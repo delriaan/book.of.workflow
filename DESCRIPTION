@@ -1,9 +1,9 @@
 Package: book.of.workflow
 Type: Package
 Title: Book of Workflow: Functions to streamline R workflow tasks
-Version: 2.3.3
-Author: Chionesu George <cgeorge@alliancehealthplan.org> [aut, cre]
-Maintainer: Alliance Health Data Science Department <DScience@alliancehealthplan.org>
+Version: 3.0.0
+Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
+Maintainer: Chionesu George <sapienti.Dei@outlook.com>
 Description: The Book of Workflow provides action-oriented functions as it pertains to actions related to data processing and connecting to data sources.
 License: Unicorn Overlords
 Encoding: UTF-8
