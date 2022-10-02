@@ -1,0 +1,26 @@
+{
+    "id": "7582FEE6",
+    "path": "~/GitHub/Custom R Packages/book.of.workflow/validation.R",
+    "project_path": "validation.R",
+    "type": "r_source",
+    "hash": "295886125",
+    "contents": "",
+    "dirty": false,
+    "created": 1661979110026.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "83,0",
+        "scrollLine": "0"
+    },
+    "folds": "12|18|72|0|\n73|43|78|63|\n87|29|92|0|\n93|98|101|0|\n",
+    "lastKnownWriteTime": 1661981001,
+    "encoding": "ASCII",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1661981001297,
+    "read_only": false,
+    "read_only_alternatives": []
+}

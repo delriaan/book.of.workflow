@@ -1,0 +1,26 @@
+{
+    "id": "AA4C37CA",
+    "path": "~/GitHub/Custom R Packages/book.of.workflow/R/4_workflow_management.R",
+    "project_path": "R/4_workflow_management.R",
+    "type": "r_source",
+    "hash": "1030126033",
+    "contents": "",
+    "dirty": false,
+    "created": 1661973397939.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "120,77",
+        "scrollLine": "0"
+    },
+    "folds": "108|10|112|7|\n125|61|159|0|\n137|16|148|1|\n150|18|153|1|\n155|34|156|1|\n161|78|190|0|\n192|29|217|0|\n224|21|460|0|\n237|30|240|3|\n263|140|340|3|\n348|27|366|3|\n377|67|421|3|\n429|36|434|3|\n439|26|446|3|\n448|32|457|3|\n",
+    "lastKnownWriteTime": 1661980641,
+    "encoding": "ASCII",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1661980641112,
+    "read_only": false,
+    "read_only_alternatives": []
+}
