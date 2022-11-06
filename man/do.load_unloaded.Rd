@@ -7,7 +7,7 @@
 do.load_unloaded(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE)
 }
 \arguments{
-\item{...}{<[`dynamic-dots`][rlang::dyn-dots]> A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.}
+\item{...}{\code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.}
 
 \item{libs}{(string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.}
 
@@ -19,9 +19,14 @@ do.load_unloaded(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE)
 See `library()`
 }
 \description{
-\code{do.load_unloaded} checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
+\code{do.load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
 }
 \details{
 Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
 Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
 }
+\seealso{
+Other Environment Processing: 
+\code{\link{do.save_image}()}
+}
+\concept{Environment Processing}

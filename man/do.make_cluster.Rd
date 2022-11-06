@@ -4,50 +4,14 @@
 \alias{do.make_cluster}
 \title{A Wrapper for \code{\link[parallelly]{makeClusterPSOCK}}}
 \usage{
-do.make_cluster(
-  master.host = sprintf("\%s", Sys.getenv("COMPUTERNAME")),
-  worker.hosts = "localhost",
-  cluster.port,
- 
-    win_cmd = "\\\\\\\\\%s \\"\%s\\" --default-packages=datasets,utils,grDevices,graphics,stats -e \\".libPaths(paste0(R.home(), '/library')); tryCatch(parallel:::.workRSOCK,error=function(e)parallel:::.slaveRSOCK)()\\" MASTER=\%s PORT=\%s OUT=\\"/dev/null\\" SETUPTIMEOUT=3 TIMEOUT=2592000 XDR=TRUE SETUPSTRATEGY=sequential ",
-  ...
-)
-}
-\arguments{
-\item{master.host}{(string) Name or IP of the master node as known to the worker nodes}
-
-\item{worker.hosts}{(string, character vector) The names or IPs of the worker nodes (see 'Details')}
-
-\item{cluster.port}{(integer) Not used (retained for legacy code);}
-
-\item{win_cmd}{(string) The worker initialization command template to use given as an \code{\link[base]{sprintf}} string accepting \emph{ordered} arguments of \emph{worker hosts}, \emph{path to rscript.exe (64-bit) }, \emph{'Master' hostname}, and \emph{port}}
-
-\item{...}{Additional arguments passed on to \code{\link[parallelly]{makeClusterPSOCK}}}
-}
-\value{
-A socket connection object as per \code{\link[parallelly]{makeClusterPSOCK}}
+do.make_cluster(...)
 }
 \description{
-All arguments are ultimately passed to \code{\link[parallelly]{makeClusterPSOCK}}.  Hard-coded arguments are as follows:
-\itemize{
-\item \code{manual}: \code{TRUE}
-\item \code{homogenous}: \code{TRUE}
-\item \code{rshcmd}: Replaced with \href{https://docs.microsoft.com/en-us/sysinternals/downloads/pstools}{psexec}, which is why the workers must be started manually in a Windows environment.  Putting the executable in \code{paste0(R.home(), "/bin/x64/Rscript")} ensures the same user access as \code{rscript.exe}
-\item \code{rscript}: Dynamically set with \code{paste0(R.home(), "/bin/x64/Rscript")}
-}
-}
-\details{
-Argument \code{worker.hosts} can take two forms: either a character vector, or a <space/comma/semi-colon>-delimited string.  Additionally, each worker name/IP can have the number of instances to run by appending a colon (':') and providing a positive integer (e.g., \code{"WORKER_1; WORKER_2:3, WORKER_3:9"} resulting in 13 worker processes across three (3) nodes).
-
-The function leverages the \code{parallelly} and \code{callr} packages in order to start the workers in the background after the call to \code{\link[parallelly]{makeClusterPSOCK}} is made.  What \emph{actually} occurs is the workers are initiated first via \code{list(future({callr::r_bg(...)}, lazy = TRUE)[i])}, where \code{i} ranges from 1 to the number of parsed workers.  The list of lazy futures is iterated over via \code{lapply(l, future::value)}, spawning background processes that are initially delayed with incrementally increasing timeouts in calls to \code{Sys.sleep(<delay>)}.
-
-The result is that the iteration phase is nearly instantaneous; however, because these are delayed in background processes, the subsequent call to \code{\link[parallelly]{makeClusterPSOCK}} is executed in the meantime: while waiting for workers to start, the workers are started once the delay timeouts expire sequentially (like dominoes falling one after another).
-
-Calling \code{\link[future]{plan}}(sequential) at the end of the parallel processing block is advised.
+`do.make_cluster()` is no longer in use
 }
 \seealso{
-Other Parallelism: 
-\code{\link{get.cluster_meta}()},
+Other DEPRECATED: 
+\code{\link{do.get_pkgs}()},
 \code{\link{terminate.cluster_workers}()}
 }
-\concept{Parallelism}
+\concept{DEPRECATED}

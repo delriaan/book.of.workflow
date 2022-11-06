@@ -15,9 +15,4 @@ Invisibly, an environment with active-binding \code{cluster_meta}
 \description{
 \code{get.cluster_meta} reads the information from a saved object created with one of the \code{makeCluster} family of functions
 }
-\seealso{
-Other Parallelism: 
-\code{\link{do.make_cluster}()},
-\code{\link{terminate.cluster_workers}()}
-}
 \concept{Parallelism}

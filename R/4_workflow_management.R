@@ -40,7 +40,7 @@ read.snippet <- function(..., doc, action){
 	}
 	if (rlang::is_empty(doc)){ stop("Value for 'doc' is empty.  Call this funciton from RStudio to default to current document: exiting ...") }
 
-	action	= if (missing(action)){ "goto" } else { as.character(rlang::enexprs(action)) }
+	action	= if (missing(action)){ "goto" } else { as.character(rlang::enexpr(action)) }
 	label 	= as.character(rlang::exprs(...));
 	pattern = paste(label, collapse = ".+") %>% sprintf(fmt = "<snippet[:].+%s.+");
 
@@ -59,18 +59,18 @@ read.snippet <- function(..., doc, action){
 	# ::
 	message("Searching " %s+% doc);
 
-	file.data = suppressWarnings(readtext::readtext(doc)$text %>% stri_split_regex("\n", simplify = TRUE)) %>%
-		stri_replace_all_regex("read[.]snippet[(].+[)][;]?", "", vectorize_all = FALSE) %>%
-		stri_trim_both();
+	file.data = suppressWarnings(readtext::readtext(doc)$text %>% stringi::stri_split_regex("\n", simplify = TRUE)) %>%
+		stringi::stri_replace_all_regex("read[.]snippet[(].+[)][;]?", "", vectorize_all = FALSE) %>%
+		stringi::stri_trim_both();
 
-	match.pos = map(which(file.data %ilike% pattern), ~{
+	match.pos = purrr::map(which(file.data %ilike% pattern), ~{
 		from = .x
-		to = which(file.data %ilike% "</snippet") %>% keep(~.x > from) %>% min();
+		to = which(file.data %ilike% "</snippet") %>% purrr::keep(~.x > from) %>% min();
 
 		if (action == "goto"){ .x } else { seq(from, to); }
 	}) %>% unlist();
 
-  out = paste(file.data[match.pos] %>% stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
+  out = paste(file.data[match.pos] %>% stringi::stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
 
 	# ::
 	if (is_studio_audience){
@@ -78,8 +78,9 @@ read.snippet <- function(..., doc, action){
 	  	if (doc == rstudioapi::getSourceEditorContext()$path){
 	  		rstudioapi::setCursorPosition(rstudioapi::as.document_position(c(max(match.pos) + 1L, 1L)))
 	  	}
-	  } else { if (doc == rstudioapi::getSourceEditorContext()$path){
-	  	rstudioapi::setCursorPosition(rstudioapi::as.document_position(c(min(match.pos), 1L)))}
+	  } else {
+	  	if (doc == rstudioapi::getSourceEditorContext()$path){
+	  	rstudioapi::setCursorPosition(rstudioapi::as.document_position(c(min(match.pos), 1L))) }
 	  }
 	}
 
@@ -107,10 +108,11 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 	.args = as.character(rlang::exprs(...));
 
 	.text = { sprintf(
-						fmt = "# <snippet: %s> ----%s"
-						, paste(.args, collapse = " ")
-						, ifelse(include.read, sprintf("\nread.snippet(%s, action = parse);\n", paste(.args, collapse = ", ")), "")
-						)} %>% c("\n# </snippet>\n") %>% paste(collapse = "");
+							fmt = "# <snippet: %s> ----%s"
+							, paste(.args, collapse = " ")
+							, ifelse(include.read, sprintf("\nread.snippet(%s, action = parse);\n", paste(.args, collapse = ", ")), "")
+							)
+						} %>% c("\n# </snippet>\n") %>% paste(collapse = "");
 
 	if (use.clipboard){
 		cat(.text);
@@ -121,73 +123,6 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 		.tgt_pos = rstudioapi::getSourceEditorContext()$selection[[1]]$range$start;
 		rstudioapi::insertText(location = .tgt_pos, text = .text);
 	} else { utils::readClipboard() }
-}
-#
-execute.workflow <- function(wf, wf_step, list.only = FALSE){
-#' Execute a Stored Workflow Step
-#'
-#' \code{execute.workflow} executes quoted expressions referencing \code{read.snippet} calls.
-#'
-#' @param wf (list) The workflow queue object containing the quoted workflow steps
-#' @param wf_step (string/symbol) The names of the steps to execute.  Tip: label the steps in the order they should execute.
-#' @param list.only (logical | FALSE) When \code{TRUE}, available workflows and workflow steps are printed to console before the function exits.
-#'
-#' @return When \code{list.only == TRUE}, the listing of workflows and corresponding steps invisibly; otherwise, nothing.
-#' @export
-
-	if (list.only){
-		.out = refer.to("workflow") %$%
-			ls(pattern = "wf[_][0-9]+[_][a-z]+") %>%
-			purrr::set_names() %>%
-			imap(~{
-				.prefix = .y %s+% ": \n- ";
-				cat(.prefix);
-				refer.to("workflow")[[.x]] %$% { cat(paste(ls(), collapse = "\n- "), "\n\n") }
-			});
-
-		return(invisible(.out));
-	}
-
-	if (missing(wf)){
-		wf <- tcltk::tk_select.list(ls("workflow", pattern = "wf[_][0-9]+[_][a-z]+"), title = "Choose a workflow to search:");
-		if (rlang::is_empty(wf)){ message("No workflow selected: exiting ...");	return(invisible(0)) }
-	}
-
-	wf_step <- if (missing(wf_step)){ wf %$% mget(tcltk::tk_select.list(ls(), title = "Choose the workflow steps to execute in order", multiple = TRUE))
-	} else { rlang::expr(!!wf_step) %>% as.character() }
-
-	walk(wf_step, eval, envir = globalenv());
-}
-#
-make.workflow <- function(..., wf_name = "new_wf", envir = NULL, eval = TRUE){
-#' Create a Workflow Object
-#'
-#' \code{make.workflow}() assigns an expression list to the target environment.  These objects can then be invoked by calling \code{execute.workflow}()
-#'
-#' @param ... Unquoted expressions to be executed in the workflow in the order given.  Named arguments are suggested for clarity
-#' @param wf_name The name of the workflow list object for assignment
-#' @param envir The target environment for assignment
-#' @param eval (logical|TRUE) Should the assignment expression be evaluated after creation?
-#'
-#' @export
-	.steps = rlang::exprs(..., .unquote_names = TRUE);
-	wf_name = as.character(rlang::enexpr(wf_name))
-
-	if (rlang::is_empty(wf_name)){ wf_name <- "new_wf"  }
-
-	.dflt_nms = seq_along(.steps) |>
-		stringi::stri_pad_left(width = 2, pad = "0") |>
-		sprintf(fmt = "step_%s")
-
-
-	.miss_nms = which(names(.steps) == "");
-
-	names(.steps)[.miss_nms] <- .dflt_nms[.miss_nms];
-
-	if (!rlang::is_empty(envir)){
-		.out = rlang::expr(assign(!!wf_name, !!.steps, envir = !!envir))
-		if (eval){ eval(.out, envir = globalenv()) } else { .out }
-	} else { rlang::list2(!!wf_name := .steps) }
 }
 #
 mgr_upgrade <- function(ref){
@@ -202,13 +137,13 @@ mgr_upgrade <- function(ref){
 #' @export
 
 	if (missing(ref)){ message("Nothing to upgrade: exiting with no action taken ..."); return(invisible()) }
-	ref = deparse(substitute(ref));
-	obj	= ref %>% str2lang() %>% eval();
+	ref = as.character(rlang::enexpr(ref))
+	obj	= eval(ref)
 	old_ver = obj$.__enclos_env__$private$version;
 
 	if (rlang::is_empty(old_ver) || old_ver < workflow_manager$private_fields$version){
 		xfer = "workflows";
-		curr = obj[[xfer]] %$% mget(ls()) %>% map(identical, obj$current) %>% keep(~.x) %>% names();
+		curr = obj[[xfer]] %$% mget(ls()) %>% purrr::map(identical, obj$current) %>% purrr::keep(~.x) %>% names();
 		out  = workflow_manager$new();
 		out$workflows = obj$workflows;
 		substitute(out$get(curr), list(curr = curr)) %>% eval();
@@ -219,7 +154,7 @@ mgr_upgrade <- function(ref){
 #
 #' @title Workflow Manager
 #' @description
-#' \code{workflow_manager} is an R6 class that helps to manage workflow-related tasks
+#' \code{workflow_manager} is an R6 class that helps to manage workflow-related tasks.  The general idea is to set up sets of ordered actions and then selectively execute on-demand.
 #'
 #' @export
 workflow_manager <- { R6::R6Class(
@@ -228,50 +163,54 @@ workflow_manager <- { R6::R6Class(
 	, public = list(
 			#' @field workflows Holds the workflow sets (expression lists)
 			workflows = NULL,
+			#' @field log Holds the history of executed workflow steps
+			log = NULL,
 			#' Initialize the Workflow  Manager
-			#'
+			#' @description
 			#' \code{$new} initializes a new object
 			#'
 			#' @param ... Not used
 			#'
 			#' @return Invisibly, the class environment
 			initialize = function(...){
-				if (!"package:magrittr" %in% search()){ library(magrittr)}
-				invisible(self); self$workflows <- new.env();
+				self$workflows <- new.env();
+				self$log <- new.env()
+				invisible(self);
 			},
 			#' Manage Workflow Sets
-			#'
+			#' @description
 			#' \code{$manage_sets} will add or remove workflow sets from \code{$workflows}  A set is an ordered, named expression list which can be manually defined or created with \code{make.workflow()}
 			#'
 			#' Each of the above items can be defined according to taste, but the names must be passed as show above when \code{action} is one of 'add', 'update', 'remove', 'delete'.
 			#' In addition, each element of \code{...} \emph{must} be supplied as a list (e.g., \code{fitted = list(<objects>)})
 			#'
-			#' @param action One of \code{add}, \code{update}, \code{remove}, \code{delete}, or \code{copy} given as strings or symbols (see section 'Action')
-			#' @param wf_name One or more names to use for saved workflow sets
-			#' @param ... For each term expected in a set, the object data provided in a named list, each element being the same length as \code{wf_name}
-			#' @param confirm.rm (logical) Set to \code{FALSE} if you're feeling lucky -- punk!
-			#' @param chatty (logical \ FALSE) Verbosity flag
-			#'
-			#' Argument \code{action}:\cr
+			#' @param action One of \code{add}, \code{update}, \code{remove}, \code{delete}, or \code{copy} given as strings or symbols:\cr
 			#' \describe{
 			#'	\item{add}{Populate objects into a \emph{new} object set stored in \code{$workflows}}
 			#'	\item{update}{Similar to \code{add} but to an existing stored object set }
 			#'	\item{remove, delete}{Remove a stored object set by name}
 			#'	\item{copy, clone}{Copy a stored object set under a new name}
 			#' }
+			#' @param wf_name One or more names to use for saved workflow sets
+			#' @param ... For each term expected in a set, the object data provided in a named list, each element being the same length as \code{wf_name}
+			#' @param confirm.rm (logical) Set to \code{FALSE} if you're feeling lucky -- punk!
+			#' @param chatty (logical \ FALSE) Verbosity flag
 			#'
 			#' @return Invisibly, the class environment
 			manage = function(action, wf_name = private$curnt, ..., confirm.rm = quote(askYesNo("Remove %s?" %>% sprintf(wf_name))), chatty = FALSE){
-				action =  if (is.symbol(action)){ as.character(action)
-				} else if (is.language(action)|is.call(action)|is.expression(action)){
-					eval(action, envir = globalenv())
-				} else { substitute(action) %>% as.character() }
+				action =  if (is.symbol(action)){
+						as.character(action)
+					} else if (is.language(action)|is.call(action)|is.expression(action)){
+						eval(action, envir = globalenv())
+					} else { substitute(action) %>% as.character() }
 
 				if (is.null(action)){ action <- tcltk::tk_select.list(
 					choices = c("add", "update", "remove/delete")
 					, multiple = TRUE
-					, title = "Choose one or more actions to take:")
+					, title = "Choose one or more actions to take:"
+					)
 				}
+
 				in_data = rlang::list2(...)
 
 				action.queue = { rlang::exprs(
@@ -289,35 +228,34 @@ workflow_manager <- { R6::R6Class(
 							}
 							self$workflows[[this.name]] <- in_data[[this.idx]][[1]]
 						});
-						if (length(ls(self$workflows)) == 1){ self$current <- ls(self$workflows) }
+						if (rlang::has_length(ls(self$workflows), 1)){ self$current <- ls(self$workflows) }
 					}
 					, update = {
-						purrr::iwalk(!!wf_name, ~{
-							this.name = .x;
-							this.idx = .y;
-							if (hasName(self$workflows, this.name)){
-								# Add objects if dots list is named and not empty
-								if (chatty){ message(sprintf(
-									"Updating %s with %s: ", this.name, paste(names(in_data[this.idx]), collapse = ", ")
-								))
-								}
-								purrr::walk(in_data[[this.idx]], ~{ self$workflows[[this.name]][names(.x)] <- .x })
-							} else { if (chatty){ message("Nothing to update") }}
-						})
-					}
+							purrr::iwalk(!!wf_name, ~{
+								this.name = .x;
+								this.idx = .y;
+								if (hasName(self$workflows, this.name)){
+									# Add objects if dots list is named and not empty
+									if (chatty){ message(sprintf( "Updating %s with %s: ", this.name, paste(names(in_data[this.idx]), collapse = ", ") )) }
+									purrr::walk(in_data[[this.idx]], ~{ self$workflows[[this.name]][names(.x)] <- .x })
+								} else { if (chatty){ message("Nothing to update") }}
+							})
+						}
 					, remove = { purrr::walk(!!wf_name, ~{
-						this.name = .x;
-						if (hasName(self$workflows, this.name)){
-							if (eval(confirm.rm) == TRUE){
-								rm(list = this.name, envir = self$workflows);
-								if (length(ls(self$workflows)) == 1){ private$curnt <- ls(self$workflows) }
-								if (length(ls(self$workflows)) == 0){
-									if (chatty){ message("No workflows exist!") }
-									private$curnt <- NULL
-								}
-							} else { message("No action taken ...")}
-						} else { message(paste0(this.name, " not found to remove ...")) }
-					})
+							this.name = .x;
+							if (hasName(self$workflows, this.name)){
+								if (eval(confirm.rm) == TRUE){
+									rm(list = this.name, envir = self$workflows);
+
+									if (length(ls(self$workflows)) == 1){ private$curnt <- ls(self$workflows) }
+
+									if (length(ls(self$workflows)) == 0){
+										if (chatty){ message("No workflows exist!") }
+										private$curnt <- NULL
+									}
+								} else { message("No action taken ...")}
+							} else { message(paste0(this.name, " not found to remove ...")) }
+						})
 					}
 					, copy = {
 						purrr::iwalk(!!wf_name, ~{
@@ -329,7 +267,7 @@ workflow_manager <- { R6::R6Class(
 
 						do.call(self$get, args = list(wf_name = wf_name));
 					}
-				)} %>% append(list(delete = .$remove, clone = .$copy));
+					)} %>% append(list(delete = .$remove, clone = .$copy));
 
 				queue.idx = which(stringi::stri_detect_regex(names(action.queue), action)) %>%
 					unique() %>% .[1];
@@ -340,7 +278,7 @@ workflow_manager <- { R6::R6Class(
 				invisible(self);
 			},
 			#' Get a Saved Set of Workflow Objects
-			#'
+			#' @description
 			#' \code{$get} will retrieve the object in \code{$workflows} named in \code{wf_name} out and set \code{$current} to the environment with the name of that in \code{wf_name}
 			#'
 			#' @param wf_name A string or symbol of the name of the set to get
@@ -366,7 +304,7 @@ workflow_manager <- { R6::R6Class(
 				invisible(self);
 			},
 			#' Execute a Stored Workflow Step
-			#'
+			#' @description
 			#' \code{execute.workflow} executes quoted expressions referencing \code{read.snippet} calls.
 			#'
 			#' @param wf (list) The name of the workflow object containing the workflow step expressions
@@ -395,6 +333,7 @@ workflow_manager <- { R6::R6Class(
 							message("Argument 'wf' must be provided when running in a non-interactive session: exiting ...");
 							return()
 						}
+
 						wf <- self$workflows[[
 							tcltk::tk_select.list(.workflows, title = "Choose a workflow to search:")]];
 						if (rlang::is_empty(wf)){
@@ -412,16 +351,19 @@ workflow_manager <- { R6::R6Class(
 							))
 						} else { wf %$% mget(ls()) }
 					} else {
-						wf_step <- wf %$% mget(ls(pattern = as.character(rlang::exprs(!!!wf_step)) %>%
-																				sprintf(fmt = "(%s)") %>% paste(collapse = "|")))
+						wf_step <- wf %$% mget(ls(pattern = as.character(rlang::exprs(!!!wf_step)) %>% sprintf(fmt = "(%s)") %>% paste(collapse = "|")))
 					}
 				})
 
-				invisible(purrr::map(wf_step, eval, envir = globalenv()));
+				invisible(purrr::walk(wf_step, ~{
+					eval(.x, envir = globalenv());
+					assign(Sys.time(), expr = .x, envir = self$log)
+				}));
+
 				invisible(self)
 			},
 			#' Reset the Workflow Manager
-			#'
+			#' @description
 			#' \code{$reset} will clear out '$workflows' and set '$current' to \code{NULL}
 			#'
 			#' @param confirm (logical | TRUE) Set to \code{FALSE} if you're feeling lucky -- punk!

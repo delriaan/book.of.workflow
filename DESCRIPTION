@@ -1,25 +1,25 @@
 Package: book.of.workflow
 Type: Package
-Title: Book of Workflow: Functions to streamline R workflow tasks
-Version: 3.0.0
+Title: Book of Workflow
+Description: Book of Workflow provides action-oriented functions as it pertains to actions related to data processing and connecting to data sources.
+Version: 3.0.2
 Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
 Maintainer: Chionesu George <sapienti.Dei@outlook.com>
-Description: The Book of Workflow provides action-oriented functions as it pertains to actions related to data processing and connecting to data sources.
 License: Unicorn Overlords
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.0
 Depends: R (>= 4.1.0)
+Imports: parallel
 	, data.table
 	, magrittr
 	, purrr
 	, stringi
+	, DBI
+	, callr 
+	, foreach
 	, future
 	, parallelly
-	, callr 
-	, DBI
-Imports: parallel
-	, foreach
 	, rlang
 	, doParallel
 	, rstudioapi

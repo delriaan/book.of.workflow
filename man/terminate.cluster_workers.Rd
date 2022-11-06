@@ -4,27 +4,14 @@
 \alias{terminate.cluster_workers}
 \title{Terminate Remote Cluster Workers}
 \usage{
-terminate.cluster_workers(cl, chatty = FALSE)
-}
-\arguments{
-\item{cl}{A socket cluster object make with package 'parallelly' (e.g., \code{\link[parallelly]{makeClusterPSOCK}}) or similar}
-
-\item{chatty}{(logical | FALSE) Verbosity flag}
-}
-\value{
-None
+terminate.cluster_workers(...)
 }
 \description{
-Terminate Remote Cluster Workers
+`terminate.cluster_workers()` is no longer in use
 }
-\section{Required}{
-
-The following \href{https://docs.microsoft.com/en-us/sysinternals/downloads/pstools}{PSTools} programs must be globally accessible on the active session workstation: \cr \itemize{\item{psexec} \item{pskill} \item{tasklist}}
-}
-
 \seealso{
-Other Parallelism: 
-\code{\link{do.make_cluster}()},
-\code{\link{get.cluster_meta}()}
+Other DEPRECATED: 
+\code{\link{do.get_pkgs}()},
+\code{\link{do.make_cluster}()}
 }
-\concept{Parallelism}
+\concept{DEPRECATED}

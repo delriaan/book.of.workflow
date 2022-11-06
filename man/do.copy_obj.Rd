@@ -14,19 +14,20 @@ do.copy_obj(
 )
 }
 \arguments{
-\item{...}{(\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., FROM_ENV$from.name).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = "a = this, that, `TO_ENV$the_other` = other"} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.}
+\item{...}{(\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., `FROM_ENV$from.name`).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = "a = this, that, `TO_ENV$the_other` = other"} results in three destination objects named \code{a}, `that`, and `the_other` with `the_other` created in environment `TO_ENV`.}
 
 \item{from.env}{(string|".GlobalEnv"): The default source environment of the object(s) to be moved/copied}
 
 \item{to.env}{(string|".GlobalEnv"): The default target environment of the target object}
 
-\item{keep.orig}{(logical | TRUE): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}}
+\item{keep.orig}{(logical | TRUE): When `FALSE`, the original is removed via \code{\link[base]{rm}}}
 
 \item{chatty}{(logical | FALSE): Verbosity flag}
 }
 \description{
 \code{do.copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
-If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
+If `to.env` is `NULL`, the execution will simply replace the object under a new name.
+If `to.env` has multiple values, the copy or move operations will populate each environment.
 }
 \examples{
 library(book.of.workflow)

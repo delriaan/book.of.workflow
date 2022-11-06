@@ -35,3 +35,8 @@ A `.rdata` file, the filename of which being suffixed with a timestamp formatted
 \description{
 The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
 }
+\seealso{
+Other Environment Processing: 
+\code{\link{do.load_unloaded}()}
+}
+\concept{Environment Processing}
