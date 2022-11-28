@@ -280,3 +280,13 @@ workflow_manager <- { R6::R6Class(
 		)
 })(list(a, b, action = exec), list(k, j, doc = "this_doc.R", action = "skip"))
 
+
+
+do.make_cluster
+get.cluster_meta
+do.make_workers
+terminate.cluster_workers
+do.make_query
+do.get_data
+do.export_data
+check.db_conn

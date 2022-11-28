@@ -4,15 +4,15 @@
 \alias{workflow_manager}
 \title{Workflow Manager}
 \description{
-\code{workflow_manager} is an R6 class that helps to manage workflow-related tasks
+\code{workflow_manager} is an R6 class that helps to manage workflow-related tasks.  The general idea is to set up sets of ordered actions and then selectively execute on-demand.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{workflows}}{Holds the workflow sets (expression lists)
-Initialize the Workflow  Manager
+\item{\code{workflows}}{Holds the workflow sets (expression lists)}
 
-\code{$new} initializes a new object}
+\item{\code{log}}{Holds the history of executed workflow steps
+Initialize the Workflow  Manager}
 }
 \if{html}{\out{</div>}}
 }
@@ -40,6 +40,7 @@ Initialize the Workflow  Manager
 \if{html}{\out{<a id="method-workflow_manager-new"></a>}}
 \if{latex}{\out{\hypertarget{method-workflow_manager-new}{}}}
 \subsection{Method \code{new()}}{
+\code{$new} initializes a new object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{workflow_manager$new(...)}\if{html}{\out{</div>}}
 }
@@ -54,17 +55,16 @@ Initialize the Workflow  Manager
 \subsection{Returns}{
 Invisibly, the class environment
 Manage Workflow Sets
-
-\code{$manage_sets} will add or remove workflow sets from \code{$workflows}  A set is an ordered, named expression list which can be manually defined or created with \code{make.workflow()}
-
-Each of the above items can be defined according to taste, but the names must be passed as show above when \code{action} is one of 'add', 'update', 'remove', 'delete'.
-In addition, each element of \code{...} \emph{must} be supplied as a list (e.g., \code{fitted = list(<objects>)})
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-workflow_manager-manage"></a>}}
 \if{latex}{\out{\hypertarget{method-workflow_manager-manage}{}}}
 \subsection{Method \code{manage()}}{
+\code{$manage_sets} will add or remove workflow sets from \code{$workflows}  A set is an ordered, named expression list which can be manually defined or created with \code{make.workflow()}
+
+Each of the above items can be defined according to taste, but the names must be passed as show above when \code{action} is one of 'add', 'update', 'remove', 'delete'.
+In addition, each element of \code{...} \emph{must} be supplied as a list (e.g., \code{fitted = list(<objects>)})
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{workflow_manager$manage(
   action,
@@ -78,7 +78,13 @@ In addition, each element of \code{...} \emph{must} be supplied as a list (e.g.,
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{action}}{One of \code{add}, \code{update}, \code{remove}, \code{delete}, or \code{copy} given as strings or symbols (see section 'Action')}
+\item{\code{action}}{One of \code{add}, \code{update}, \code{remove}, \code{delete}, or \code{copy} given as strings or symbols:\cr
+\describe{
+\item{add}{Populate objects into a \emph{new} object set stored in \code{$workflows}}
+\item{update}{Similar to \code{add} but to an existing stored object set }
+\item{remove, delete}{Remove a stored object set by name}
+\item{copy, clone}{Copy a stored object set under a new name}
+}}
 
 \item{\code{wf_name}}{One or more names to use for saved workflow sets}
 
@@ -86,29 +92,20 @@ In addition, each element of \code{...} \emph{must} be supplied as a list (e.g.,
 
 \item{\code{confirm.rm}}{(logical) Set to \code{FALSE} if you're feeling lucky -- punk!}
 
-\item{\code{chatty}}{(logical \ FALSE) Verbosity flag
-
-Argument \code{action}:\cr
-\describe{
-\item{add}{Populate objects into a \emph{new} object set stored in \code{$workflows}}
-\item{update}{Similar to \code{add} but to an existing stored object set }
-\item{remove, delete}{Remove a stored object set by name}
-\item{copy, clone}{Copy a stored object set under a new name}
-}}
+\item{\code{chatty}}{(logical \ FALSE) Verbosity flag}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 Invisibly, the class environment
 Get a Saved Set of Workflow Objects
-
-\code{$get} will retrieve the object in \code{$workflows} named in \code{wf_name} out and set \code{$current} to the environment with the name of that in \code{wf_name}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-workflow_manager-get"></a>}}
 \if{latex}{\out{\hypertarget{method-workflow_manager-get}{}}}
 \subsection{Method \code{get()}}{
+\code{$get} will retrieve the object in \code{$workflows} named in \code{wf_name} out and set \code{$current} to the environment with the name of that in \code{wf_name}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{workflow_manager$get(wf_name)}\if{html}{\out{</div>}}
 }
@@ -123,14 +120,13 @@ Get a Saved Set of Workflow Objects
 \subsection{Returns}{
 Invisibly, the class environment
 Execute a Stored Workflow Step
-
-\code{execute.workflow} executes quoted expressions referencing \code{read.snippet} calls.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-workflow_manager-exec"></a>}}
 \if{latex}{\out{\hypertarget{method-workflow_manager-exec}{}}}
 \subsection{Method \code{exec()}}{
+\code{execute.workflow} executes quoted expressions referencing \code{read.snippet} calls.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{workflow_manager$exec(wf, wf_step, list.only = FALSE, passive = TRUE)}\if{html}{\out{</div>}}
 }
@@ -151,14 +147,13 @@ Execute a Stored Workflow Step
 \subsection{Returns}{
 When \code{list.only == TRUE}, the listing of workflows and corresponding steps invisibly; otherwise, nothing.
 Reset the Workflow Manager
-
-\code{$reset} will clear out '$workflows' and set '$current' to \code{NULL}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-workflow_manager-reset"></a>}}
 \if{latex}{\out{\hypertarget{method-workflow_manager-reset}{}}}
 \subsection{Method \code{reset()}}{
+\code{$reset} will clear out '$workflows' and set '$current' to \code{NULL}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{workflow_manager$reset(confirm = TRUE)}\if{html}{\out{</div>}}
 }

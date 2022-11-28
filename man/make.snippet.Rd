@@ -7,7 +7,7 @@
 make.snippet(..., include.read = TRUE, use.clipboard = FALSE)
 }
 \arguments{
-\item{...}{Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document}
+\item{...}{(\code{\link[rlang]{dots_list}}) Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document}
 
 \item{include.read}{(logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{eval = parse}}
 

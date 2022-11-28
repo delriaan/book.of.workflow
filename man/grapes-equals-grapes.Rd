@@ -15,14 +15,14 @@ env \%-=\% x
 The target environment, invisibly
 }
 \description{
-Operator \code{\%-=\%} is a wrapper for \code{base::rm()}
+\code{\%-=\%} wraps for \code{base::rm()}
 }
 \seealso{
 Other Environmental Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%+must.have\%}()},
+\code{\link{\%check\%}()},
 \code{\link{\%missing\%}()},
-\code{\link{env.check}()},
-\code{\link{must.have}()}
+\code{\link{\%must.have\%}()}
 }
 \concept{Environmental Integrity}

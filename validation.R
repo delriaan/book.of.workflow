@@ -1,19 +1,24 @@
+library(magick)
+library(jsonlite)
+library(sodium)
+magick::image_read("book-305126_1280.png") %>% serialize(connection = NULL) %>% base64enc::base64encode() %>% writeClipboard()
+
 sapply(dir("R", full.names = TRUE), source)
 
 library(purrr);
-library(magrittr);
 library(stringi);
 library(parallelly);
 library(future);
 library(foreach);
-library(data.table);
 
 # library(book.of.workflow)
 #
 # ~ do.copy_obj() ====
-BLAH <- new.env(); BLEH <- new.env()
-set_names(letters[1:10], LETTERS[1:10]) %>% as.list %>% list2env(envir = globalenv())
-set_names(letters[11:20], LETTERS[11:20]) %>% as.list %>% list2env(envir = BLEH)
+BLAH <- new.env()
+BLEH <- new.env()
+
+set_names(letters[1:10], LETTERS[1:10]) |> as.list() |> list2env(envir = globalenv())
+set_names(letters[11:20], LETTERS[11:20]) |> as.list() |> list2env(envir = BLEH)
 .pattern <- "^[A-Z]$"
 
 do.copy_obj(A, keep.orig = TRUE, .debug = !TRUE);
@@ -33,7 +38,7 @@ do.copy_obj(B, C, D, from.env = BLAH, to.env = BLEH, keep.orig = TRUE, .debug = 
 	# [1] "B" "C" "D" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
 
 do.copy_obj(E, `F`, G, to.env = BLEH, keep.orig = TRUE, .debug = !TRUE);
-	map(purrr::set_names(c("BLAH", "BLEH")), ~ls(pattern = .pattern, envir = eval(as.symbol(.x))));
+	purrr::map(purrr::set_names(c("BLAH", "BLEH")), ~ls(pattern = .pattern, envir = eval(as.symbol(.x))));
 	# $BLAH
 	# [1] "B" "C" "D"
 	#
@@ -72,9 +77,18 @@ do.copy_obj(`BLAH$alpha` = H, `BLAH$beta` = I, `BLEH$gamma` = J, keep.orig = TRU
 	# [1] "H" "I" "J"
 
 # ~ do.make_cluster(), get.cluster_ports() ====
-assign("test.cluster", do.make_cluster(worker.hosts = "ITDHPC02-D ITDHPC03-D", autoStop = TRUE))#, cluster.port = freePort(1.1E4:1.2E4)))
-cl_meta <- get.cluster_meta(test.cluster)
-cl_meta$cluster_meta
+# debug(do.make_cluster)
+library(magrittr);
+library(data.table);
+library(future)
+assign("test.cluster", do.make_cluster(worker.hosts = "IMPERIALTOWER:5", autoStop = TRUE))
+# undebug(do.make_cluster)
+test.cluster$is_alive()
+test.cluster$get_result()
+future::plan(cluster, workers = test.cluster$get_result())
+plan(sequential)
+cl_meta <- get.cluster_meta(test.cluster$main$get_result())
+.cl_meta$cluster_meta
 rm(cl_meta)
 do.make_workers(refresh = FALSE, with_cluster = "test.cluster")
 # ~ read.snippet(), make.snippet() ====

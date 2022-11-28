@@ -17,17 +17,17 @@ do.save_image(
 \arguments{
 \item{...}{(vector or list) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})}
 
-\item{safe}{(logical | TRUE) Should the pending action be confirmed at the prompt?}
+\item{safe}{(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?}
 
-\item{env}{(string | ".GlobalEnv") The environment to search for items given as a string}
+\item{env}{(string | \code{.GlobalEnv}) The environment to search for items given as a string}
 
-\item{save.dir}{(string | getwd()) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.}
+\item{save.dir}{(string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.}
 
 \item{file.name}{(string | "") The name of the file to save, or, when \code{NULL}, the value of \code{i} if atomic or a predefined name when \code{i} is a vector}
 
-\item{use.prefix}{(logical | TRUE) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}}
+\item{use.prefix}{(logical | \code{TRUE}) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}}
 
-\item{prepare}{(language | NULL) A quoted expression that executes before the save action takes place.}
+\item{prepare}{(language | \code{NULL}) A quoted expression that executes before the save action takes place.}
 }
 \value{
 A `.rdata` file, the filename of which being suffixed with a timestamp formatted as "yyyy.mm.dd.hhmmss"
@@ -35,3 +35,8 @@ A `.rdata` file, the filename of which being suffixed with a timestamp formatted
 \description{
 The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
 }
+\seealso{
+Other Environment Processing: 
+\code{\link{do.load_unloaded}()}
+}
+\concept{Environment Processing}

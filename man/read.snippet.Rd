@@ -7,7 +7,7 @@
 read.snippet(..., doc, action)
 }
 \arguments{
-\item{...}{Keywords given as strings or symbols for which a matching snippet is sought}
+\item{...}{(\code{\link[rlang]{dots_list}}) Keywords given as strings or symbols for which a matching snippet is sought}
 
 \item{doc}{The input source document name given as a string: defaults to the active document when the function is invoked with no argument}
 

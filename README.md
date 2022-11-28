@@ -1,20 +1,41 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Book of Workflow
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+The following functional families are covered in 'book.of.workflow':
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Environment-processing
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+The focus is on loading libraries and managing environment objects:
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+-   do.load_unloaded()
+-   do.save_image()
+-   do.copy_obj()
+
+## Environment Integrity
+
+This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to missing object dependencies:
+
+-   %missing%
+-   %must.have%, %+must.have%
+-   %check%
+-   %+=%
+-   %-=%
+
+## External Data Management
+
+This family of functions focuses on connecting to external data (primarily databases) as well as parallelized computing contexts:
+
+-   get.cluster_meta()
+-   do.make_workers()
+-   do.make_query()
+-   do.get_data()
+-   do.export_data()
+-   check.db_conn()
+
+## Workflow Management
+
+This family of functions focuses on code execution workflow:
+
+-   read.snippet()
+-   make.snippet()
+-   workflow_manager()
+-   mgr_upgrade()

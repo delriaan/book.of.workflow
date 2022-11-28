@@ -28,7 +28,7 @@ do.export_data(
 
 \item{append}{(logical)    Should the data be appended to existing data rather than replacing existing data?}
 
-\item{persist.conn}{(logical | TRUE) When \code{FALSE}, the connection will be closed at the end of execution}
+\item{persist.conn}{(logical | \code{TRUE}) When \code{FALSE}, the connection will be closed at the end of execution}
 
 \item{...}{Additional arguments passed to \code{\link[DBI]{dbWriteTable}}}
 }

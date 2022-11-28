@@ -15,14 +15,14 @@ env \%+must.have\% x
 The names of the objects that \code{env} must have in addition to existing required objects, invisibly
 }
 \description{
-Operator \code{\%\+must.have\%} adds additional object names as "must haves" for the given environment
+\code{\%\+must.have\%} adds additional object names as "must haves" for the given environment
 }
 \seealso{
 Other Environmental Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%-=\%}()},
+\code{\link{\%check\%}()},
 \code{\link{\%missing\%}()},
-\code{\link{env.check}()},
-\code{\link{must.have}()}
+\code{\link{\%must.have\%}()}
 }
 \concept{Environmental Integrity}

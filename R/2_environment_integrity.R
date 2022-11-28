@@ -17,11 +17,12 @@
 		!(is.null(must.have(.)) || (must.have(.) %in% ls(., all.names = TRUE)))
 	}
 };
+
 #
-must.have <- function(env, x){
+`%must.have%` <- function(env, x){
 #' Must Have
 #'
-#' \code{must.have} and related operator \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{env.check}}.
+#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{env.check}}.
 #'
 #' @param env (object) An environment or name of an environment
 #' @param x (string[]) A string vector of the names that \code{env} must have when checked
@@ -43,16 +44,14 @@ must.have <- function(env, x){
 
 	return(x);
 };
+
 #
-#' @export
-`%must.have%` <- must.have;
-#
-env.check <- function(env, x){
+`%check%` <- function(env, x){
 #' Environment Integrity Check
 #'
-#' \code{env.check} and related operator \code{\%check\%} checks the environment for required objects
+#' \code{\%check\%} checks the environment for required objects
 #'
-#' @param env (object|string) An environment or name of an environment
+#' @param env (object | string) An environment or name of an environment
 #' @param x (string[]) The names of the objects that \code{env} must have
 #'
 #' @return If all objects that \code{env} \code{\link{must.have}} are present, nothing is returned; otherwise, an error message is returned.
@@ -67,14 +66,12 @@ env.check <- function(env, x){
 
 	if (any(na.omit(logi.vec))){ stop(x[logi.vec] %>% paste(collapse = ", ") %>% sprintf(fmt = "Missing objects: %s")) }
 }
-#
-#' @export
-`%check%` <- env.check;
+
 #
 `%+must.have%` <- function(env, x){
 #' Must Have in Addition
 #'
-#' Operator \code{\%\+must.have\%} adds additional object names as "must haves" for the given environment
+#' \code{\%\+must.have\%} adds additional object names as "must haves" for the given environment
 #'
 #' @param env (object) An environment or name of an environment
 #' @param x (string[]) A string vector of the names that \code{env} must have when checked
@@ -89,11 +86,12 @@ env.check <- function(env, x){
 
 	invisible(env %must.have% { c(attr(env, "must.have"), x) });
 }
+
 #
-`%+=%` <- function(env, x){
+`%+=%`<- function(env, x){
 #' Assignment Shorthand
 #'
-#' Operator \code{\%+=\%} is a wrapper for \code{base::list2env()}
+#' \code{\%+=\%} wraps \code{base::list2env()}
 #'
 #' @param env (environment, string) An environment or name of an environment
 #' @param x	(list) A named list with the names serving as the object name to add to \code{env} and the values the object definitions/contents for each object.
@@ -112,11 +110,12 @@ env.check <- function(env, x){
 
 	invisible(env);
 }
+
 #
 `%-=%` <- function(env, x){
 #' Remove Objects from an Environment
 #'
-#' Operator \code{\%-=\%} is a wrapper for \code{base::rm()}
+#' \code{\%-=\%} wraps for \code{base::rm()}
 #'
 #' @param env (environment, string) An environment or name of an environment
 #' @param x	(string[]) A collection of strings representing the names of the objects to remove from \code{env}
@@ -133,4 +132,3 @@ env.check <- function(env, x){
 	rm(list = x[sapply(x, exists, envir = env)], envir = env);
 	invisible(env);
 }
-#
