@@ -15,14 +15,14 @@ env \%+=\% x
 The target environment, invisibly
 }
 \description{
-Operator \code{\%+=\%} is a wrapper for \code{base::list2env()}
+\code{\%+=\%} wraps \code{base::list2env()}
 }
 \seealso{
 Other Environmental Integrity: 
 \code{\link{\%+must.have\%}()},
 \code{\link{\%-=\%}()},
+\code{\link{\%check\%}()},
 \code{\link{\%missing\%}()},
-\code{\link{env.check}()},
-\code{\link{must.have}()}
+\code{\link{\%must.have\%}()}
 }
 \concept{Environmental Integrity}

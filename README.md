@@ -1,4 +1,4 @@
-# ![](img/book-305126_1280.png){#book style="text-align:middle;" width="39"} Book of Workflow
+# Book of Workflow
 
 The following functional families are covered in 'book.of.workflow':
 
@@ -15,8 +15,8 @@ The focus is on loading libraries and managing environment objects:
 This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to missing object dependencies:
 
 -   %missing%
--   must.have(), %must.have%, %+must.have%
--   env.check(), %check%
+-   %must.have%, %+must.have%
+-   %check%
 -   %+=%
 -   %-=%
 

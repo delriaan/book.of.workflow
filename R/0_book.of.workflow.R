@@ -1,4 +1,4 @@
-#' @title Book of Workflow Overview
+#' @title Book of Workflow
 #'
 #' @description
 #' The following functional families are covered in `book.of.workflow`:\cr
@@ -46,8 +46,8 @@
 #'  	\item{\code{\link{mgr_upgrade}}}
 #'  }
 #'
-#' @importFrom magrittr %>% %T>% %<>% %$% freduce
-#' @importFrom data.table %between% %ilike% %like% rbindlist
+#' @importFrom magrittr %>% %T>% %<>% %$% freduce not
+#' @importFrom data.table %between% %ilike% %like% rbindlist last
+#' @importFrom stringi %s+%
 #'
 #' @name Book of Workflow Package
-NULL

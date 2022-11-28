@@ -22,7 +22,7 @@ Other Environmental Integrity:
 \code{\link{\%+=\%}()},
 \code{\link{\%+must.have\%}()},
 \code{\link{\%-=\%}()},
-\code{\link{env.check}()},
-\code{\link{must.have}()}
+\code{\link{\%check\%}()},
+\code{\link{\%must.have\%}()}
 }
 \concept{Environmental Integrity}

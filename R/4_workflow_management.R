@@ -7,7 +7,8 @@ read.snippet <- function(..., doc, action){
 #'
 #' With the exception of \code{action = goto}, the document cursor moves to the closing snippet tag (i.e., \code{"</snippet>"}) when using RStudio.
 #'
-#' @param ... Keywords given as strings or symbols for which a matching snippet is sought
+#' @param ... (\code{\link[rlang]{dots_list}}) Keywords given as strings or symbols for which a matching snippet is sought
+#'
 #' @param doc The input source document name given as a string: defaults to the active document when the function is invoked with no argument
 #' @param action One of \code{goto}, \code{skip}, \code{parse}, \code{exec}, \code{save}
 #'
@@ -93,8 +94,10 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 #'
 #' On a new line, \code{make.snippet} creates "tag"-like comments referenced by \code{\link{read.snippet}} (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>}).  Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.  The opening "tag" is created as a code section.
 #'
-#' @param ... Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document
+#' @param ... (\code{\link[rlang]{dots_list}}) Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document
+#'
 #' @param include.read (logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{eval = parse}
+#'
 #' @param use.clipboard (logical) When \code{TRUE}, the snippet contents are saved to the clipboard and \code{`.Last.value`}
 #'
 #' @return When \code{use.clipboard} is \code{FALSE}, a pair of "tag"-like comments between which code is to be supplied; otherwise, the contents are saved to the clipboard (Windows OS only)

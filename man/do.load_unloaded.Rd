@@ -7,13 +7,13 @@
 do.load_unloaded(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE)
 }
 \arguments{
-\item{...}{\code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.}
+\item{...}{\code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.}
 
-\item{libs}{(string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.}
+\item{libs}{(string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.}
 
-\item{pattern}{(string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use '+' or '-'}.}
+\item{pattern}{(string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.}
 
-\item{chatty}{(logical|FALSE) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()}
+\item{chatty}{(logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()}
 }
 \value{
 See `library()`

@@ -1,15 +1,4 @@
 # ::::: ENVIRONMENT PROCESSING
-do.get_pkgs <- function() {
-#' Install and load packages
-#'
-#' `do.get_pkgs()` is no longer in use
-#'
-#' @family DEPRECATED
-#' @export
-
-	cat("`do.get_pkgs()` is no longer in use")
-}
-#
 do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE) {
 #' Load Unloaded Packages
 #'
@@ -18,10 +7,10 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", chatty = FALS
 #' Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
 #' Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
 #'
-#' @param ... \code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.
-#' @param libs (string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use '+' or '-'}.
-#' @param pattern  (string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use '+' or '-'}.
-#' @param chatty (logical|FALSE) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
+#' @param ... \code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
+#' @param libs (string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
+#' @param pattern  (string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.
+#' @param chatty (logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
 #'
 #' @return See `library()`
 #' @family Environment Processing
@@ -66,12 +55,12 @@ do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd
 #' The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
 #'
 #' @param ... (vector or list) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})
-#' @param safe	(logical | TRUE) Should the pending action be confirmed at the prompt?
-#' @param env	(string | ".GlobalEnv") The environment to search for items given as a string
-#' @param save.dir (string | getwd()) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.
+#' @param safe	(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?
+#' @param env	(string | \code{.GlobalEnv}) The environment to search for items given as a string
+#' @param save.dir (string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.
 #' @param file.name	(string | "") The name of the file to save, or, when \code{NULL}, the value of \code{i} if atomic or a predefined name when \code{i} is a vector
-#' @param use.prefix (logical | TRUE) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}
-#' @param prepare	(language | NULL) A quoted expression that executes before the save action takes place.
+#' @param use.prefix (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}
+#' @param prepare	(language | \code{NULL}) A quoted expression that executes before the save action takes place.
 #'
 #' @return A `.rdata` file, the filename of which being suffixed with a timestamp formatted as "yyyy.mm.dd.hhmmss"
 #'
@@ -80,15 +69,15 @@ do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd
 
 	# :: Preliminary checks on supplied parameters
 	env <- rlang::enexpr(env) %>% as.character();
-	obj.nms <- NULL
+	obj.nms <- NULL;
 
-	if (!is.character(env)){ message("'env' must be a single string or symbol"); return(invisible(0)); }
+	if (!is.character(env)){ message("'env' must be a single string or symbol"); return(invisible(0)) }
 	env_ref <- if (env %in% search()) { as.environment(env) } else { get(env, envir = globalenv()) }
 
 	if (!is.null(prepare)) { eval(prepare, envir = env_ref) }
-	if (...length() == 0){ obj.nms <- ls(envir = env_ref); }
+	if (...length() == 0){ obj.nms <- ls(envir = env_ref) }
 
-	i = rlang::list2(...) %>%
+	i = rlang::enexprs(...) %>%
 		as.character() %>%
 		purrr::map(~stringi::stri_split_regex(.x, pattern = "[,;| ]", simplify = TRUE, omit_empty = TRUE)) %>%
 		unlist() %>%
@@ -110,17 +99,19 @@ do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd
 		, multi.as.vector = { (length(i) > 1) & !any(i %in% c("*", "all")) }
 		, multi.as.string = { any((i %like% "[,;| ]") & !any(i %in% c("*", "all"))) }
 		) %>%
-		purrr::keep(~ .x) %>% names() %>% .[1]
+		purrr::keep(~.x) %>% names() %>% .[1]
 	}
 
 	# :: Set the file name based on the values supplied to argument `i`
 	switch(
 		namescheck
 		, "all" 						= { file.name <- ifelse(filecheck, "all", file.name); i <- ls(env_ref, all.names = TRUE) }
-		, "multi.as.string" = { file.name <- ifelse(filecheck, "multiObs", file.name); i <- stringi::stri_split_regex(i, "[,;| ]", omit_empty = TRUE, simplify = TRUE) %>% c(); }
+		, "multi.as.string" = { file.name <- ifelse(filecheck, "multiObs", file.name);
+														i <- stringi::stri_split_regex(i, "[,;| ]", omit_empty = TRUE, simplify = TRUE) %>% c();
+													}
 		, "multi.as.vector" = { file.name <- ifelse(filecheck, "multiObs", file.name) }
 		, 										{ file.name <- ifelse(filecheck, i, file.name) }
-		)
+		);
 
 	# :: Write the binary file to disk
 	tstamp = format(Sys.time(), "%Y.%m.%d.%H%M%S");
@@ -140,34 +131,14 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 #'
 #' @description
 #' \code{do.copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
-#' If `to.env` is `NULL`, the execution will simply replace the object under a new name.
-#' If `to.env` has multiple values, the copy or move operations will populate each environment.
+#' If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
+#' If \code{to.env} has multiple values, the copy or move operations will populate each environment.
 #'
-#' @param ... (\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., `FROM_ENV$from.name`).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = "a = this, that, `TO_ENV$the_other` = other"} results in three destination objects named \code{a}, `that`, and `the_other` with `the_other` created in environment `TO_ENV`.
-#' @param from.env (string|".GlobalEnv"): The default source environment of the object(s) to be moved/copied
-#' @param to.env (string|".GlobalEnv"): The default target environment of the target object
-#' @param keep.orig (logical | TRUE): When `FALSE`, the original is removed via \code{\link[base]{rm}}
-#' @param chatty (logical | FALSE): Verbosity flag
-#'
-#' @examples
-#' library(book.of.workflow)
-#' BLAH <- new.env(); BLEH <- new.env()
-#' set_names(letters[1:10], LETTERS[1:10]) %>% as.list %>% list2env(envir = globalenv())
-#' set_names(letters[11:20], LETTERS[11:20]) %>% as.list %>% list2env(envir = BLEH)
-#' do.copy_obj(A, keep.orig = TRUE, .debug = TRUE)
-#' ls()
-#'
-#' do.copy_obj(B, C, D, to.env = BLAH, keep.orig = TRUE, .debug = !TRUE)
-#' ls(BLAH)
-#'
-#' do.copy_obj(E, `F`, G, to.env = BLEH, keep.orig = TRUE, .debug = !TRUE)
-#' ls(BLAH); ls(BLEH)
-#'
-#' do.copy_obj(A, B, C, D, E, `F`, G, to.env = c(BLEH, BLAH), keep.orig = TRUE, .debug = !TRUE)
-#' ls(BLAH); ls(BLEH)
-#'
-#' do.copy_obj(!!ls(pattern = "^[A-Z]"), to.env = c(BLEH, BLAH), keep.orig = TRUE, .debug = !TRUE)
-#' ls(BLAH); ls(BLEH)
+#' @param ... (\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.
+#' @param from.env (string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied
+#' @param to.env (string| \code{.GlobalEnv}): The default target environment of the target object
+#' @param keep.orig (logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}
+#' @param chatty (logical | \code{FALSE}): Verbosity flag
 #'
 #' @export
 
@@ -182,7 +153,12 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 
 	from.env = as.character(rlang::enexpr(from.env));
 
-	to.env = if (missing(to.env)){ from.env } else { .out = rlang::enexpr(to.env) %>% as.character(); if (length(.out) > 1){ .out[-1] } else { .out }}
+	to.env = if (missing(to.env)){
+		from.env
+	} else {
+		.out <- rlang::enexpr(to.env) %>% as.character();
+		if (length(.out) > 1){ .out[-1] } else { .out }
+	}
 
 	.args = rlang::list2(!!!purrr::map(rlang::exprs(...), as.character)) %>%
 		purrr::map(~{
@@ -219,11 +195,13 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 		, TO_OBJ := ifelse(TO_OBJ == "", FR_OBJ, TO_OBJ)
 		][
 		, `:=`(
-			ACTION = purrr::pmap_chr(.SD, function(...){ sprintf("%s$%s <- %s$%s", ...elt(3), ...elt(4), ...elt(1), ...elt(2)) })
+			ACTION = purrr::pmap_chr(.SD, function(...){
+				sprintf("%s$%s <- %s$%s", ...elt(3), ...elt(4), ...elt(1), ...elt(2))
+			})
 			, VALID = purrr::pmap(.SD, function(...){
-						c(env_check = (...elt(2) %in% { parse(text = ...elt(1)) %>% eval(envir = globalenv()) %>% ls() })
-							, obj_check = !is.null(parse(text = ...elt(3)) %>% eval(envir = globalenv()))) %>% t()
-						})
+					c(env_check = (...elt(2) %in% { parse(text = ...elt(1)) %>% eval(envir = globalenv()) %>% ls() })
+						, obj_check = !is.null(parse(text = ...elt(3)) %>% eval(envir = globalenv()))) %>% t()
+				})
 			)
 		];
 
@@ -244,7 +222,11 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 	});
 
 	# :: If a 'move' action, remove the source objects from the corresponding environments
-	if (!keep.orig){ .xfer_map[sapply(VALID, all), rm(list = unique(FR_OBJ), envir = eval(parse(text = FR_ENV), envir = globalenv())), by = FR_ENV] }
+	if (!keep.orig){ .xfer_map[
+			sapply(VALID, all)
+			, rm(list = unique(FR_OBJ), envir = eval(parse(text = FR_ENV), envir = globalenv()))
+			, by = FR_ENV
+			]}
 
 	return(invisible(0));
 }

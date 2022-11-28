@@ -21,17 +21,17 @@ do.get_data(
 
 \item{src.name}{(string) Data source name}
 
-\item{tgt.name}{(string | NULL) When not \code{NULL}, the name of the R workspace object to use when assigning the output. Use format \code{obj_name@env_name} to specify a target environment to assign the object}
+\item{tgt.name}{(string | \code{NULL}) When not \code{NULL}, the name of the R workspace object to use when assigning the output. Use format \code{obj_name@env_name} to specify a target environment to assign the object}
 
 \item{this.data}{(expression) When not \code{NULL}, an R object for post-operation only}
 
 \item{post.op}{(object) A function or list of functions to process the retrieved dataset (argument #1) before assigning to workspace}
 
-\item{verbose}{(logical | FALSE) When \code{TRUE}, interim output is printed to console}
+\item{verbose}{(logical | \code{FALSE}) When \code{TRUE}, interim output is printed to console}
 
-\item{promise}{(logical | FALSE) When \code{TRUE}, assignment is done via a call to \code{\link[future]{futureAssign}}}
+\item{promise}{(logical | \code{FALSE}) When \code{TRUE}, assignment is done via a call to \code{\link[future]{futureAssign}}}
 
-\item{persist.conn}{(logical | TRUE) When \code{FALSE}, the connection will be closed at the end of execution}
+\item{persist.conn}{(logical | \code{TRUE}) When \code{FALSE}, the connection will be closed at the end of execution}
 
 \item{...}{Arguments to be used by function \code{\link{do.make_query}}}
 }

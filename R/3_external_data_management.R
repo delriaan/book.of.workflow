@@ -170,12 +170,12 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 #'
 #' @param this.conn A \code{\link[DBI]{DBI-package}} connection object
 #' @param src.name (string) Data source name
-#' @param tgt.name (string | NULL) When not \code{NULL}, the name of the R workspace object to use when assigning the output. Use format \code{obj_name@@env_name} to specify a target environment to assign the object
+#' @param tgt.name (string | \code{NULL}) When not \code{NULL}, the name of the R workspace object to use when assigning the output. Use format \code{obj_name@@env_name} to specify a target environment to assign the object
 #' @param post.op (object) A function or list of functions to process the retrieved dataset (argument #1) before assigning to workspace
 #' @param this.data (expression) When not \code{NULL}, an R object for post-operation only
-#' @param verbose (logical | FALSE) When \code{TRUE}, interim output is printed to console
-#' @param promise (logical | FALSE) When \code{TRUE}, assignment is done via a call to \code{\link[future]{futureAssign}}
-#' @param persist.conn (logical | TRUE) When \code{FALSE}, the connection will be closed at the end of execution
+#' @param verbose (logical | \code{FALSE}) When \code{TRUE}, interim output is printed to console
+#' @param promise (logical | \code{FALSE}) When \code{TRUE}, assignment is done via a call to \code{\link[future]{futureAssign}}
+#' @param persist.conn (logical | \code{TRUE}) When \code{FALSE}, the connection will be closed at the end of execution
 #' @param ... Arguments to be used by function \code{\link{do.make_query}}
 #'
 #' @return Invisibly, the retrieved, post-processed dataset
@@ -201,7 +201,10 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 		output = .;
 
 		if (!is.null(tgt.name)) {
-			tgt.name %>% stringi::stri_split_fixed("@", n = 2, simplify = TRUE) %>% { if (.[2] == ""){ c(.[1], ".GlobalEnv") } else { . }} %>%
+			tgt.name %>%
+				stringi::stri_split_fixed("@", n = 2, simplify = TRUE) %>% {
+					if (.[2] == ""){ c(.[1], ".GlobalEnv") } else { . }
+				} %>%
 				book.of.utilities::enlist("obj", "env") %$% {
 				substitute(
 					future::futureAssign(x = obj, value = output
@@ -225,7 +228,7 @@ do.export_data <- function(out.data, this.conn, tbl = NULL, sch = "dbo", post.cm
 #' @param sch (string) The name of the schema in which to create the table
 #' @param post.cmd (string) When provided, a post-table creation call to sqlQuery() will be executed with `post.cmd` as the query string: use this for subsequent operations such as indexing, execution of additional stored procedures, etc.
 #' @param append (logical)	Should the data be appended to existing data rather than replacing existing data?
-#' @param persist.conn (logical | TRUE) When \code{FALSE}, the connection will be closed at the end of execution
+#' @param persist.conn (logical | \code{TRUE}) When \code{FALSE}, the connection will be closed at the end of execution
 #' @param ... Additional arguments passed to \code{\link[DBI]{dbWriteTable}}
 #'
 #' @family Data transmission
@@ -242,7 +245,10 @@ do.export_data <- function(out.data, this.conn, tbl = NULL, sch = "dbo", post.cm
 	do.call(dbWriteTable, args = .args);
 
 	# Execute additional actions on DBMS post-transfer
-	if (!is.null(post.cmd)) { DBI::dbSendQuery(conn = this.conn, statement = post.cmd %>% stringi::stri_replace_all_regex(regex.remove, "")) }
+	if (!is.null(post.cmd)) {
+		DBI::dbSendQuery(conn = this.conn
+										 , statement = post.cmd %>% stringi::stri_replace_all_regex(regex.remove, ""))
+	}
 
 	if (!persist.conn){ DBI::dbDisconnect(this.conn) }
 }
@@ -285,28 +291,4 @@ check.db_conn <- function(this.conn, pass, ...){
 			}
 		, { if (!DBI::dbIsValid(this.conn)){ DBI::dbConnect(drv = odbc::odbc(), dsn = this.conn@info$sourcename) } else { this.conn } }
 		))
-}
-
-# :: Deprecated ==================================
-#
-do.make_cluster <- function(...){
-#' A Wrapper for \code{\link[parallelly]{makeClusterPSOCK}}
-#'
-#' `do.make_cluster()` is no longer in use
-#'
-#' @family DEPRECATED
-#' @export
-
-	cat("`do.make_cluster()` is no longer in use")
-}
-#
-terminate.cluster_workers <- function(...){
-#' Terminate Remote Cluster Workers
-#'
-#' `terminate.cluster_workers()` is no longer in use
-#'
-#' @family DEPRECATED
-#' @export
-
-	cat("`terminate.cluster_workers()` is no longer in use")
 }

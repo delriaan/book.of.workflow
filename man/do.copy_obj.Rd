@@ -14,39 +14,18 @@ do.copy_obj(
 )
 }
 \arguments{
-\item{...}{(\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., `FROM_ENV$from.name`).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = "a = this, that, `TO_ENV$the_other` = other"} results in three destination objects named \code{a}, `that`, and `the_other` with `the_other` created in environment `TO_ENV`.}
+\item{...}{(\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.}
 
-\item{from.env}{(string|".GlobalEnv"): The default source environment of the object(s) to be moved/copied}
+\item{from.env}{(string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied}
 
-\item{to.env}{(string|".GlobalEnv"): The default target environment of the target object}
+\item{to.env}{(string| \code{.GlobalEnv}): The default target environment of the target object}
 
-\item{keep.orig}{(logical | TRUE): When `FALSE`, the original is removed via \code{\link[base]{rm}}}
+\item{keep.orig}{(logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}}
 
-\item{chatty}{(logical | FALSE): Verbosity flag}
+\item{chatty}{(logical | \code{FALSE}): Verbosity flag}
 }
 \description{
 \code{do.copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
-If `to.env` is `NULL`, the execution will simply replace the object under a new name.
-If `to.env` has multiple values, the copy or move operations will populate each environment.
-}
-\examples{
-library(book.of.workflow)
-BLAH <- new.env(); BLEH <- new.env()
-set_names(letters[1:10], LETTERS[1:10]) \%>\% as.list \%>\% list2env(envir = globalenv())
-set_names(letters[11:20], LETTERS[11:20]) \%>\% as.list \%>\% list2env(envir = BLEH)
-do.copy_obj(A, keep.orig = TRUE, .debug = TRUE)
-ls()
-
-do.copy_obj(B, C, D, to.env = BLAH, keep.orig = TRUE, .debug = !TRUE)
-ls(BLAH)
-
-do.copy_obj(E, `F`, G, to.env = BLEH, keep.orig = TRUE, .debug = !TRUE)
-ls(BLAH); ls(BLEH)
-
-do.copy_obj(A, B, C, D, E, `F`, G, to.env = c(BLEH, BLAH), keep.orig = TRUE, .debug = !TRUE)
-ls(BLAH); ls(BLEH)
-
-do.copy_obj(!!ls(pattern = "^[A-Z]"), to.env = c(BLEH, BLAH), keep.orig = TRUE, .debug = !TRUE)
-ls(BLAH); ls(BLEH)
-
+If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
+If \code{to.env} has multiple values, the copy or move operations will populate each environment.
 }

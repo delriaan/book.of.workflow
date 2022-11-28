@@ -2,10 +2,9 @@ Package: book.of.workflow
 Type: Package
 Title: Book of Workflow
 Description: Book of Workflow provides action-oriented functions as it pertains to actions related to data processing and connecting to data sources.
-Version: 3.0.2
+Version: 1.0.0
 Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
 Maintainer: Chionesu George <sapienti.Dei@outlook.com>
-License: Unicorn Overlords
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.0
@@ -27,3 +26,4 @@ Imports: parallel
 	, tcltk
 	, odbc
 	, RODBCDBI
+License: file LICENSE
