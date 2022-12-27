@@ -45,7 +45,6 @@ The workflow for this function is to retrieve the dataset from a source, post-pr
 Other Data transmission: 
 \code{\link{check.db_conn}()},
 \code{\link{do.export_data}()},
-\code{\link{do.make_query}()},
-\code{\link{do.make_workers}()}
+\code{\link{do.make_query}()}
 }
 \concept{Data transmission}

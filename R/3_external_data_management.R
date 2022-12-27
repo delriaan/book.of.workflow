@@ -1,112 +1,4 @@
 # ::::: EXTERNAL DATA MANAGEMENT
-get.cluster_meta <- function(cl){
-#' Retrieve Cluster Metadata
-#'
-#' \code{get.cluster_meta} reads the information from a saved object created with one of the \code{makeCluster} family of functions
-#'
-#' @param cl A cluster object
-#'
-#' @return Invisibly, an environment with active-binding \code{cluster_meta}
-#'
-#' @family Parallelism
-#'
-#' @export
-
-	out.env = new.env();
-	purrr::imap(purrr::set_names(cl, "node_" %s+% 1:length(cl)), ~{
-		# Gather metadata for each cluster node
-		.x$session_info %>% purrr::imap_chr(~{
-			.data = .x;
-			.label = .y;
-			r_date = NULL;
-
-			# Modify .data when the current item has name "r"
-			if (.label == "r"){
-				r_date <- paste(.x[c("year", "month", "day")] %>% unlist, collapse = ".");
-				.data %<>% .[!names(.data) %in% c("year", "month", "day")];
-				.data %<>% append(list(r_date = r_date));
-			}
-
-			# Assemble the key-value pairs into a single string
-			paste(
-				sprintf("   :::: %s ::::\n", stringi::stri_trans_totitle(.label))
-				, purrr::imap_chr(.data, ~sprintf("  %s = %s", .y, .x)) %>% paste(collapse = "\n ")
-				, collapse = ""
-				) %s+% "\n"
-		}) %>%
-			purrr::prepend(sprintf("========\n%s\n========", stringi::stri_trans_totitle(.y))) %>%
-			purrr::reduce(paste, sep = "\n")
-	}) %>% list2env(envir = out.env);
-
-	makeActiveBinding(
-		"cluster_meta"
-		, function(){ out.env %$% mget(ls(pattern = "node")) %>% purrr::walk(cat)}
-		, env = out.env
-		);
-
-	invisible(out.env);
-}
-#
-do.make_workers <- function(workers = 5, refresh = TRUE, with_cluster = NULL, ...){
-#' Garbage Collection and Parallelization Management
-#'
-#' \code{do.make_workers()} is a simple manager for setting and freeing \code{future}s and external clusters.  This has a fairly restricted level of flexibility, but it does make management of parallelized resources easier to execute.
-#' @param workers (integer) The number of multisession workers to spawn in the call to \code{future::plan()}.  Valid values are between 1 and 10.
-#' @param refresh (logical) When \code{TRUE}, parallelization workers are cleared out and redefined according to values passed to argument \code{workers}
-#' @param with_cluster (string) The object name holding a secondary cluster object (e.g., an cluster created with \code{\link[parallel]{makeCluster}})
-#' @param ... (Not used)
-#'
-#' @family Data transmission
-#'
-#' @export
-
-	old_cls <- old_cls.cfg <- cls_port <- cls_wrkr = NULL;
-
-	if (!workers %between% list(1, 15)){
-		message(sprintf("Number of workers (%s) is out of bounds (15 max): setting to five (5)", workers));
-		workers = 5;
-	}
-
-	if (!is.null(with_cluster)){
-		# Get the existing external cluster object along with its configuration
-		old_cls <- get(with_cluster);
-		old_cls.cfg <- purrr::map(1:length(old_cls), ~{
-			cls_def = capture.output(old_cls[[.x]]$con);
-
-			cls_def[cls_def %ilike% "description"] %>%
-				stringi::stri_extract_all_regex("[A-Z].*.[.]+alliance[.]local[:][0-9]+") %>%
-				stringi::stri_replace_all_fixed(".alliance.local", "", vectorize_all = FALSE) %>%
-				stringi::stri_split_fixed(":", simplify = TRUE)
-		}) %>% purrr::reduce(rbind);
-	}
-
-	future::plan(sequential);
-
-	if (refresh){
-		if (!is.null(with_cluster)) {
-			cls_port <- old_cls.cfg[1, 2] %>% as.integer;
-			cls_wrkr <- old_cls.cfg[, 1] %>% paste(collapse = ", ");
-
-			assign(
-				with_cluster
-				, if (unique(old_cls.cfg[, 1] == Sys.getenv("COMPUTERNAME"))){
-					parallelly::makeClusterPSOCK(workers = nrow(old_cls.cfg), port = parallelly::freePort(1.1E4:1.2E4), verbose = FALSE, ...)
-				} else {
-					do.make_cluster(worker.hosts = cls_wrkr, cluster_port = parallelly::freePort(1.1E4:1.2E4))
-				}
-				, envir = globalenv()
-				);
-
-			# Set the local cluster object
-			future::plan(future::tweak(future::cluster, workers = get(with_cluster, envir = globalenv())));
-		} else { future::plan(future::tweak(future::multisession, workers = workers, ...)) }
-	} else {
-		if (!is.null(with_cluster)) { rm(list = with_cluster, envir = globalenv()) }
-	}
-
-	gc(full = TRUE);
-}
-#
 do.make_query <- function(this.conn, from, from.mod	= "", where	= "1=1 ", sel	= "*", sel.mod = "", grp.by	= NULL, having = NULL, ord.by	= NULL, ...){
 #' T-SQL Query Maker
 #'
@@ -184,9 +76,16 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 #'
 #' @export
 
-	post_op.check = function(i, p_op = post.op){
-		if (length(p_op) > 1) { purrr::reduce(i, p_op) } else { p_op(i); }
-	}
+	post_op.check = purrr::as_mapper(~{
+		if (rlang::is_empty(post.op)){
+			.x
+		} else if (is.function(post.op)){
+			post.op(.x)
+		} else if (is.list(post.op)){
+			magrittr::freduce(.x, post.op)
+		} else { .x }
+	});
+
 	this.conn = check.db_conn(this.conn);
 
 	# Execute data retrieval and (optionally) assign the output
@@ -205,7 +104,8 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 				stringi::stri_split_fixed("@", n = 2, simplify = TRUE) %>% {
 					if (.[2] == ""){ c(.[1], ".GlobalEnv") } else { . }
 				} %>%
-				book.of.utilities::enlist("obj", "env") %$% {
+				rlang::set_names(c("obj", "env")) %>%
+				as.list() %$% {
 				substitute(
 					future::futureAssign(x = obj, value = output
 											 , assign.env = if (env %in% search()){ as.environment(env) } else { get(env) }, lazy = promise)
@@ -235,20 +135,17 @@ do.export_data <- function(out.data, this.conn, tbl = NULL, sch = "dbo", post.cm
 #'
 #' @export
 
-	if (!is.data.table(out.data)){ setDT(out.data) }
+	if (!data.table::is.data.table(out.data)){ .out.data <- data.table::as.data.table(out.data) }
 	regex.remove = "([-][-])|(/[*])|([*]/)";
 	this.conn = check.db_conn(this.conn);
 
-	.args = list(conn = this.conn, name = Id(schema = sch, table = tbl), value = out.data, append = append);
+	.args = list(conn = this.conn, name = DBI::Id(schema = sch, table = tbl), value = out.data, append = append);
 	.args[...names()] <- rlang::list2(...);
 
-	do.call(dbWriteTable, args = .args);
+	do.call(DBI::dbWriteTable, args = .args);
 
 	# Execute additional actions on DBMS post-transfer
-	if (!is.null(post.cmd)) {
-		DBI::dbSendQuery(conn = this.conn
-										 , statement = post.cmd %>% stringi::stri_replace_all_regex(regex.remove, ""))
-	}
+	if (!is.null(post.cmd)) { DBI::dbSendQuery(conn = this.conn, statement = post.cmd %>% stringi::stri_replace_all_regex(regex.remove, "")) }
 
 	if (!persist.conn){ DBI::dbDisconnect(this.conn) }
 }
@@ -283,12 +180,10 @@ check.db_conn <- function(this.conn, pass, ...){
 									, stringi::stri_split_fixed(connection, ";", simplify = TRUE) %>%
 											keep(~.x %like% "DSN|UID|case") %>%
 											stringi::stri_replace_first_regex("[A-Z]{3}[=]", "") %>%
-											set_names(c("dsn", "uid"))
+											rlang::set_names(c("dsn", "uid"))
 									);
 							}
 				this.conn
-				# if (!RODBC::odbcReConnect(this.conn)){ do.call(dbConnect, args = append(.args, list(drv = RODBCDBI::ODBC()))) } else { this.conn }
-			}
-		, { if (!DBI::dbIsValid(this.conn)){ DBI::dbConnect(drv = odbc::odbc(), dsn = this.conn@info$sourcename) } else { this.conn } }
+			}, { if (!DBI::dbIsValid(this.conn)){ DBI::dbConnect(drv = odbc::odbc(), dsn = this.conn@info$sourcename) } else { this.conn } }
 		))
 }

@@ -1,5 +1,5 @@
 # ::::: ENVIRONMENT PROCESSING
-do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE) {
+do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall = FALSE, chatty = FALSE) {
 #' Load Unloaded Packages
 #'
 #' \code{do.load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
@@ -10,6 +10,12 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", chatty = FALS
 #' @param ... \code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
 #' @param libs (string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
 #' @param pattern  (string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.
+#' @param autoinstall:\cr
+#' \itemize{
+#'	\item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}
+#'	\item{\code{TRUE}: If a library isn't installed, it will be using the default library installation path}
+#'	\item{\code{list()}: Assumes \code{TRUE} and should be a list of arguments (excluding \code{pkgs}) to send to \code{\link[utils]{install.packages}}}
+#'	}
 #' @param chatty (logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
 #'
 #' @return See `library()`
@@ -17,6 +23,7 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", chatty = FALS
 #' @export
 
 	libs = c(as.character(rlang::enexprs(...)), libs);
+
 	if (chatty){ cat(libs, sep = "\n") }
 
 	library.cfg = stringi::stri_split_regex(libs, "[, |;]", simplify = TRUE, omit_empty = TRUE) %>%
@@ -28,38 +35,47 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", chatty = FALS
 			this.str = stringi::stri_split_regex(.x, pattern = "[{}]", omit_empty = TRUE, simplify = TRUE) %>% unlist();
 			purrr::map(
 				.x = rlang::set_names(c("[+]", "[-]"), c("include.only", "exclude"))
-				, .f = ~{ stringi::stri_extract_all_regex(this.str, .x %s+% "[a-zA-Z.0-9]+", simplify = TRUE) %>% na.omit() %>%
+				, .f = ~{ stringi::stri_extract_all_regex(this.str, paste0(.x, "[a-zA-Z.0-9]+"), simplify = TRUE) %>% na.omit() %>%
 									stringi::stri_replace_all_regex(pattern = "[+-]", replacement = "", vectorize_all = FALSE)
 							})
-			}) %T>% { if (chatty){ print(.) }};
+		});
+
+	if (chatty){ print(library.cfg) }
+
+	new.libs = purrr::keep(names(library.cfg), ~!.x %in% rownames(installed.packages()));
+
+	if (!rlang::is_empty(new.libs)){
+		if (is.list(autoinstall)){
+			rlang::inject(install.packages(pkgs = new.libs, !!!autoinstall))
+		} else if (is.logical(autoinstall)==autoinstall){ install.packages(pkgs = new.libs) }
+	}
 
 	invisible(
 		library.cfg[
-			# don't try to load libraries already loaded and attached via indexing against `library.cfg`
-			purrr::map_lgl(names(library.cfg), ~{ not(any(search() %ilike% .x)) })
-			] %>%
-			purrr::imap(~try({ do.call(
-				"library"
-				, append(
-					.x[c(length(.x$include) > 0, length(.x[[2]]) > 0)] # <- User syntax error can lead to both being true, so let the call to 'library()' error out
-					, list(package = .y, attach.required = TRUE, quietly = !chatty, warn.conflicts = FALSE)
-					)
-				)
-			}))
+			# Don't try to load libraries already loaded and attached via indexing against `library.cfg`
+			purrr::map_lgl(names(library.cfg), ~{ not(any(grepl(.x, search()))) })
+			] %>% purrr::imap(~tryCatch(expr = { do.call(
+				what = "library"
+				, args = append(
+						.x[c(length(.x$include) > 0, length(.x[[2]]) > 0)] # <- User syntax error can lead to both being true, so let the call to 'library()' error out
+						, list(package = .y, attach.required = TRUE, quietly = !chatty, warn.conflicts = FALSE)
+						))
+				}, error = function(e){ message(e) }))
 		)
 }
 #
-do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd(), file.name = "", use.prefix = TRUE, prepare = NULL){
+do.save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), file.name = "", use.prefix = TRUE, use.timestamp = TRUE, prepare = NULL){
 #' Manual Export of Workspace Objects
 #'
 #' The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
 #'
 #' @param ... (vector or list) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})
 #' @param safe	(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?
-#' @param env	(string | \code{.GlobalEnv}) The environment to search for items given as a string
+#' @param env	The environment to search for items
 #' @param save.dir (string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.
 #' @param file.name	(string | "") The name of the file to save, or, when \code{NULL}, the value of \code{i} if atomic or a predefined name when \code{i} is a vector
 #' @param use.prefix (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}
+#' @param use.timestamp (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is appended with a formatted value of \code{Sys.time()}
 #' @param prepare	(language | \code{NULL}) A quoted expression that executes before the save action takes place.
 #'
 #' @return A `.rdata` file, the filename of which being suffixed with a timestamp formatted as "yyyy.mm.dd.hhmmss"
@@ -68,21 +84,18 @@ do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd
 #' @export
 
 	# :: Preliminary checks on supplied parameters
-	env <- rlang::enexpr(env) %>% as.character();
 	obj.nms <- NULL;
+	env_ref <- as.character(rlang::enexpr(env));
 
-	if (!is.character(env)){ message("'env' must be a single string or symbol"); return(invisible(0)) }
-	env_ref <- if (env %in% search()) { as.environment(env) } else { get(env, envir = globalenv()) }
+	if ("character" %in% class(env)){
+		env <- if (env %in% search()) { env <- as.environment(env) } else { eval(as.symbol(env)) }
+	}
 
-	if (!is.null(prepare)) { eval(prepare, envir = env_ref) }
-	if (...length() == 0){ obj.nms <- ls(envir = env_ref) }
+	if (!is.null(prepare)) { eval(prepare, envir = env) }
 
-	i = rlang::enexprs(...) %>%
-		as.character() %>%
-		purrr::map(~stringi::stri_split_regex(.x, pattern = "[,;| ]", simplify = TRUE, omit_empty = TRUE)) %>%
-		unlist() %>%
-		purrr::map(~if (exists(.x, envir = env_ref)){ .x } else { eval(as.symbol(.x), envir = env_ref) }) %>%
-		unlist();
+	if (...length() == 0){ obj.nms <- ls(envir = env) }
+
+	i =  purrr::map(as.character(rlang::enexprs(...)), ~stringi::stri_split_regex(.x, pattern = "[,;| ]", simplify = TRUE, omit_empty = TRUE)) |> unlist()
 
 	if (rlang::is_empty(i)){ i <- "all" }
 
@@ -91,8 +104,6 @@ do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd
 	filecheck = is.null(file.name) | (stringi::stri_length(trimws(file.name)) == 0)
 
 	# :: Environment reference from string
-	env_ref = if (env %in% search()){ as.environment(env) } else { eval(parse(text = env), envir = globalenv()) }
-
 	namescheck = { c(
 		all = { any(i %in% c("*", "all")) }
 		, single.obj = { (length(i) == 1) & !any(i %in% c("*", "all")) & (stringi::stri_length(i) > 0)}
@@ -105,25 +116,25 @@ do.save_image <- function(..., safe = TRUE, env = ".GlobalEnv", save.dir = getwd
 	# :: Set the file name based on the values supplied to argument `i`
 	switch(
 		namescheck
-		, "all" 						= { file.name <- ifelse(filecheck, "all", file.name); i <- ls(env_ref, all.names = TRUE) }
+		, "all" 						= { file.name <- ifelse(filecheck, "all", file.name); i <- ls(envir = env, all.names = TRUE) }
 		, "multi.as.string" = { file.name <- ifelse(filecheck, "multiObs", file.name);
 														i <- stringi::stri_split_regex(i, "[,;| ]", omit_empty = TRUE, simplify = TRUE) %>% c();
-													}
+														}
 		, "multi.as.vector" = { file.name <- ifelse(filecheck, "multiObs", file.name) }
 		, 										{ file.name <- ifelse(filecheck, i, file.name) }
 		);
 
 	# :: Write the binary file to disk
-	tstamp = format(Sys.time(), "%Y.%m.%d.%H%M%S");
+	tstamp = ifelse(use.timestamp, paste0("_", format(Sys.time(), "%Y.%m.%d.%H%M%S")), "");
 
-	tmp.file = sprintf("%s/%s%s_%s.rdata", save.dir, if (use.prefix){ ifelse(env %like% "Global", "", paste0(env, "$")) } else { "" }, file.name, tstamp);
+	tmp.file = sprintf("%s/%s%s%s.rdata", save.dir, if (use.prefix){ ifelse(env_ref %like% "Global", "", paste0(env_ref, "$")) } else { "" }, file.name, tstamp);
 
 	if (safe) {
-		msg = { sprintf("Preparing to save %s[%s] to %s: \nContinue? ", env, paste(i, collapse = ", "), tmp.file) }
+		msg = { sprintf("Preparing to save %s[%s] to %s: \nContinue? ", env_ref, paste(i, collapse = ", "), tmp.file) }
 		if (askYesNo(msg, prompt = "Y/N/C")) {
-			save(list = i, envir = env_ref, file = tmp.file, compress = "bzip2", precheck = safe)
+			save(list = i, envir = env, file = tmp.file, compress = "bzip2", precheck = safe)
 		} else { message("Canceling operation ...") }
-	} else { save(list = i , envir = env_ref, file = tmp.file, compress = "bzip2") }
+	} else { save(list = i , envir = env, file = tmp.file, compress = "bzip2") }
 }
 #
 do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatty = FALSE, .debug = FALSE) {

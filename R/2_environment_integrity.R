@@ -14,7 +14,7 @@
 	if (is.character(env)) {
 		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
 	} else { eval(env) } %>% {
-		!(is.null(must.have(.)) || (must.have(.) %in% ls(., all.names = TRUE)))
+		!(is.null(env %must.have% .) || ((env %must.have% .) %in% ls(., all.names = TRUE)))
 	}
 };
 
@@ -22,7 +22,7 @@
 `%must.have%` <- function(env, x){
 #' Must Have
 #'
-#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{env.check}}.
+#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{\%check\%}}.
 #'
 #' @param env (object) An environment or name of an environment
 #' @param x (string[]) A string vector of the names that \code{env} must have when checked
@@ -39,7 +39,7 @@
 
 	x = if (missing(x) || is.null(x)) { mh } else { x } %>% unique %>% sort %>% trimws;
 
-	setattr(env, "must.have", x);
+	data.table::setattr(env, "must.have", x);
 	message(paste(attr(env, "must.have"), collapse = ", "));
 
 	return(x);
@@ -54,7 +54,7 @@
 #' @param env (object | string) An environment or name of an environment
 #' @param x (string[]) The names of the objects that \code{env} must have
 #'
-#' @return If all objects that \code{env} \code{\link{must.have}} are present, nothing is returned; otherwise, an error message is returned.
+#' @return If all objects that \code{env} \code{\link{\%must.have\%}} are present, nothing is returned; otherwise, an error message is returned.
 #' @family Environmental Integrity
 #' @export
 
@@ -106,7 +106,6 @@
 	} else { eval(env) }
 
 	list2env(x, envir = env);
-	# map(x, ~try({ assign(.x[[1]], eval(.x[[2]]), envir = env) }, silent = TRUE));
 
 	invisible(env);
 }

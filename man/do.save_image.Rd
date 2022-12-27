@@ -7,10 +7,11 @@
 do.save_image(
   ...,
   safe = TRUE,
-  env = ".GlobalEnv",
+  env = .GlobalEnv,
   save.dir = getwd(),
   file.name = "",
   use.prefix = TRUE,
+  use.timestamp = TRUE,
   prepare = NULL
 )
 }
@@ -19,13 +20,15 @@ do.save_image(
 
 \item{safe}{(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?}
 
-\item{env}{(string | \code{.GlobalEnv}) The environment to search for items given as a string}
+\item{env}{The environment to search for items}
 
 \item{save.dir}{(string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.}
 
 \item{file.name}{(string | "") The name of the file to save, or, when \code{NULL}, the value of \code{i} if atomic or a predefined name when \code{i} is a vector}
 
 \item{use.prefix}{(logical | \code{TRUE}) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}}
+
+\item{use.timestamp}{(logical | \code{TRUE}) When \code{TRUE} (the default), the file name is appended with a formatted value of \code{Sys.time()}}
 
 \item{prepare}{(language | \code{NULL}) A quoted expression that executes before the save action takes place.}
 }

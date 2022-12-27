@@ -12,7 +12,7 @@ env \%check\% x
 \item{x}{(string[]) The names of the objects that \code{env} must have}
 }
 \value{
-If all objects that \code{env} \code{\link{must.have}} are present, nothing is returned; otherwise, an error message is returned.
+If all objects that \code{env} \code{\link{\%must.have\%}} are present, nothing is returned; otherwise, an error message is returned.
 }
 \description{
 \code{\%check\%} checks the environment for required objects

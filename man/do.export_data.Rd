@@ -40,7 +40,6 @@ The parameter `post.cmd` is provided
 Other Data transmission: 
 \code{\link{check.db_conn}()},
 \code{\link{do.get_data}()},
-\code{\link{do.make_query}()},
-\code{\link{do.make_workers}()}
+\code{\link{do.make_query}()}
 }
 \concept{Data transmission}

@@ -53,7 +53,6 @@ A (hopefully) valid T-SQL string
 Other Data transmission: 
 \code{\link{check.db_conn}()},
 \code{\link{do.export_data}()},
-\code{\link{do.get_data}()},
-\code{\link{do.make_workers}()}
+\code{\link{do.get_data}()}
 }
 \concept{Data transmission}

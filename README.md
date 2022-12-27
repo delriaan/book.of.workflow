@@ -22,10 +22,9 @@ This family of functions is focused on maintaining the integrity of object envir
 
 ## External Data Management
 
-This family of functions focuses on connecting to external data (primarily databases) as well as parallelized computing contexts:
+This family of functions primarily focuses on connecting to external data (primarily databases):
 
 -   get.cluster_meta()
--   do.make_workers()
 -   do.make_query()
 -   do.get_data()
 -   do.export_data()

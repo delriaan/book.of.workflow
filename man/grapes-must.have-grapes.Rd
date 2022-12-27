@@ -15,7 +15,7 @@ env \%must.have\% x
 The names of the objects that \code{env} must have
 }
 \description{
-\code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{env.check}}.
+\code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{\%check\%}}.
 }
 \seealso{
 Other Environmental Integrity: 

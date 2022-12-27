@@ -23,7 +23,6 @@ An active DBI connection object
 Other Data transmission: 
 \code{\link{do.export_data}()},
 \code{\link{do.get_data}()},
-\code{\link{do.make_query}()},
-\code{\link{do.make_workers}()}
+\code{\link{do.make_query}()}
 }
 \concept{Data transmission}

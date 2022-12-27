@@ -15,9 +15,7 @@
 #'  This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to  missing object dependencies:\cr
 #'  \itemize{
 #'  	\item{\code{\link{\%missing\%}}}
-#'  	\item{\code{\link{must.have}}}
 #'  	\item{\code{\link{\%must.have\%}}}
-#'  	\item{\code{\link{env.check}}}
 #'  	\item{\code{\link{\%check\%}}}
 #'  	\item{\code{\link{\%+must.have\%}}}
 #'  	\item{\code{\link{\%+=\%}}}
@@ -27,10 +25,6 @@
 #' @section External Data Management:
 #'  This family of functions focuses on connecting to external data (primarily databases) as well as parallelized computing contexts with special consideration of Windows environments without SSH implemented:\cr
 #'  \itemize{
-#'  	\item{\code{\link{do.make_cluster}}}
-#'  	\item{\code{\link{get.cluster_meta}}}
-#'  	\item{\code{\link{do.make_workers}}}
-#'  	\item{\code{\link{terminate.cluster_workers}}}
 #'  	\item{\code{\link{do.make_query}}}
 #'  	\item{\code{\link{do.get_data}}}
 #'  	\item{\code{\link{do.export_data}}}
@@ -51,3 +45,4 @@
 #' @importFrom stringi %s+%
 #'
 #' @name Book of Workflow Package
+NULL

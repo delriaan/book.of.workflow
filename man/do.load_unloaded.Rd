@@ -4,7 +4,13 @@
 \alias{do.load_unloaded}
 \title{Load Unloaded Packages}
 \usage{
-do.load_unloaded(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE)
+do.load_unloaded(
+  ...,
+  libs = NULL,
+  pattern = "[,|; ]",
+  autoinstall = FALSE,
+  chatty = FALSE
+)
 }
 \arguments{
 \item{...}{\code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.}
@@ -14,6 +20,12 @@ do.load_unloaded(..., libs = NULL, pattern = "[,|; ]", chatty = FALSE)
 \item{pattern}{(string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.}
 
 \item{chatty}{(logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()}
+
+\item{autoinstall:\cr}{\itemize{
+\item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}
+\item{\code{TRUE}: If a library isn't installed, it will be using the default library installation path}
+\item{\code{list()}: Assumes \code{TRUE} and should be a list of arguments (excluding \code{pkgs}) to send to \code{\link[utils]{install.packages}}}
+}}
 }
 \value{
 See `library()`
