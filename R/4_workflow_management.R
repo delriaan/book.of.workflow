@@ -128,6 +128,41 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 	} else { utils::readClipboard() }
 }
 #
+snippets_toc <- function(doc){
+#' Snippets Table of Contents
+#' 
+#' \code{snippets_toc} creates a table of contents of snippet code sections.
+#' @note An active session must be required to use this file if \code{doc} is \code{NULL}
+#' 
+#' @param doc The path to a document containing code sections created via \code{\link{make.snippet}}()
+#' 
+#' @return Invisibly, a listing of snippet code sections for the document provided
+#' @export
+
+	if (missing(doc) || rlang::is_empty(doc)){
+		doc <- ifelse(
+			interactive()
+			, ifelse(
+					"rstudioapi" == data.table::as.data.table(installed.packages(), keep.rownames = TRUE)[(rn %like% "rstudio"), Package]
+					, rstudioapi::getSourceEditorContext()$path
+					, file.choose()
+					)
+			, { message("This function requires an active session when argument 'doc' is not provided: exiting ..."); return() }
+			)
+	}
+	.toc <- readLines(doc) |> 
+		purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |> 
+		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
+		trimws()
+	
+	
+	sprintf("Snippet Table of Contents [%s], \n%s"
+					, doc#stri_split_fixed(doc, "/", simplify = TRUE) |> purrr::keep(~.x %like% "R$")
+					, paste(paste0(seq_along(.toc), ". ", .toc), collapse = "\n")
+					) |> cat()
+	invisible(.toc)
+}
+#
 mgr_upgrade <- function(ref){
 #' Upgrade a workflow Manager
 #'
