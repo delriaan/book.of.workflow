@@ -151,11 +151,10 @@ snippets_toc <- function(doc, preview =FALSE){
 			, { message("This function requires an active session when argument 'doc' is not provided: exiting ..."); return() }
 			)
 	}
+	
 	out <- doc %>% 
 		purrr::set_names(
-		stringi::stri_replace_all_fixed(., getwd(), "", vectorize_all = FALSE) |>
-		stringi::stri_split_fixed("/", simplify = FALSE, omit_empty = TRUE) |> 
-		purrr::map_chr(~.x[length(.x)])
+		stringi::stri_replace_all_fixed(., getwd(), "", vectorize_all = FALSE)
 		) |>
 		purrr::imap(~{
 			.toc <- readLines(.x) |> 
@@ -164,13 +163,15 @@ snippets_toc <- function(doc, preview =FALSE){
 					trimws();
 		
 			if (!rlang::is_empty(stringi::stri_length(.toc))){ 
-			glue::glue("Snippet Table of Contents [{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n')}")
+			glue::glue("[{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n')}")
 			} else { NULL }
 		}) |>
 		purrr::compact() |>
 		unlist() |> 
 		paste(collapse = "\n")
+
 	if (preview){ cat(out, sep = "\n") }
+
 	invisible(out)
 }
 #
