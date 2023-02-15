@@ -157,14 +157,19 @@ snippets_toc <- function(doc, preview =FALSE){
 		stringi::stri_split_fixed("/", simplify = FALSE, omit_empty = TRUE) |> 
 		purrr::map_chr(~.x[length(.x)])
 		) |>
-		purrr::imap_chr(~{
-		.toc <- readLines(.x) |> 
-				purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |> 
-				stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
-				trimws();
+		purrr::imap(~{
+			.toc <- readLines(.x) |> 
+					purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |> 
+					stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
+					trimws();
 		
-			glue::glue("Snippet Table of Contents [{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n\n')}")
-		}) |> paste(collapse = "\n")
+			if (!rlang::is_empty(stringi::stri_length(.toc))){ 
+			glue::glue("Snippet Table of Contents [{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n')}")
+			} else { NULL }
+		}) |>
+		purrr::compact() |>
+		unlist() |> 
+		paste(collapse = "\n")
 	if (preview){ cat(out, sep = "\n") }
 	invisible(out)
 }
