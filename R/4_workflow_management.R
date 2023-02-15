@@ -128,13 +128,14 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 	} else { utils::readClipboard() }
 }
 #
-snippets_toc <- function(doc){
+snippets_toc <- function(doc, preview =FALSE){
 #' Snippets Table of Contents
 #' 
 #' \code{snippets_toc} creates a table of contents of snippet code sections.
 #' @note An active session must be required to use this file if \code{doc} is \code{NULL}
 #' 
 #' @param doc The path to a document containing code sections created via \code{\link{make.snippet}}()
+#' @param preview (logical) Should the formatted output be run through \code{\link[base]{cat}} before exiting?
 #' 
 #' @return Invisibly, a listing of snippet code sections for the document provided
 #' @export
@@ -150,17 +151,22 @@ snippets_toc <- function(doc){
 			, { message("This function requires an active session when argument 'doc' is not provided: exiting ..."); return() }
 			)
 	}
-	.toc <- readLines(doc) |> 
-		purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |> 
-		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
-		trimws()
-	
-	
-	sprintf("Snippet Table of Contents [%s], \n%s"
-					, doc#stri_split_fixed(doc, "/", simplify = TRUE) |> purrr::keep(~.x %like% "R$")
-					, paste(paste0(seq_along(.toc), ". ", .toc), collapse = "\n")
-					) |> cat()
-	invisible(.toc)
+	out <- doc %>% 
+		purrr::set_names(
+		stringi::stri_replace_all_fixed(., getwd(), "", vectorize_all = FALSE) |>
+		stringi::stri_split_fixed("/", simplify = FALSE, omit_empty = TRUE) |> 
+		purrr::map_chr(~.x[length(.x)])
+		) |>
+		purrr::imap_chr(~{
+		.toc <- readLines(.x) |> 
+				purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |> 
+				stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
+				trimws();
+		
+			glue::glue("Snippet Table of Contents [{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n')}")# %T>% cat(sep = "\n")
+		}) |> paste(collapse = "\n")
+	if (preview){ cat(out, sep = "\n") }
+	invisible(out)
 }
 #
 mgr_upgrade <- function(ref){
