@@ -163,7 +163,7 @@ snippets_toc <- function(doc, preview =FALSE){
 				stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
 				trimws();
 		
-			glue::glue("Snippet Table of Contents [{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n')}")# %T>% cat(sep = "\n")
+			glue::glue("Snippet Table of Contents [{.y}], \n{paste(paste0(seq_along(.toc), '. ', .toc), collapse = '\n\n')}")
 		}) |> paste(collapse = "\n")
 	if (preview){ cat(out, sep = "\n") }
 	invisible(out)
