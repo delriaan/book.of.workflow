@@ -24,7 +24,6 @@ This family of functions is focused on maintaining the integrity of object envir
 
 This family of functions primarily focuses on connecting to external data (primarily databases):
 
--   get.cluster_meta()
 -   do.make_query()
 -   do.get_data()
 -   do.export_data()
@@ -36,5 +35,6 @@ This family of functions focuses on code execution workflow:
 
 -   read.snippet()
 -   make.snippet()
--   workflow_manager()
+-	  snippets_toc()
 -   mgr_upgrade()
+-   workflow_manager()
