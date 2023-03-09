@@ -2,7 +2,7 @@
 
 The following functional families are covered in 'book.of.workflow':
 
-## Environment-processing
+## Chapter 1: Environment-processing
 
 The focus is on loading libraries and managing environment objects:
 
@@ -10,7 +10,7 @@ The focus is on loading libraries and managing environment objects:
 -   do.save_image()
 -   do.copy_obj()
 
-## Environment Integrity
+## Chapter 2: Environment Integrity
 
 This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to missing object dependencies:
 
@@ -20,7 +20,7 @@ This family of functions is focused on maintaining the integrity of object envir
 -   %+=%
 -   %-=%
 
-## External Data Management
+## Chapter 3: External Data Management
 
 This family of functions primarily focuses on connecting to external data (primarily databases):
 
@@ -29,7 +29,7 @@ This family of functions primarily focuses on connecting to external data (prima
 -   do.export_data()
 -   check.db_conn()
 
-## Workflow Management
+## Chapter 4: Workflow Management
 
 This family of functions focuses on code execution workflow:
 

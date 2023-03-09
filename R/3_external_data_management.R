@@ -56,9 +56,9 @@ do.make_query <- function(this.conn, from, from.mod	= "", where	= "1=1 ", sel	= 
 }
 #
 do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data = NULL, post.op = eval, verbose = FALSE, promise = FALSE, persist.conn = TRUE, ...){
-#' Retrieve SQL Data and Post-process
+#' Retrieve T-SQL Data
 #'
-#' The workflow for this function is to retrieve the dataset from a source, post-process it according to the value of argument \code{post.op}, and, when \code{tgt.name} is not \code{NULL}, assign it to an object named according to the value of \code{tgt.name}
+#' The workflow for this function is to retrieve the data from SQL Server, post-process it according to the value of argument \code{post.op}, and, when \code{tgt.name} is not \code{NULL}, assign it to an object named according to the value of \code{tgt.name}
 #'
 #' @param this.conn A \code{\link[DBI]{DBI-package}} connection object
 #' @param src.name (string) Data source name
@@ -91,7 +91,7 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 	# Execute data retrieval and (optionally) assign the output
 	{ if (is.null(this.data)){
 		# Get the data
-		.callArgs = list(this.conn = this.conn, from = src.name) %>% append(list(...));
+		.callArgs = list(this.conn = this.conn, from = src.name) |> append(list(...));
 		if (verbose) { print(list(call_args = .callArgs)) }
 
 		DBI::dbGetQuery(conn = this.conn, statement = do.call(do.make_query, args = .callArgs))
@@ -103,7 +103,7 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 			tgt.name %>%
 				stringi::stri_split_fixed("@", n = 2, simplify = TRUE) %>% {
 					if (.[2] == ""){ c(.[1], ".GlobalEnv") } else { . }
-				} %>%
+				} |>
 				rlang::set_names(c("obj", "env")) %>%
 				as.list() %$% {
 				substitute(
@@ -111,7 +111,7 @@ do.get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data =
 											 , assign.env = if (env %in% search()){ as.environment(env) } else { get(env) }, lazy = promise)
 					, list(obj = obj, output = output, env = env, promise = promise)
 					)
-				} %>% eval();
+				} |> eval();
 		} else { invisible(output) }
 	}
 }
@@ -177,9 +177,9 @@ check.db_conn <- function(this.conn, pass, ...){
 		, "ODBCConnection"  = {
 				.args = this.conn@odbc %>% attr("call") %>% as.list() %$% {
 								c(case = case
-									, stringi::stri_split_fixed(connection, ";", simplify = TRUE) %>%
-											keep(~.x %like% "DSN|UID|case") %>%
-											stringi::stri_replace_first_regex("[A-Z]{3}[=]", "") %>%
+									, stringi::stri_split_fixed(connection, ";", simplify = TRUE) |>
+											keep(~.x %like% "DSN|UID|case") |>
+											stringi::stri_replace_first_regex("[A-Z]{3}[=]", "") |>
 											rlang::set_names(c("dsn", "uid"))
 									);
 							}

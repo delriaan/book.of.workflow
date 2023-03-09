@@ -50,7 +50,7 @@ read.snippet <- function(..., doc, action){
 		goto		= { message(sprintf("Moved to snippet <%s> ..." , paste(label, collapse = ", "))); }
 		, skip	= { message(sprintf("Skipping snippet <%s> ..." , paste(label, collapse = ", "))); }
 		, parse = { message(sprintf("Parsed snippet <%s> as:\n" , paste(label, collapse = ", "))); cat(out, sep = "\n"); }
-		, exec	= { message(sprintf("Executing snippet <%s> ...", paste(label, collapse = ", "))); parse(text = out) %>% eval(envir = globalenv()) }
+		, exec	= { message(sprintf("Executing snippet <%s> ...", paste(label, collapse = ", "))); parse(text = out) |> eval(envir = globalenv()) }
 		, save	= { .outfile = sprintf("%s.snippet", paste(label, collapse = "_"));
 								message(sprintf("Saving snippet <%s> to '%s'", paste(label, collapse = ", "), .outfile));
 								cat(out, sep = "\n", file = .outfile);
@@ -60,18 +60,18 @@ read.snippet <- function(..., doc, action){
 	# ::
 	message("Searching " %s+% doc);
 
-	file.data = suppressWarnings(readtext::readtext(doc)$text %>% stringi::stri_split_regex("\n", simplify = TRUE)) %>%
-		stringi::stri_replace_all_regex("read[.]snippet[(].+[)][;]?", "", vectorize_all = FALSE) %>%
+	file.data = suppressWarnings(readtext::readtext(doc)$text %>% stringi::stri_split_regex("\n", simplify = TRUE)) |>
+		stringi::stri_replace_all_regex("read[.]snippet[(].+[)][;]?", "", vectorize_all = FALSE) |>
 		stringi::stri_trim_both();
 
 	match.pos = purrr::map(which(file.data %ilike% pattern), ~{
 		from = .x
-		to = which(file.data %ilike% "</snippet") %>% purrr::keep(~.x > from) %>% min();
+		to = which(file.data %ilike% "</snippet") |> purrr::keep(~.x > from) |> min(na.rm = TRUE);
 
 		if (action == "goto"){ .x } else { seq(from, to); }
-	}) %>% unlist();
+	}) |> unlist();
 
-  out = paste(file.data[match.pos] %>% stringi::stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
+  out = paste(file.data[match.pos] |> stringi::stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
 
 	# ::
 	if (is_studio_audience){
@@ -115,7 +115,7 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 							, paste(.args, collapse = " ")
 							, ifelse(include.read, sprintf("\nread.snippet(%s, action = parse);\n", paste(.args, collapse = ", ")), "")
 							)
-						} %>% c("\n# </snippet>\n") %>% paste(collapse = "");
+						} |> c("\n# </snippet>\n") |> paste(collapse = "");
 
 	if (use.clipboard){
 		cat(.text);
@@ -130,12 +130,12 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 #
 snippets_toc <- function(doc){
 #' Snippets Table of Contents
-#' 
+#'
 #' \code{snippets_toc} creates a table of contents of snippet code sections.
 #' @note An active session must be required to use this file if \code{doc} is \code{NULL}
-#' 
+#'
 #' @param doc The path to a document containing code sections created via \code{\link{make.snippet}}()
-#' 
+#'
 #' @return Invisibly, a listing of snippet code sections for the document provided
 #' @export
 
@@ -150,12 +150,12 @@ snippets_toc <- function(doc){
 			, { message("This function requires an active session when argument 'doc' is not provided: exiting ..."); return() }
 			)
 	}
-	.toc <- readLines(doc) |> 
-		purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |> 
-		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |> 
+	.toc <- readLines(doc) |>
+		purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |>
+		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |>
 		trimws()
-	
-	
+
+
 	sprintf("Snippet Table of Contents [%s], \n%s"
 					, doc#stri_split_fixed(doc, "/", simplify = TRUE) |> purrr::keep(~.x %like% "R$")
 					, paste(paste0(seq_along(.toc), ". ", .toc), collapse = "\n")
@@ -181,12 +181,12 @@ mgr_upgrade <- function(ref){
 
 	if (rlang::is_empty(old_ver) || old_ver < workflow_manager$private_fields$version){
 		xfer = "workflows";
-		curr = obj[[xfer]] %$% mget(ls()) %>% purrr::map(identical, obj$current) %>% purrr::keep(~.x) %>% names();
+		curr = obj[[xfer]] %$% mget(ls()) |> purrr::map(identical, obj$current) |> purrr::keep(~.x) |> names();
 		out  = workflow_manager$new();
 		out$workflows = obj$workflows;
-		substitute(out$get(curr), list(curr = curr)) %>% eval();
+		substitute(out$get(curr), list(curr = curr)) |> eval();
 
-		parse(text = sprintf("%s <- out", ref)) %>% eval();
+		parse(text = sprintf("%s <- out", ref)) |> eval();
 	} else { message("Object is up-to-date: exiting with no action taken ..."); return(invisible()) }
 }
 #

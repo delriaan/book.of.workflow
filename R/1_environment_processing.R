@@ -26,11 +26,11 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall =
 
 	if (chatty){ cat(libs, sep = "\n") }
 
-	library.cfg = stringi::stri_split_regex(libs, "[, |;]", simplify = TRUE, omit_empty = TRUE) %>%
+	library.cfg = stringi::stri_split_regex(libs, "[, |;]", simplify = TRUE, omit_empty = TRUE) |>
 		as.vector() %>%
 		stringi::stri_replace_all_regex(., "([{].*.[}])?", replacement = "", simplify = TRUE) %>%
 		as.vector() %>%
-		rlang::set_names() %>%
+		rlang::set_names() |>
 		purrr::map(~{
 			this.str = stringi::stri_split_regex(.x, pattern = "[{}]", omit_empty = TRUE, simplify = TRUE) %>% unlist();
 			purrr::map(
@@ -54,7 +54,7 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall =
 		library.cfg[
 			# Don't try to load libraries already loaded and attached via indexing against `library.cfg`
 			purrr::map_lgl(names(library.cfg), ~{ not(any(grepl(.x, search()))) })
-			] %>% purrr::imap(~tryCatch(expr = { do.call(
+			] |> purrr::imap(~tryCatch(expr = { do.call(
 				what = "library"
 				, args = append(
 						.x[c(length(.x$include) > 0, length(.x[[2]]) > 0)] # <- User syntax error can lead to both being true, so let the call to 'library()' error out
@@ -109,8 +109,8 @@ do.save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd()
 		, single.obj = { (length(i) == 1) & !any(i %in% c("*", "all")) & (stringi::stri_length(i) > 0)}
 		, multi.as.vector = { (length(i) > 1) & !any(i %in% c("*", "all")) }
 		, multi.as.string = { any((i %like% "[,;| ]") & !any(i %in% c("*", "all"))) }
-		) %>%
-		purrr::keep(~.x) %>% names() %>% .[1]
+		) |>
+		purrr::keep(~.x) |> names() %>% .[1]
 	}
 
 	# :: Set the file name based on the values supplied to argument `i`
@@ -167,34 +167,34 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 	to.env = if (missing(to.env)){
 		from.env
 	} else {
-		.out <- rlang::enexpr(to.env) %>% as.character();
+		.out <- rlang::enexpr(to.env) |> as.character();
 		if (length(.out) > 1){ .out[-1] } else { .out }
 	}
 
-	.args = rlang::list2(!!!purrr::map(rlang::exprs(...), as.character)) %>%
+	.args = rlang::list2(!!!purrr::map(rlang::exprs(...), as.character)) |>
 		purrr::map(~{
 			.str = if(class(.x) %in% c("symbol", "name")){ as.character(.x) } else { .x }
-			.str %>% stringi::stri_split_regex(pattern = c('[,;| ]'), simplify = TRUE) %>% trimws() %>% c()
-		}) %>%
+			.str |> stringi::stri_split_regex(pattern = c('[,;| ]'), simplify = TRUE) |> trimws() |> c()
+		})|>
 		unlist();
 
 	# :: Source object strings
 	.source = suppressWarnings({
 		if (length(.args) == 1){
-			stringi::stri_split_fixed(.args, "[$]", simplify = TRUE, omit_empty = FALSE) %>% sub_fn(from.env)
+			stringi::stri_split_fixed(.args, "[$]", simplify = TRUE, omit_empty = FALSE) |> sub_fn(from.env)
 		} else { purrr::map_dfr(.args, ~{
-			stringi::stri_split_fixed(.x, "[$]", simplify = TRUE, omit_empty = FALSE) %>% sub_fn(from.env) })
+			stringi::stri_split_fixed(.x, "[$]", simplify = TRUE, omit_empty = FALSE) |> sub_fn(from.env) })
 		}
 	})
 
 	# :: Target object strings
 	.target = suppressWarnings({
 		if (length(.args) == 1){
-			stringi::stri_split_fixed(names(.args), "$", simplify = TRUE, omit_empty = FALSE) %>% sub_fn(to.env)
+			stringi::stri_split_fixed(names(.args), "$", simplify = TRUE, omit_empty = FALSE) |> sub_fn(to.env)
 		} else {
 			purrr::map(names(.args), ~{
-				stringi::stri_split_fixed(.x, "$", simplify = TRUE, omit_empty = FALSE) %>% sub_fn(to.env)
-			}) %>% purrr::reduce(rbind)
+				stringi::stri_split_fixed(.x, "$", simplify = TRUE, omit_empty = FALSE) |> sub_fn(to.env)
+			}) |> purrr::reduce(rbind)
 		}
 	})
 
@@ -210,8 +210,8 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 				sprintf("%s$%s <- %s$%s", ...elt(3), ...elt(4), ...elt(1), ...elt(2))
 			})
 			, VALID = purrr::pmap(.SD, function(...){
-					c(env_check = (...elt(2) %in% { parse(text = ...elt(1)) %>% eval(envir = globalenv()) %>% ls() })
-						, obj_check = !is.null(parse(text = ...elt(3)) %>% eval(envir = globalenv()))) %>% t()
+					c(env_check = (...elt(2) %in% { parse(text = ...elt(1)) |> eval(envir = globalenv()) |> ls() })
+						, obj_check = !is.null(parse(text = ...elt(3)) |> eval(envir = globalenv()))) |> t()
 				})
 			)
 		];
@@ -226,18 +226,19 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 	}
 
 	# :: ACTION!
-	.xfer_map[!sapply(VALID, all), ACTION] %>% purrr::walk(~message("Skipping invalid operation: " %s+% .x));
-	.xfer_map[sapply(VALID, all), ACTION] %>% purrr::walk(~{
+	.xfer_map[!sapply(VALID, all), ACTION] |> purrr::walk(~message("Skipping invalid operation: " %s+% .x));
+	.xfer_map[sapply(VALID, all), ACTION] |> purrr::walk(~{
 		if (chatty){ message("Executing " %s+% .x, appendLF = FALSE) }
 		parse(text = .x) %>% eval(envir = globalenv());
 	});
 
 	# :: If a 'move' action, remove the source objects from the corresponding environments
-	if (!keep.orig){ .xfer_map[
+	if (!(keep.orig | .debug)){ .xfer_map[
 			sapply(VALID, all)
 			, rm(list = unique(FR_OBJ), envir = eval(parse(text = FR_ENV), envir = globalenv()))
 			, by = FR_ENV
-			]}
+		]
+	}
 
 	return(invisible(0));
 }

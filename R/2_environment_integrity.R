@@ -11,10 +11,18 @@
 #' @family Environmental Integrity
 #' @export
 
-	if (is.character(env)) {
-		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
-	} else { eval(env) } %>% {
-		!(is.null(env %must.have% .) || ((env %must.have% .) %in% ls(., all.names = TRUE)))
+	env <- if (is.character(env)) {
+				if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
+	} else { eval(env) }
+
+
+	if (rlang::is_empty(attr(env, "must.have"))){
+		message("Environment not required to have anything: exiting ...")
+		return(invisible(FALSE))
+	} else {
+		x.found <- intersect(attr(env, "must.have"), rlang::enexprs(!!!x) |> as.character()) |> purrr::set_names()
+		x.new <- setdiff(rlang::enexprs(!!!x) |> as.character(), attr(env, "must.have")) %>% purrr::set_names(sprintf("not_req_%s", .))
+		c(x.found, x.new) %in% ls(env, all.names = TRUE)
 	}
 };
 
@@ -32,15 +40,14 @@
 #' @export
 
 	env = if (is.character(env)) {
-		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
+		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
 	mh = attr(env, "must.have");
 
-	x = if (missing(x) || is.null(x)) { mh } else { x } %>% unique %>% sort %>% trimws;
+	x = (if (missing(x) || is.null(x)) { mh } else { x }) |> unique() |> sort() |> trimws();
 
 	data.table::setattr(env, "must.have", x);
-	message(paste(attr(env, "must.have"), collapse = ", "));
 
 	return(x);
 };
@@ -59,12 +66,12 @@
 #' @export
 
 	env = if (is.character(env)) {
-		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
+		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
 	logi.vec = na.omit(env %missing% x);
 
-	if (any(na.omit(logi.vec))){ stop(x[logi.vec] %>% paste(collapse = ", ") %>% sprintf(fmt = "Missing objects: %s")) }
+	if (any(na.omit(logi.vec))){ stop(x[logi.vec] |> paste(collapse = ", ") |> sprintf(fmt = "Missing objects: %s")) }
 }
 
 #
@@ -81,7 +88,7 @@
 #' @export
 
 	env = if (is.character(env)) {
-		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
+		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
 	invisible(env %must.have% { c(attr(env, "must.have"), x) });
@@ -102,7 +109,7 @@
 #' @export
 
 	env = if (is.character(env)) {
-		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
+		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
 	list2env(x, envir = env);
@@ -125,7 +132,7 @@
 #' @export
 
 	env = if (is.character(env)) {
-		if (env %in% search()){ as.environment(env) } else { parse(text = env) %>% eval() }
+		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
 	rm(list = x[sapply(x, exists, envir = env)], envir = env);
