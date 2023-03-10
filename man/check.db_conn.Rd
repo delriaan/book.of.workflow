@@ -2,7 +2,7 @@
 % Please edit documentation in R/3_external_data_management.R
 \name{check.db_conn}
 \alias{check.db_conn}
-\title{Check a Database Connection}
+\title{Check a Database Connection (OBSOLETE)}
 \usage{
 check.db_conn(this.conn, pass, ...)
 }
@@ -21,8 +21,8 @@ An active DBI connection object
 }
 \seealso{
 Other Data transmission: 
-\code{\link{do.export_data}()},
-\code{\link{do.get_data}()},
-\code{\link{do.make_query}()}
+\code{\link{export_data}()},
+\code{\link{get_data}()},
+\code{\link{make_query}()}
 }
 \concept{Data transmission}

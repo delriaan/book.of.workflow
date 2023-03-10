@@ -65,11 +65,11 @@
 #' @family Environmental Integrity
 #' @export
 
-	env = if (is.character(env)) {
+	env <- if (is.character(env)) {
 		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
-	logi.vec = na.omit(env %missing% x);
+	logi.vec <- na.omit(env %missing% x);
 
 	if (any(na.omit(logi.vec))){ stop(x[logi.vec] |> paste(collapse = ", ") |> sprintf(fmt = "Missing objects: %s")) }
 }
@@ -108,7 +108,7 @@
 #' @family Environmental Integrity
 #' @export
 
-	env = if (is.character(env)) {
+	env <- if (is.character(env)) {
 		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 
@@ -131,7 +131,7 @@
 #' @family Environmental Integrity
 #' @export
 
-	env = if (is.character(env)) {
+	env <- if (is.character(env)) {
 		if (env %in% search()){ as.environment(env) } else { parse(text = env) |> eval() }
 	} else { eval(env) }
 

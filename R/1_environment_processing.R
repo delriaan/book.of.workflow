@@ -1,8 +1,8 @@
 # ::::: ENVIRONMENT PROCESSING
-do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall = FALSE, chatty = FALSE) {
+load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall = FALSE, chatty = FALSE) {
 #' Load Unloaded Packages
 #'
-#' \code{do.load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
+#' \code{load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
 #'
 #' Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
 #' Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
@@ -22,14 +22,14 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall =
 #' @family Environment Processing
 #' @export
 
-	libs = c(as.character(rlang::enexprs(...)), libs);
+	libs <- c(as.character(rlang::enexprs(...)), libs);
 
 	if (chatty){ cat(libs, sep = "\n") }
 
-	library.cfg = stringi::stri_split_regex(libs, "[, |;]", simplify = TRUE, omit_empty = TRUE) |>
+	library.cfg <- stringi::stri_split_regex(libs, "[, |;]", simplify = TRUE, omit_empty = TRUE) |>
 		as.vector() %>%
 		stringi::stri_replace_all_regex(., "([{].*.[}])?", replacement = "", simplify = TRUE) %>%
-		as.vector() %>%
+		as.vector() |>
 		rlang::set_names() |>
 		purrr::map(~{
 			this.str = stringi::stri_split_regex(.x, pattern = "[{}]", omit_empty = TRUE, simplify = TRUE) %>% unlist();
@@ -64,12 +64,12 @@ do.load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall =
 		)
 }
 #
-do.save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), file.name = "", use.prefix = TRUE, use.timestamp = TRUE, prepare = NULL){
+save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), file.name = "", use.prefix = TRUE, use.timestamp = TRUE, prepare = NULL){
 #' Manual Export of Workspace Objects
 #'
 #' The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
 #'
-#' @param ... (vector or list) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})
+#' @param ... (\code{\link[rlang]{dots_list}}) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})
 #' @param safe	(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?
 #' @param env	The environment to search for items
 #' @param save.dir (string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.
@@ -118,8 +118,8 @@ do.save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd()
 		namescheck
 		, "all" 						= { file.name <- ifelse(filecheck, "all", file.name); i <- ls(envir = env, all.names = TRUE) }
 		, "multi.as.string" = { file.name <- ifelse(filecheck, "multiObs", file.name);
-														i <- stringi::stri_split_regex(i, "[,;| ]", omit_empty = TRUE, simplify = TRUE) %>% c();
-														}
+														i <- stringi::stri_split_regex(i, "[,;| ]", omit_empty = TRUE, simplify = TRUE) |> c();
+													}
 		, "multi.as.vector" = { file.name <- ifelse(filecheck, "multiObs", file.name) }
 		, 										{ file.name <- ifelse(filecheck, i, file.name) }
 		);
@@ -137,11 +137,11 @@ do.save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd()
 	} else { save(list = i , envir = env, file = tmp.file, compress = "bzip2") }
 }
 #
-do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatty = FALSE, .debug = FALSE) {
+copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatty = FALSE, .debug = FALSE) {
 #' Replace, [C]opy, or [M]ove objects
 #'
 #' @description
-#' \code{do.copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
+#' \code{copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
 #' If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
 #' If \code{to.env} has multiple values, the copy or move operations will populate each environment.
 #'
@@ -154,7 +154,7 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 #' @export
 
 	# :: Helper function to create the environment and object strings
-	sub_fn = function(i, dflt){
+	sub_fn <- function(i, dflt){
 		if (rlang::has_length(i, 1)){
 			expand.grid(dflt, i, stringsAsFactors = FALSE)
 		} else {
@@ -162,16 +162,16 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 		}
 	}
 
-	from.env = as.character(rlang::enexpr(from.env));
+	from.env <- as.character(rlang::enexpr(from.env));
 
-	to.env = if (missing(to.env)){
+	to.env <- if (missing(to.env)){
 		from.env
 	} else {
 		.out <- rlang::enexpr(to.env) |> as.character();
 		if (length(.out) > 1){ .out[-1] } else { .out }
 	}
 
-	.args = rlang::list2(!!!purrr::map(rlang::exprs(...), as.character)) |>
+	.args <- rlang::list2(!!!purrr::map(rlang::exprs(...), as.character)) |>
 		purrr::map(~{
 			.str = if(class(.x) %in% c("symbol", "name")){ as.character(.x) } else { .x }
 			.str |> stringi::stri_split_regex(pattern = c('[,;| ]'), simplify = TRUE) |> trimws() |> c()
@@ -179,7 +179,7 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 		unlist();
 
 	# :: Source object strings
-	.source = suppressWarnings({
+	.source <- suppressWarnings({
 		if (length(.args) == 1){
 			stringi::stri_split_fixed(.args, "[$]", simplify = TRUE, omit_empty = FALSE) |> sub_fn(from.env)
 		} else { purrr::map_dfr(.args, ~{
@@ -188,7 +188,7 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 	})
 
 	# :: Target object strings
-	.target = suppressWarnings({
+	.target <- suppressWarnings({
 		if (length(.args) == 1){
 			stringi::stri_split_fixed(names(.args), "$", simplify = TRUE, omit_empty = FALSE) |> sub_fn(to.env)
 		} else {
@@ -199,7 +199,7 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 	})
 
 	# :: The plan of action along with the inputs
-	.xfer_map = data.table::as.data.table(cbind(.source, .target));
+	.xfer_map <- data.table::as.data.table(cbind(.source, .target));
 	data.table::setnames(.xfer_map, c("FR_" %s+% c("ENV", "OBJ"), "TO_" %s+% c("ENV", "OBJ")));
 
 	.xfer_map[
@@ -229,11 +229,12 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 	.xfer_map[!sapply(VALID, all), ACTION] |> purrr::walk(~message("Skipping invalid operation: " %s+% .x));
 	.xfer_map[sapply(VALID, all), ACTION] |> purrr::walk(~{
 		if (chatty){ message("Executing " %s+% .x, appendLF = FALSE) }
-		parse(text = .x) %>% eval(envir = globalenv());
+		parse(text = .x) |> eval(envir = globalenv());
 	});
 
 	# :: If a 'move' action, remove the source objects from the corresponding environments
-	if (!(keep.orig | .debug)){ .xfer_map[
+	if (!(keep.orig | .debug)){
+		.xfer_map[
 			sapply(VALID, all)
 			, rm(list = unique(FR_OBJ), envir = eval(parse(text = FR_ENV), envir = globalenv()))
 			, by = FR_ENV
@@ -242,3 +243,12 @@ do.copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, ch
 
 	return(invisible(0));
 }
+
+#' @export
+do.load_unloaded <- load_unloaded
+
+#' @export
+do.save_image <- save_image
+
+#' @export
+do.copy_obj <- copy_obj

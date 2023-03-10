@@ -41,12 +41,12 @@ read.snippet <- function(..., doc, action){
 	}
 	if (rlang::is_empty(doc)){ stop("Value for 'doc' is empty.  Call this funciton from RStudio to default to current document: exiting ...") }
 
-	action	= if (missing(action)){ "goto" } else { as.character(rlang::enexpr(action)) }
-	label 	= as.character(rlang::exprs(...));
-	pattern = paste(label, collapse = ".+") %>% sprintf(fmt = "<snippet[:].+%s.+");
+	action	<- if (missing(action)){ "goto" } else { as.character(rlang::enexpr(action)) }
+	label 	<- as.character(rlang::exprs(...));
+	pattern <- paste(label, collapse = ".+") |> sprintf(fmt = "<snippet[:].+%s.+");
 
 	# ::
-	do.this = { rlang::exprs(
+	do.this <- { rlang::exprs(
 		goto		= { message(sprintf("Moved to snippet <%s> ..." , paste(label, collapse = ", "))); }
 		, skip	= { message(sprintf("Skipping snippet <%s> ..." , paste(label, collapse = ", "))); }
 		, parse = { message(sprintf("Parsed snippet <%s> as:\n" , paste(label, collapse = ", "))); cat(out, sep = "\n"); }
@@ -60,18 +60,18 @@ read.snippet <- function(..., doc, action){
 	# ::
 	message("Searching " %s+% doc);
 
-	file.data = suppressWarnings(readtext::readtext(doc)$text %>% stringi::stri_split_regex("\n", simplify = TRUE)) |>
+	file.data <- suppressWarnings(readtext::readtext(doc)$text %>% stringi::stri_split_regex("\n", simplify = TRUE)) |>
 		stringi::stri_replace_all_regex("read[.]snippet[(].+[)][;]?", "", vectorize_all = FALSE) |>
 		stringi::stri_trim_both();
 
-	match.pos = purrr::map(which(file.data %ilike% pattern), ~{
+	match.pos <- purrr::map(which(file.data %ilike% pattern), ~{
 		from = .x
 		to = which(file.data %ilike% "</snippet") |> purrr::keep(~.x > from) |> min(na.rm = TRUE);
 
 		if (action == "goto"){ .x } else { seq(from, to); }
 	}) |> unlist();
 
-  out = paste(file.data[match.pos] |> stringi::stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
+  out <- paste(file.data[match.pos] |> stringi::stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
 
 	# ::
 	if (is_studio_audience){
@@ -157,9 +157,10 @@ snippets_toc <- function(doc){
 
 
 	sprintf("Snippet Table of Contents [%s], \n%s"
-					, doc#stri_split_fixed(doc, "/", simplify = TRUE) |> purrr::keep(~.x %like% "R$")
+					, doc
 					, paste(paste0(seq_along(.toc), ". ", .toc), collapse = "\n")
 					) |> cat()
+
 	invisible(.toc)
 }
 #
@@ -175,9 +176,9 @@ mgr_upgrade <- function(ref){
 #' @export
 
 	if (missing(ref)){ message("Nothing to upgrade: exiting with no action taken ..."); return(invisible()) }
-	ref = as.character(rlang::enexpr(ref))
-	obj	= eval(ref)
-	old_ver = obj$.__enclos_env__$private$version;
+	ref <- as.character(rlang::enexpr(ref))
+	obj	<- eval(ref)
+	old_ver <- obj$.__enclos_env__$private$version;
 
 	if (rlang::is_empty(old_ver) || old_ver < workflow_manager$private_fields$version){
 		xfer = "workflows";
@@ -194,7 +195,7 @@ mgr_upgrade <- function(ref){
 #' @description
 #' \code{workflow_manager} is an R6 class that helps to manage workflow-related tasks.  The general idea is to set up sets of ordered actions and then selectively execute on-demand.
 #'
-#' @export
+# @export
 workflow_manager <- { R6::R6Class(
 	lock_objects = FALSE
 	, classname = "workflow_manager"

@@ -77,6 +77,10 @@ do.copy_obj(`BLAH$alpha` = H, `BLAH$beta` = I, `BLEH$gamma` = J, keep.orig = TRU
 	# $.GlobalEnv
 	# [1] "H" "I" "J"
 
+# <snippet: keyword another> ----
+read.snippet(keyword, another, action = parse);
+
+# </snippet>
 # ~ read.snippet(), make.snippet() ====
 make.snippet(keyword, another, use.clipboard = TRUE)
 make.snippet(keyword, another, include.read = TRUE, use.clipboard = FALSE)
@@ -85,11 +89,11 @@ read.snippet(keyword, another, action = parse);
 
 # </snippet>
 # undebug(read.snippet)
-# <snippet: keyword another> ----
-read.snippet(keyword, another, action = exec);
+# <snippet: keyword another2> ----
+read.snippet(keyword, another2, action = exec);
 message("It works!")
 # </snippet>
-read.snippet(keyword, another, action = save);
+read.snippet(key, ano, 2, action = save);
 
 # ~ do.save.image():: Only check the prompt to ensure the expected objects and environment return ====
 # debug(do.save_image)

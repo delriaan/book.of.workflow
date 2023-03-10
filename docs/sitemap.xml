@@ -16,7 +16,13 @@
     <loc>/reference/Book-of-Workflow-Package.html</loc>
   </url>
   <url>
+    <loc>/reference/book.of.workflow.html</loc>
+  </url>
+  <url>
     <loc>/reference/check.db_conn.html</loc>
+  </url>
+  <url>
+    <loc>/reference/copy_obj.html</loc>
   </url>
   <url>
     <loc>/reference/do.copy_obj.html</loc>
@@ -55,7 +61,13 @@
     <loc>/reference/env_subtract.html</loc>
   </url>
   <url>
+    <loc>/reference/export_data.html</loc>
+  </url>
+  <url>
     <loc>/reference/get.cluster_meta.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_data.html</loc>
   </url>
   <url>
     <loc>/reference/grapes-check-grapes.html</loc>
@@ -79,7 +91,13 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/load_unloaded.html</loc>
+  </url>
+  <url>
     <loc>/reference/make.snippet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/make_query.html</loc>
   </url>
   <url>
     <loc>/reference/mgr_upgrade.html</loc>
@@ -92,6 +110,12 @@
   </url>
   <url>
     <loc>/reference/read.snippet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/save_image.html</loc>
+  </url>
+  <url>
+    <loc>/reference/snippets_toc.html</loc>
   </url>
   <url>
     <loc>/reference/terminate.cluster_workers.html</loc>
