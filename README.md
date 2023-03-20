@@ -14,8 +14,7 @@ The focus is on loading libraries and managing environment objects:
 
 This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to missing object dependencies:
 
--   %missing%
--   %must.have%, %+must.have%
+-   %must.have%
 -   %check%
 -   %+=%
 -   %-=%
@@ -36,4 +35,4 @@ This family of functions focuses on code execution workflow:
 -   read.snippet
 -   make.snippet
 -	  snippets_toc
--   mgr_upgrade
+
