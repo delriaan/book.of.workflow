@@ -1,3 +1,11 @@
+# dir("pkg/R", full.names = TRUE) |> purrr::walk(source)
+library(purrr);
+library(stringi);
+library(parallelly);
+library(future);
+library(foreach);
+library(data.table);
+#
 # ~ do.make_cluster() ====
 library(book.of.workflow)
 do.load_unloaded("magrittr, purrr, stringi data.table callr future doFuture");
@@ -122,171 +130,74 @@ ENV <- new.env();
 do.get_data(dbConnect(odbc::odbc(), "EDW"), "", "object", this.data = mtcars, promise = TRUE)
 
 
-# ~ do.copy_obj() ====
-library(stringi)
-stri_split_fixed("a$b", "$", simplify = TRUE);
+# ~ copy_obj() ====
+# debug(copy_obj)
 
-stri_split_fixed(c("b", "C$d", "f"), "$", simplify = TRUE) %>% as.data.table %>%
-	pmap_dfr(function(...){
-		i = c(...);
-		if (..2 == ""){ c(V1 = "ENV", V2 =  ..1) } else { i }
-	}) %>% setnames(c("env", "obj")) %>% print
+BLAH <- new.env()
+BLEH <- new.env()
 
-sprintf("ENV_%s", 1:4) %>% walk(assign, value = new.env(), envir = globalenv())
+set_names(letters[1:10], LETTERS[1:10]) |> as.list() |> list2env(envir = globalenv())
+set_names(letters[11:20], LETTERS[11:20]) |> as.list() |> list2env(envir = BLEH)
+.pattern <- "^[A-Z]$"
 
-(function(..., obj.nms = NULL, from.env = .GlobalEnv, to.env = .GlobalEnv){
-#' Replace, [C]opy, or [M]ove objects
-#'
-#' \code{do.copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
-#' If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
-#  If \code{to.env} has multiple values, the copy or move operations will populate each environment.
-#'
-#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., FROM_ENV$from.name).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = "a = this, that, `TO_ENV$the_other` = other"} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.
-#' @param obj.nms (string[]|".GlobalEnv"): A string vector of object names to be moved/copied, following the key-value convention of \code{...}
-#' @param from.env (string|".GlobalEnv"): The default source environment of the object(s) to be moved/copied
-#' @param to.env (string|".GlobalEnv"): The default target environment of the target object
-#'
-#' @export
-		sub_fn = function(i, dflt){
-			if (length(i) == 2L & i[2L] == ""){ list(dflt, i[1L]) } else {
-					list(paste(i[1:(length(i) - 1L)], collapse = "$"), i[length(i)])
-					}
-			}
-		from.env = substitute(from.env) %>% as.character();
-		to.env = substitute(to.env) %>% as.character();
-		.args = c(rlang::list2(...), obj.nms);
+test_fn <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv, keep.orig = TRUE, .debug = FALSE){
+	queue <- rlang::enquos(..., .named = FALSE);
+	nms <- ...names();
 
-		# :: Source object strings
-		.source = { stringi::stri_split_regex(.args, "[$]", simplify = TRUE, ) %>% print() %>%
-				apply(1, sub_fn, from.env) %>% purrr::reduce(rbind)}
+	from <- purrr::map(queue, ~{
+		obj <- rlang::quo_get_expr(.x)
+		.has_dollar <- grepl("[$]", rlang::as_label(obj));
 
-		# :: Target object strings
-		.target = { stringi::stri_split_regex(names(.args), "[$]", simplify = TRUE, omit_empty = TRUE) %>%
-				apply(1, sub_fn, to.env) %>% purrr::reduce(rbind)}
+		env <- if (.has_dollar){
+						rlang::parse_expr(
+							magrittr::extract(
+								stringi::stri_split_fixed(rlang::as_label(obj), "$", n = 2, simplify = TRUE)
+								, 1
+								)) |>
+						eval(envir = .GlobalEnv)
+					} else { rlang::quo_get_env(.x) }
 
-		# :: The plan of action along with the inputs
-		.xfer_map = { as.data.table(cbind(.source, .target))[
-			, setnames(.SD, c("FR_" %s+% c("ENV", "OBJ"), "TO_" %s+% c("ENV", "OBJ")))
-			][
-			, TO_OBJ := ifelse(TO_OBJ == "", FR_OBJ, TO_OBJ)
-			][
-			, `:=`(
-					ACTION = pmap_chr(.SD, function(...){ sprintf("%s$%s <- %s$%s", ...elt(3), ...elt(4), ...elt(1), ...elt(2)) })
-					, VALID = pmap(.SD, function(...){
-							t(c(
-								env_check = (...elt(2) %in% { parse(text = ...elt(1)) %>% eval(envir = globalenv()) %>% ls() })
-								, obj_check = !is.null(parse(text = ...elt(3)) %>% eval(envir = globalenv()))
-								))
+		if (!identical(from_env, env)){ env <- from_env }
+
+		if (!is.symbol(obj)){
+			.tmp_sym <- as.list(obj)[[3]]
+			.tmp_env <- as.list(obj)[[2]] |> eval(envir = env)
+
+			rlang::as_quosure(.tmp_sym, env = .tmp_env)
+		} else { .x }
+	});
+
+	to <- purrr::map2(names(queue), from, ~{
+				.has_dollar <- grepl("[$]", .x);
+
+				rlang::parse_expr(if (.has_dollar | identical(.x, rlang::as_label(rlang::quo_get_expr(.y)) )){
+						.x
+					} else {
+						glue::glue("{rlang::as_label(rlang::enexpr(to_env))}${rlang::quo_get_expr(.y)}")
 					})
-			)]}
+			})
 
-		cat("Arguments\n"); print(.args %>% unlist());
-		cat("Unnamed targets\n"); print(.args[which(names(.args) == "")])
-		cat("Transfer map\n"); print(.xfer_map);
-
-		.xfer_map[!sapply(VALID, all), ACTION] %>% walk(~message("Skipping invalid operation: " %s+% .x));
-		.xfer_map[sapply(VALID, all), ACTION] %>% walk(~{
-				if (chatty){ message("Executing " %s+% .x, appendLF = FALSE) };
-				parse(text = .x) %>% eval(envir = globalenv());
-				if (chatty){ if (!is.null(parse(text = sprintf()) %>% eval(envir = globalenv()))){ message(": ... success!", appendLF = TRUE) }}
-			});
-
-		# :: If a move method, remove the source objects from the corresponding environments
-		if (method %ilike% "^m"){ .xfer_map[sapply(VALID, all), rm(list = FR_OBJ, envir = eval(as.symbol(FR_ENV), envir = globalenv())), by = FR_ENV] }
-
-		return(invisible(0));
-	})(
-	`ENV_1$sub_this` = "this"
-	, !! letters[25] := "ENV_3$that"
-	, "bleh"
-	, "ENV_4$blah"
-	, .arg_list = { rlang::list2(
-				!! sprintf("long_name_%s", Sys.Date()) := 50
-				, !!! ls("package:magrittr")[19:21] %>% purrr::set_names("ENV_2$" %s+% .)
-				)} %>% unlist()
-	)
-
-
-# -----
-workflow_manager <- { R6::R6Class(
-	classname = "workflow_manager"
-	, public	= { list(
-			queue = NULL
-			, #' Initialize a Workflow Manager
-			 initialize = function(){ self$queue <- new.env() }
-			, #' Execute a Stored Workflow Step
-				#'
-				#' \code{$execute()} executes quoted expressions referencing \code{read.snippet} calls.
-				#'
-				#' @param wf (list) The workflow queue object containing the quoted workflow steps
-				#' @param wf_step (string/symbol) The names of the steps to execute.  Tip: label the steps in the order they should execute.
-				#' @param list.only (logical | FALSE) When \code{TRUE}, available workflows and workflow steps are printed to console before the function exits.
-				#'
-				#' @return When \code{list.only == TRUE}, the listing of workflows and corresponding steps invisibly; otherwise, nothing.
-			 execute = function(wf, wf_step, list.only = FALSE, actions = rep.int("exec", length(wf_step))){
-				if (list.only){
-					.out = self$queue %$% mget(ls()) %>%
-						imap(~{
-							.prefix = .y %s+% ": \n- ";
-							cat(.prefix);
-							.x %$% { cat(paste(ls(), collapse = "\n- "), "\n\n") }
+	action <- purrr::map2(to, from, ~{
+							list(`<-`, .x, rlang::eval_tidy(.y)) |>
+								as.call() |>
+								data.table::setattr("from", .y)
 						});
-
-					return(invisible(.out));
-				}
-
-				if (missing(wf)){
-					wf <- tcltk::tk_select.list(ls(self$queue), title = "Choose a workflow to search:");
-					if (rlang::is_empty(wf)){ message("No workflow selected: exiting ...");	return(invisible(0)) }
-				}
-
-				wf_step <- if (missing(wf_step)){
-					wf %$% mget(tcltk::tk_select.list(ls(), title = "Choose the workflow steps to execute in order", multiple = TRUE))
-					} else { rlang::expr(!!wf_step) %>% as.character() }
-
-				walk(wf_step, eval, envir = globalenv());
+	if (.debug){
+		action
+	} else {
+		purrr::walk(action, ~{
+			eval(.x)
+			if (!keep.orig){
+				obj <- attr(.x, "from") |> rlang::quo_get_expr()  |> rlang::as_label()
+				env <- attr(.x, "from") |> rlang::quo_get_env()
+				rm(list = obj, envir = env)
 			}
-			, #' Define a Workflow
-				#' \code{$define()} is a utility to help define the ordered structure for predefined \code{\link{read.snippet}} calls.
-				#' @param ...
-				#' @param name (string) The name for the workflow
-				#' @param show (logical |FALSE) \code{TRUE} prints a list of the steps in the created workflow if successfu;
-				#' @return
-			 define = function(..., name = readline("Enter a name for the workflow: "), show = FALSE){
-			 	name = make.names(name);
-			 	.dup_name = name %in% ls(self$queue);
-			 	if (name == ""){ message("No name provided: exiting ..."); return() }
+		})
+	}
+}
 
-			 	while(.dup_name){
-			 		name <<- readline(sprintf("%s already exists -- enter a name for the workflow: "))
-				 	if (name == ""){ message("No name provided: exiting ..."); return() }
-			 	}
+# debug(test_fn)
 
-			 	.args = rlang::exprs(...) %>% map(~{ .x[[1]] <- rlang::sym("read.snippet"); .x })
-
-			 	self$queue[[name]] <- rlang::set_names(.args, paste("step", stringi::stri_pad_left(seq_along(.args), width = 2, pad = "0"), sep = "_"))
-			 	invisible(self)
-			 }
-		)}
-	, private = { list()}
-	, active	= { list()}
-	)}
-
-(function(..., name = NULL){
-	.args = rlang::exprs(...) |> map(~{ .x[[1]] <- rlang::sym("read.snippet"); .x })
-	rlang::set_names(
-		.args
-		, paste("step", stringi::stri_pad_left(seq_along(.args), width = 2, pad = "0"), sep = "_")
-		)
-})(list(a, b, action = exec), list(k, j, doc = "this_doc.R", action = "skip"))
-
-
-
-do.make_cluster
-get.cluster_meta
-do.make_workers
-terminate.cluster_workers
-do.make_query
-do.get_data
-do.export_data
-check.db_conn
+inspect <- test_fn(A, `BLAH$new_G` = G, BLEH$K, to_env = BLAH, keep.orig = !FALSE)
+inspect <- test_fn(A, `BLAH$new_G` = G, BLEH$K, to_env = BLAH, keep.orig = FALSE)
+inspect[[3]]

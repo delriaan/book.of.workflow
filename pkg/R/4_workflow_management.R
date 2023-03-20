@@ -34,7 +34,7 @@ read.snippet <- function(..., doc, action){
 		, ifelse(
 				is_studio_audience
 				, rstudioapi::getSourceEditorContext()$path
-				, utils::file.choose()
+				, do.call(file.choose, args = NULL)
 				)
 		, NULL
 		)
@@ -143,13 +143,15 @@ snippets_toc <- function(doc){
 		doc <- ifelse(
 			interactive()
 			, ifelse(
-					"rstudioapi" == data.table::as.data.table(installed.packages(), keep.rownames = TRUE)[(rn %like% "rstudio"), Package]
+					"rstudioapi" == (installed.packages())[grepl("rstudio", rownames(installed.packages())), "Package"]
 					, rstudioapi::getSourceEditorContext()$path
-					, file.choose()
+					, ""
 					)
 			, { message("This function requires an active session when argument 'doc' is not provided: exiting ..."); return() }
 			)
 	}
+
+	if (doc == ""){ stop("Unable to determine the document to use: provide a document path.")}
 	.toc <- readLines(doc) |>
 		purrr::keep(~.x %like% "^[# <]+snippet[:].+[>]") |>
 		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |>

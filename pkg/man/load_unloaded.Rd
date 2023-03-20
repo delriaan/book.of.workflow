@@ -19,16 +19,16 @@ load_unloaded(
 
 \item{pattern}{(string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.}
 
-\item{chatty}{(logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()}
-
-\item{autoinstall:\cr}{\itemize{
+\item{autoinstall}{\itemize{
 \item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}
 \item{\code{TRUE}: If a library isn't installed, it will be using the default library installation path}
 \item{\code{list()}: Assumes \code{TRUE} and should be a list of arguments (excluding \code{pkgs}) to send to \code{\link[utils]{install.packages}}}
 }}
+
+\item{chatty}{(logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()}
 }
 \value{
-See `library()`
+See \code{\link[base]{library}}
 }
 \description{
 \code{load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.

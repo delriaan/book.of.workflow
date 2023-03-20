@@ -28,13 +28,13 @@ make_query <- function(this.conn, from, from.mod	= "", where	= "1=1 ", sel	= "*"
 #'
 #' @export
 
-	tbl_cols = DBI::dbListFields(this.conn, from);
+	tbl_cols = DBI::dbListFields(conn = this.conn, name = from);
 
 	# Create and return the query string
 	sprintf(
 		"SELECT %s FROM %s WHERE %s%s%s%s%s"
 		, paste(
-				ifelse(grepl("MySQL", conn@info$dbms.name, ignore.case = TRUE), "", sel.mod)
+				ifelse(grepl("MySQL", this.conn@info$dbms.name, ignore.case = TRUE), "", sel.mod)
 				, switch(
 						class(sel)[1]
 						, "logical" 		= tcltk::tk_select.list(tbl_cols, multiple = TRUE, title = sprintf("%s: Choose columns", from))
@@ -50,7 +50,7 @@ make_query <- function(this.conn, from, from.mod	= "", where	= "1=1 ", sel	= "*"
 		, ifelse(rlang::is_empty(group_by), "", paste0(" GROUP BY "	, group_by))
 		, ifelse(rlang::is_empty(having)	, "", paste0(" HAVING"		, having))
 		, ifelse(rlang::is_empty(order_by), "", paste0(" ORDER BY "	, order_by))
-		, ifelse(!grepl("MySQL", conn@info$dbms.name, ignore.case = TRUE), "", sel.mod)
+		, ifelse(!grepl("MySQL", this.conn@info$dbms.name, ignore.case = TRUE), "", sel.mod)
 		);
 }
 #
@@ -76,13 +76,19 @@ get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data = NU
 #' @export
 
 	post_op.check = purrr::as_mapper(~{
-		if (rlang::is_empty(post.op)){ .x	} else if (is.function(post.op)){	post.op(.x)	} else if (is.list(post.op)){	magrittr::freduce(.x, post.op)	} else { .x }
+		if (rlang::is_empty(post.op)){
+			.x
+		} else if (is.function(post.op)){
+			post.op(.x)
+		} else if (is.list(post.op)){
+			magrittr::freduce(.x, post.op)
+		} else { .x }
 	});
 
 	this.conn = check.db_conn(this.conn);
 
 	# Execute data retrieval and (optionally) assign the output
-	{ if (is.null(this.data)){
+	output <- { if (is.null(this.data)){
 			# Get the data
 			.callArgs = list(this.conn = this.conn, from = src.name) |> append(list(...));
 			if (chatty) { print(list(call_args = .callArgs)) }
@@ -91,23 +97,25 @@ get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data = NU
 		} else {
 			eval(this.data)
 		}
-	} |>
-	post_op.check() %>% {
-			if (!persist.conn){ DBI::dbDisconnect(this.conn) }
-			output = .;
+	} |> post_op.check()
 
-			if (!is.null(tgt.name)) {
-				stringi::stri_split_fixed(tgt.name, "@", n = 2, simplify = TRUE) %>% {  if (.[2] == ""){ c(.[1], ".GlobalEnv") } else { . } } |>
-				rlang::set_names(c("obj", "env")) %>%
-				as.list() %$% {
-					substitute(
-						future::futureAssign(x = obj, value = output
-												 , assign.env = if (env %in% search()){ as.environment(env) } else { get(env) }, lazy = promise)
-						, list(obj = obj, output = output, env = env, promise = promise)
-						)
-					} |> eval();
-			} else { invisible(output) }
-	}
+	if (!persist.conn){ DBI::dbDisconnect(this.conn) }
+
+	purrr::as_mapper(~{
+		if (!is.null(tgt.name)) {
+			.target <- stringi::stri_split_fixed(tgt.name, "@", n = 2, simplify = TRUE)
+			.target <- if (.target[2] == ""){ c(.target[1], ".GlobalEnv") } else { .target }
+
+			.target <- rlang::set_names(.target, c("obj", "env")) |> as.list()
+
+			rlang::inject(future::futureAssign(
+				x = .target$obj
+				, value = !!.x
+				, assign.env = if (.target$env %in% search()){ as.environment(.target$env) } else { get(.target$env) }
+				, lazy = promise
+				))
+		} else { invisible(.x) }
+	})(output)
 }
 #
 export_data <- function(this.conn, out.data, tbl = NULL, sch = "dbo", append = FALSE, persist.conn = TRUE, ...){
@@ -160,12 +168,3 @@ check.db_conn <- function(this.conn, pass, ...){
 
 	invisible(this.conn)
 }
-
-#' @export
-do.make_query <- make_query
-
-#' @export
-do.get_data <- get_data
-
-#' @export
-do.export_data <- export_data

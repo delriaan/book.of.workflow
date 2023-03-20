@@ -10,7 +10,7 @@ load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall = FA
 #' @param ... \code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
 #' @param libs (string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
 #' @param pattern  (string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.
-#' @param autoinstall:\cr
+#' @param autoinstall
 #' \itemize{
 #'	\item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}
 #'	\item{\code{TRUE}: If a library isn't installed, it will be using the default library installation path}
@@ -18,8 +18,10 @@ load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall = FA
 #'	}
 #' @param chatty (logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
 #'
-#' @return See `library()`
+#' @return See \code{\link[base]{library}}
+#'
 #' @family Environment Processing
+#'
 #' @export
 
 	libs <- c(as.character(rlang::enexprs(...)), libs);
@@ -27,33 +29,35 @@ load_unloaded <- function(..., libs = NULL, pattern = "[,|; ]", autoinstall = FA
 	if (chatty){ cat(libs, sep = "\n") }
 
 	library.cfg <- stringi::stri_split_regex(libs, "[, |;]", simplify = TRUE, omit_empty = TRUE) |>
-		as.vector() %>%
-		stringi::stri_replace_all_regex(., "([{].*.[}])?", replacement = "", simplify = TRUE) %>%
+		as.vector() |>
+		stringi::stri_replace_all_regex(pattern = "([{].*.[}])?", replacement = "", simplify = TRUE) |>
 		as.vector() |>
 		rlang::set_names() |>
 		purrr::map(~{
 			this.str = stringi::stri_split_regex(.x, pattern = "[{}]", omit_empty = TRUE, simplify = TRUE) %>% unlist();
+
 			purrr::map(
 				.x = rlang::set_names(c("[+]", "[-]"), c("include.only", "exclude"))
-				, .f = ~{ stringi::stri_extract_all_regex(this.str, paste0(.x, "[a-zA-Z.0-9]+"), simplify = TRUE) %>% na.omit() %>%
+				, .f = ~{ stringi::stri_extract_all_regex(this.str, paste0(.x, "[a-zA-Z.0-9]+"), simplify = TRUE) |>
+									na.omit() |>
 									stringi::stri_replace_all_regex(pattern = "[+-]", replacement = "", vectorize_all = FALSE)
 							})
 		});
 
 	if (chatty){ print(library.cfg) }
 
-	new.libs = purrr::keep(names(library.cfg), ~!.x %in% rownames(installed.packages()));
+	new.libs = purrr::keep(names(library.cfg), ~!.x %in% rownames(utils::installed.packages()));
 
 	if (!rlang::is_empty(new.libs)){
 		if (is.list(autoinstall)){
-			rlang::inject(install.packages(pkgs = new.libs, !!!autoinstall))
-		} else if (is.logical(autoinstall)==autoinstall){ install.packages(pkgs = new.libs) }
+			rlang::inject(utils::install.packages(pkgs = new.libs, !!!autoinstall))
+		} else if (is.logical(autoinstall)==autoinstall){ utils::install.packages(pkgs = new.libs) }
 	}
 
 	invisible(
 		library.cfg[
 			# Don't try to load libraries already loaded and attached via indexing against `library.cfg`
-			purrr::map_lgl(names(library.cfg), ~{ not(any(grepl(.x, search()))) })
+			purrr::map_lgl(names(library.cfg), ~{ magrittr::not(any(grepl(.x, search()))) })
 			] |> purrr::imap(~tryCatch(expr = { do.call(
 				what = "library"
 				, args = append(
@@ -110,7 +114,7 @@ save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), f
 		, multi.as.vector = { (length(i) > 1) & !any(i %in% c("*", "all")) }
 		, multi.as.string = { any((i %like% "[,;| ]") & !any(i %in% c("*", "all"))) }
 		) |>
-		purrr::keep(~.x) |> names() %>% .[1]
+		purrr::keep(~.x) |> names() |> magrittr::extract(1)
 	}
 
 	# :: Set the file name based on the values supplied to argument `i`
@@ -131,13 +135,13 @@ save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), f
 
 	if (safe) {
 		msg = { sprintf("Preparing to save %s[%s] to %s: \nContinue? ", env_ref, paste(i, collapse = ", "), tmp.file) }
-		if (askYesNo(msg, prompt = "Y/N/C")) {
+		if (utils::askYesNo(msg, prompt = "Y/N/C")) {
 			save(list = i, envir = env, file = tmp.file, compress = "bzip2", precheck = safe)
 		} else { message("Canceling operation ...") }
 	} else { save(list = i , envir = env, file = tmp.file, compress = "bzip2") }
 }
 #
-copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatty = FALSE, .debug = FALSE) {
+copy_obj <- function(..., from_env = .GlobalEnv, to_env = from_env, keep.orig = TRUE, chatty = FALSE) {
 #' Replace, [C]opy, or [M]ove objects
 #'
 #' @description
@@ -146,109 +150,82 @@ copy_obj <- function(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatt
 #' If \code{to.env} has multiple values, the copy or move operations will populate each environment.
 #'
 #' @param ... (\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.
-#' @param from.env (string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied
-#' @param to.env (string| \code{.GlobalEnv}): The default target environment of the target object
+#' @param from_env (string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied
+#' @param to_env (string| \code{.GlobalEnv}): The default target environment of the target object
 #' @param keep.orig (logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}
-#' @param chatty (logical | \code{FALSE}): Verbosity flag
+#' @param chatty (logical | \code{FALSE}) Verbosity flag
 #'
 #' @export
 
-	# :: Helper function to create the environment and object strings
-	sub_fn <- function(i, dflt){
-		if (rlang::has_length(i, 1)){
-			expand.grid(dflt, i, stringsAsFactors = FALSE)
-		} else {
-			list(paste(i[1:(length(i) - 1L)], collapse = "$"), i[length(i)])
-		}
-	}
+	.debug <- FALSE
 
-	from.env <- as.character(rlang::enexpr(from.env));
+	queue <- rlang::enquos(..., .named = FALSE);
+	nms <- ...names();
 
-	to.env <- if (missing(to.env)){
-		from.env
-	} else {
-		.out <- rlang::enexpr(to.env) |> as.character();
-		if (length(.out) > 1){ .out[-1] } else { .out }
-	}
+	from <- purrr::map(queue, ~{
+		obj <- rlang::quo_get_expr(.x)
+		.has_dollar <- grepl("[$]", rlang::as_label(obj));
 
-	.args <- rlang::list2(!!!purrr::map(rlang::exprs(...), as.character)) |>
-		purrr::map(~{
-			.str = if(class(.x) %in% c("symbol", "name")){ as.character(.x) } else { .x }
-			.str |> stringi::stri_split_regex(pattern = c('[,;| ]'), simplify = TRUE) |> trimws() |> c()
-		})|>
-		unlist();
+		env <- if (.has_dollar){
+						rlang::parse_expr(magrittr::extract(stringi::stri_split_fixed(rlang::as_label(obj), "$", n = 2, simplify = TRUE), 1)) |>
+						eval(envir = .GlobalEnv)
+					} else { rlang::quo_get_env(.x) }
 
-	# :: Source object strings
-	.source <- suppressWarnings({
-		if (length(.args) == 1){
-			stringi::stri_split_fixed(.args, "[$]", simplify = TRUE, omit_empty = FALSE) |> sub_fn(from.env)
-		} else { purrr::map_dfr(.args, ~{
-			stringi::stri_split_fixed(.x, "[$]", simplify = TRUE, omit_empty = FALSE) |> sub_fn(from.env) })
-		}
-	})
+		if (!identical(from_env, env)){ env <- from_env }
 
-	# :: Target object strings
-	.target <- suppressWarnings({
-		if (length(.args) == 1){
-			stringi::stri_split_fixed(names(.args), "$", simplify = TRUE, omit_empty = FALSE) |> sub_fn(to.env)
-		} else {
-			purrr::map(names(.args), ~{
-				stringi::stri_split_fixed(.x, "$", simplify = TRUE, omit_empty = FALSE) |> sub_fn(to.env)
-			}) |> purrr::reduce(rbind)
-		}
-	})
+		if (!is.symbol(obj)){
+			.tmp_sym <- as.list(obj)[[3]]
+			.tmp_env <- as.list(obj)[[2]] |> eval(envir = env)
 
-	# :: The plan of action along with the inputs
-	.xfer_map <- data.table::as.data.table(cbind(.source, .target));
-	data.table::setnames(.xfer_map, c("FR_" %s+% c("ENV", "OBJ"), "TO_" %s+% c("ENV", "OBJ")));
-
-	.xfer_map[
-		, TO_OBJ := ifelse(TO_OBJ == "", FR_OBJ, TO_OBJ)
-		][
-		, `:=`(
-			ACTION = purrr::pmap_chr(.SD, function(...){
-				sprintf("%s$%s <- %s$%s", ...elt(3), ...elt(4), ...elt(1), ...elt(2))
-			})
-			, VALID = purrr::pmap(.SD, function(...){
-					c(env_check = (...elt(2) %in% { parse(text = ...elt(1)) |> eval(envir = globalenv()) |> ls() })
-						, obj_check = !is.null(parse(text = ...elt(3)) |> eval(envir = globalenv()))) |> t()
-				})
-			)
-		];
-
-	if (.debug){
-		cat("Arguments\n");
-		print(unlist(.args));
-		cat("Unnamed targets\n");
-		print(.args[which(names(.args) == "")]);
-		cat("Transfer map\n");
-		print(.xfer_map);
-	}
-
-	# :: ACTION!
-	.xfer_map[!sapply(VALID, all), ACTION] |> purrr::walk(~message("Skipping invalid operation: " %s+% .x));
-	.xfer_map[sapply(VALID, all), ACTION] |> purrr::walk(~{
-		if (chatty){ message("Executing " %s+% .x, appendLF = FALSE) }
-		parse(text = .x) |> eval(envir = globalenv());
+			rlang::as_quosure(.tmp_sym, env = .tmp_env)
+		} else { .x }
 	});
 
-	# :: If a 'move' action, remove the source objects from the corresponding environments
-	if (!(keep.orig | .debug)){
-		.xfer_map[
-			sapply(VALID, all)
-			, rm(list = unique(FR_OBJ), envir = eval(parse(text = FR_ENV), envir = globalenv()))
-			, by = FR_ENV
-		]
+	to <- purrr::map2(names(queue), from, ~{
+				.has_dollar <- grepl("[$]", .x);
+				from_quo <- .y
+
+				if (.has_dollar | identical(.x, rlang::as_label(rlang::quo_get_expr(from_quo)) )){
+						rlang::parse_expr(.x)
+					} else {
+						.tmp_to_env <- rlang::enexprs(to_env)
+
+						purrr::map(.tmp_to_env[[1]] |> as.list() %>% .[-1], ~{
+							sprintf("%s$%s", rlang::as_label(.x), rlang::as_label(rlang::quo_get_expr(from_quo))) |> rlang::parse_expr()
+						})
+					}
+			})
+
+	action <- purrr::map2(to, from, ~{
+							if (rlang::has_length(.x, 1)){
+								list(`<-`, .x, rlang::eval_tidy(.y)) |> as.call() |> data.table::setattr("from", .y)
+							} else {
+								y <- .y
+								purrr::map(.x, ~list(`<-`, .x, rlang::eval_tidy(y)) |> as.call() |> data.table::setattr("from", y))
+							}
+						});
+
+	if (.debug){
+		action
+	} else {
+		purrr::walk(action, ~{
+			if (rlang::has_length(.x, 1)){
+				eval(.x);
+				if (!keep.orig){
+					obj <- attr(.x, "from") |> rlang::quo_get_expr()  |> rlang::as_label()
+					env <- attr(.x, "from") |> rlang::quo_get_env()
+					rm(list = obj, envir = env)
+				}
+			} else {
+				purrr::walk(.x, ~{
+						eval(.x)
+						if (!keep.orig){
+							obj <- attr(.x, "from") |> rlang::quo_get_expr()  |> rlang::as_label()
+							env <- attr(.x, "from") |> rlang::quo_get_env()
+							rm(list = obj, envir = env)
+						}
+					})
+				}
+		})
 	}
-
-	return(invisible(0));
 }
-
-#' @export
-do.load_unloaded <- load_unloaded
-
-#' @export
-do.save_image <- save_image
-
-#' @export
-do.copy_obj <- copy_obj

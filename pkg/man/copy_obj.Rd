@@ -4,14 +4,7 @@
 \alias{copy_obj}
 \title{Replace, [C]opy, or [M]ove objects}
 \usage{
-copy_obj(
-  ...,
-  from.env = .GlobalEnv,
-  to.env,
-  keep.orig = TRUE,
-  chatty = FALSE,
-  .debug = FALSE
-)
+copy_obj(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatty = FALSE)
 }
 \arguments{
 \item{...}{(\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.}
@@ -22,7 +15,7 @@ copy_obj(
 
 \item{keep.orig}{(logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}}
 
-\item{chatty}{(logical | \code{FALSE}): Verbosity flag}
+\item{chatty}{(logical | \code{FALSE}) Verbosity flag}
 }
 \description{
 \code{copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.

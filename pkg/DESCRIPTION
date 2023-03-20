@@ -2,14 +2,15 @@ Package: book.of.workflow
 Type: Package
 Title: Book of Workflow
 Description: Book of Workflow provides action-oriented functions that support data processing and connection workflow.
-Version: 1.2.0
+Version: 1.2.1
 Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
 Maintainer: Chionesu George <sapienti.Dei@outlook.com>
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
-Depends: R (>= 4.1.0), purrr(< 1.0.0)
+Depends: R (>= 4.1.0)
 Imports: parallel
+	, purrr(< 1.0.0)
 	, data.table
 	, magrittr
 	, stringi
@@ -25,4 +26,6 @@ Imports: parallel
 	, tcltk
 	, odbc
 	, RODBCDBI
+	, glue
+	, utils
 License: file LICENSE
