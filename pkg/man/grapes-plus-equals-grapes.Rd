@@ -19,10 +19,8 @@ The target environment, invisibly
 }
 \seealso{
 Other Environmental Integrity: 
-\code{\link{\%+must.have\%}()},
 \code{\link{\%-=\%}()},
-\code{\link{\%check\%}()},
-\code{\link{\%missing\%}()},
-\code{\link{\%must.have\%}()}
+\code{\link{\%must.have\%}()},
+\code{\link{check.env}()}
 }
 \concept{Environmental Integrity}

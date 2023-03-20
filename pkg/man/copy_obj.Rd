@@ -2,16 +2,22 @@
 % Please edit documentation in R/1_environment_processing.R
 \name{copy_obj}
 \alias{copy_obj}
-\title{Replace, [C]opy, or [M]ove objects}
+\title{Replace, Copy, or Move Objects}
 \usage{
-copy_obj(..., from.env = .GlobalEnv, to.env, keep.orig = TRUE, chatty = FALSE)
+copy_obj(
+  ...,
+  from_env = .GlobalEnv,
+  to_env = from_env,
+  keep.orig = TRUE,
+  chatty = FALSE
+)
 }
 \arguments{
 \item{...}{(\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.}
 
-\item{from.env}{(string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied}
+\item{from_env}{(string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied}
 
-\item{to.env}{(string| \code{.GlobalEnv}): The default target environment of the target object}
+\item{to_env}{(string| \code{.GlobalEnv}): The default target environment of the target object}
 
 \item{keep.orig}{(logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}}
 

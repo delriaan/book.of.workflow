@@ -20,10 +20,8 @@ The focus is on loading libraries and managing environment objects:
 
  This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to  missing object dependencies:
  \itemize{
- 	\item{\code{\link{\%missing\%}}}
  	\item{\code{\link{\%must.have\%}}}
- 	\item{\code{\link{\%check\%}}}
- 	\item{\code{\link{\%+must.have\%}}}
+ 	\item{\code{\link{check.env}}}
  	\item{\code{\link{\%+=\%}}}
  	\item{\code{\link{\%-=\%}}}
  }

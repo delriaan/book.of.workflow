@@ -9,7 +9,7 @@ env \%must.have\% x
 \arguments{
 \item{env}{(object) An environment or name of an environment}
 
-\item{x}{(string[]) A string vector of the names that \code{env} must have when checked}
+\item{x}{(string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{`!!`}} operator when passing a vector or list.}
 }
 \value{
 The names of the objects that \code{env} must have
@@ -20,9 +20,7 @@ The names of the objects that \code{env} must have
 \seealso{
 Other Environmental Integrity: 
 \code{\link{\%+=\%}()},
-\code{\link{\%+must.have\%}()},
 \code{\link{\%-=\%}()},
-\code{\link{\%check\%}()},
-\code{\link{\%missing\%}()}
+\code{\link{check.env}()}
 }
 \concept{Environmental Integrity}

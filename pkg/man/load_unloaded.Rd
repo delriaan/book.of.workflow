@@ -7,7 +7,7 @@
 load_unloaded(
   ...,
   libs = NULL,
-  pattern = "[,|; ]",
+  delim = "[,|; ]",
   autoinstall = FALSE,
   chatty = FALSE
 )
@@ -17,7 +17,7 @@ load_unloaded(
 
 \item{libs}{(string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.}
 
-\item{pattern}{(string | "[, ]") A regex delimiter pattern that operates on `str`: \emph{DO NOT use \code{+} or \code{-}}.}
+\item{delim}{(string | "[, ]") A regular expression delimiter pattern that operates on `str`: \emph{DO NOT use glyphs \code{+} or \code{-}}.}
 
 \item{autoinstall}{\itemize{
 \item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}

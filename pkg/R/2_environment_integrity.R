@@ -2,29 +2,10 @@
 check_env_arg <- function(env){
 	if (is.character(env)){
 		if (env %in% search()){ as.environment(env) } else { rlang::parse_expr(env) |> eval() }
-	} else { eval(env) }
-}
-
-# Environment must have ...
-`%must.have%` <- function(env, x = ""){
-#' Must Have
-#'
-#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{\%check\%}}.
-#'
-#' @param env (object) An environment or name of an environment
-#' @param x (string[]) A string vector of the names that \code{env} must have when checked
-#'
-#' @return The names of the objects that \code{env} must have
-#' @family Environmental Integrity
-#' @export
-
-	env <- check_env_arg(env);
-	x <- rlang::ensyms(x) |> purrr::compact();
-
-	if (x == ""){
-		if (rlang::is_empty(attr(env, "must.have"))){ return() } else { return(attr(env, "must.have")) }
+	} else if (rlang::is_quosure(env)){
+		rlang::eval_tidy(env)
 	} else {
-		attr(env, "must.have") <- purrr::map_chr(x, as.character)
+		eval(env)
 	}
 }
 
@@ -40,16 +21,45 @@ check.env <- function(...){
 #' @family Environmental Integrity
 #' @export
 
-	envs <- purrr::map(rlang::enquos(..., .named = TRUE), check_env_arg);
+	envs <- rlang::enquos(..., .named = TRUE) |> purrr::map(check_env_arg);
 
 	purrr::iwalk(envs, ~{
-		message(glue::glue("Checking `{.y}`"))
-		stopifnot(rlang::env_has(.x, attr(.x, "must.have")));
+		.test <- rlang::env_has(.x, attr(.x, "must.have"));
+		.pass <- "PASS"
+		.fail <- paste0("FAIL (missing ", paste(names(.test[!.test]) |> trimws(), collapse = ", "), ")");
+		cat(glue::glue("Checking `{.y}`: {ifelse(all(.test), .pass, .fail)}"), sep = "\n")
 	})
 }
 
+# Environment must have ...
+`%must.have%` <- function(env, x = ""){
+#' Must Have
+#'
+#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{\%check\%}}.
+#'
+#' @param env (object) An environment or name of an environment
+#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{`!!`}} operator when passing a vector or list.
+#'
+#' @return The names of the objects that \code{env} must have
+#' @family Environmental Integrity
+#' @export
+
+	env <- check_env_arg(env);
+	x <- rlang::enexprs(x) |> purrr::compact();
+
+	if (x == ""){
+		if (rlang::is_empty(attr(env, "must.have"))){ return() } else { return(attr(env, "must.have")) }
+	} else {
+		if (rlang::is_empty(attr(env, "must.have"))){
+			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist()
+		} else {
+			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist() |> c(attr(env, "must.have")) |> unique()
+		}
+	}
+}
+
 # Add to environment
-`%+=%`<- function(env, x){
+`%+=%`<- function(env, x = ""){
 #' Assignment Shorthand
 #'
 #' \code{\%+=\%} wraps \code{base::list2env()}
@@ -63,20 +73,21 @@ check.env <- function(...){
 #' @export
 
 	env <- check_env_arg(env)
+	x <- as.list(x);
 
-	list2env(x, envir = env);
+	suppressWarnings(if (x != ""){ list2env(x, envir = env) })
 
 	invisible(env);
 }
 
-# Remote from environment
-`%-=%` <- function(env, x){
+# Remove from environment
+`%-=%` <- function(env, x = ""){
 #' Remove Objects from an Environment
 #'
 #' \code{\%-=\%} wraps for \code{base::rm()}
 #'
 #' @param env (environment, string) An environment or name of an environment
-#' @param x	(string[]) A collection of strings representing the names of the objects to remove from \code{env}
+#' @param x	(string[]) A collection of strings representing the names of the objects to remove from \code{env}.
 #'
 #' @return The target environment, invisibly
 #'
@@ -85,7 +96,7 @@ check.env <- function(...){
 
 	env <- check_env_arg(env)
 
-	rm(list = x, envir = env);
+	suppressWarnings(if (x != ""){ rm(list = x, envir = env); })
 
 	invisible(env);
 }

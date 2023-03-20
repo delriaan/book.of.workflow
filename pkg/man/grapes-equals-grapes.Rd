@@ -9,7 +9,7 @@ env \%-=\% x
 \arguments{
 \item{env}{(environment, string) An environment or name of an environment}
 
-\item{x}{(string[]) A collection of strings representing the names of the objects to remove from \code{env}}
+\item{x}{(string[]) A collection of strings representing the names of the objects to remove from \code{env}.}
 }
 \value{
 The target environment, invisibly
@@ -20,9 +20,7 @@ The target environment, invisibly
 \seealso{
 Other Environmental Integrity: 
 \code{\link{\%+=\%}()},
-\code{\link{\%+must.have\%}()},
-\code{\link{\%check\%}()},
-\code{\link{\%missing\%}()},
-\code{\link{\%must.have\%}()}
+\code{\link{\%must.have\%}()},
+\code{\link{check.env}()}
 }
 \concept{Environmental Integrity}
