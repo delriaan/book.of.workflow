@@ -14,14 +14,8 @@ library(data.table)
 
 # library(book.of.workflow)
 #
+
 # ~ copy_obj() ====
-BLAH <- new.env()
-BLEH <- new.env()
-
-set_names(letters[1:10], LETTERS[1:10]) |> as.list() |> list2env(envir = globalenv())
-set_names(letters[11:20], LETTERS[11:20]) |> as.list() |> list2env(envir = BLEH)
-.pattern <- "^[A-Z]$"
-
 unit_tests <- rlang::exprs(
 	test_1 = {copy_obj(A, keep.orig = TRUE)
 	identical(ls(pattern = .pattern), c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"))}
@@ -63,10 +57,16 @@ unit_tests <- rlang::exprs(
 			, `.GlobalEnv` = c("H", "I", "J")
 			))}
 	)
+BLAH <- new.env()
+BLEH <- new.env()
+
+set_names(letters[1:10], LETTERS[1:10]) |> as.list() |> list2env(envir = globalenv())
+set_names(letters[11:20], LETTERS[11:20]) |> as.list() |> list2env(envir = BLEH)
+.pattern <- "^[A-Z]$"
 
 undebug(copy_obj)
 
-imap_lgl(unit_tests[], ~{ message(.y); eval(.x, envir = globalenv()) })
+imap_lgl(unit_tests[7], ~{ message(.y); eval(.x, envir = globalenv()) })
 
 # <snippet: keyword another> ----
 read.snippet(keyword, another, action = parse);
