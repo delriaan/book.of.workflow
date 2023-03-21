@@ -7,7 +7,7 @@
 copy_obj(
   ...,
   from_env = .GlobalEnv,
-  to_env = from_env,
+  to_env = .GlobalEnv,
   keep.orig = TRUE,
   chatty = FALSE
 )

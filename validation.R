@@ -6,13 +6,14 @@ make_test_objs <- rlang::expr({
 			BLAH <- new.env()
 			BLEH <- new.env()
 
-			set_names(letters[1:10], LETTERS[1:10]) |> as.list() |> list2env(envir = globalenv())
-			set_names(letters[11:20], LETTERS[11:20]) |> as.list() |> list2env(envir = BLEH)
+			rlang::set_names(letters[1:10], LETTERS[1:10]) |> as.list() |> list2env(envir = globalenv())
+			rlang::set_names(letters[11:20], LETTERS[11:20]) |> as.list() |> list2env(envir = BLEH)
 			.pattern <- "^[A-Z]$"
 		})
+unit_tests <- list()
+# sapply(dir("pkg/R", full.names = TRUE), source)
 
 # library(book.of.workflow)
-sapply(dir("pkg/R", full.names = TRUE), source)
 library(purrr);
 library(stringi);
 library(parallelly);
@@ -21,8 +22,7 @@ library(foreach);
 library(data.table)
 #
 # ~ copy_obj() ====
-unit_tests <- list(
-	copy_obj = rlang::exprs(
+unit_tests$copy_obj <- rlang::exprs(
 		test_1 = {
 				copy_obj(A, keep.orig = TRUE);
 				list(`.GlobalEnv` = rlang::env_has(.GlobalEnv, c("A")));
@@ -66,23 +66,34 @@ unit_tests <- list(
 					, `.GlobalEnv` = !rlang::env_has(.GlobalEnv, c("H", "I", "J")) |> print()
 					)
 			}
-		) |>
-		setattr("init", make_test_objs)
-	);
+		);
 
-attr(unit_tests$copy_obj, "init") |> eval()
-imap(unit_tests$copy_obj[], ~{ message(.y); eval(.x, envir = globalenv()) })
+attr(unit_tests, "init") |> eval()
+purrr::imap(unit_tests$copy_obj[], ~{ message(.y); eval(.x, envir = globalenv()) })
+
 # debug(copy_obj)
+copy_obj(EEEE = A, to_env = .GlobalEnv, keep.orig = !FALSE)
+copy_obj(DDDD = A, to_env = c(.GlobalEnv, BLAH), keep.orig = FALSE)
+copy_obj(zz = EEEE, to_env = c(.GlobalEnv, BLAH), keep.orig = !FALSE)
+copy_obj(WHY.WOULD.USE.USE.THIS.AS.AN.OBJECT.NAME = B, to_env = c(BLEH, BLAH), keep.orig = !FALSE)
 # imap(unit_tests$copy_obj[8], ~{ message(.y); eval(.x, envir = globalenv())})
 # undebug(copy_obj)
 
 # ~ read.snippet(), make.snippet() ====
 make.snippet(keyword, another_1)
+# <snippet: keyword another_1> ----
+read.snippet(keyword, another_1, action = parse);
+
+# </snippet>
 make.snippet(keyword, another_2, use.clipboard = TRUE)
 make.snippet(keyword, another_3, include.read = FALSE, use.clipboard = FALSE)
+# <snippet: keyword another_3> ----
+TRUE
+# </snippet>
 read.snippet(key, another_3, action = save)
 file.edit("key_another_3.snippet")
 
+snippets_toc()
 # ~ save.image():: Only check the prompt to ensure the expected objects and environment return ====
 # debug(save_image)
 save_image();
@@ -96,7 +107,7 @@ save_image(!!!LETTERS[1:6], env = BLEH, file.name = "all")
 sapply(dir("pkg/R", full.names = TRUE, pattern = "^1_"), source)
 
 load_unloaded(purrr)
-"purrr" %in% print(search()())
+"package:purrr" %in% print(search())
 
 load_unloaded(purrr, stringi, parallelly)
 paste0("package:", c("purrr", "stringi", "parallelly")) %in% print(search())
@@ -111,7 +122,7 @@ identical("cache_disk", ls(as.environment("package:cachem")))
 # undebug(load_unloaded)
 
 # debug(load_unloaded)
-load_unloaded("furrr{-future_imap}|arules")
+load_unloaded("furrr{-future_imap}|arules", autoinstall = TRUE)
 paste0("package:", c("furrr", "arules")) %in% print(search())
 "future_imap" %in% ls(as.environment("package:furrr"))
 # undebug(load_unloaded)
@@ -163,10 +174,8 @@ unit_tests$must_have <- rlang::exprs(
 				copy_obj(A, B, C, D, E, `F`, G, to_env = c(BLEH, BLAH), keep.orig = TRUE);
 				check.env(BLAH, BLEH)
 			}
-		) |>
-		setattr("init", make_test_objs)
-
-attr(unit_tests$copy_obj, "init") |> eval()
+		)
+eval(make_test_objs)
 unit_tests$must_have$test_1 |> eval()
 unit_tests$must_have$test_2 |> eval()
 unit_tests$must_have$test_3 |> eval()
@@ -199,5 +208,5 @@ check.env(BLAH) # Checking `BLAH`: FAIL: (missing W, Y)
 check.env(.GlobalEnv, BLAH, BLEH)
 #
 # pkgdown ----
-pkgdown::build_site()
+pkgdown::build_site(pkg = "pkg")
 # pkgdown::build_site_github_pages()

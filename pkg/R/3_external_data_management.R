@@ -26,7 +26,7 @@ make_query <- function(this.conn, from, from.mod	= "", where	= "1=1 ", sel	= "*"
 #'
 #' @family Data transmission
 #'
-#' @export
+# @export
 
 	tbl_cols = DBI::dbListFields(conn = this.conn, name = from);
 
@@ -73,7 +73,7 @@ get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data = NU
 #'
 #' @family Data transmission
 #'
-#' @export
+# @export
 
 	post_op.check = purrr::as_mapper(~{
 		if (rlang::is_empty(post.op)){
@@ -84,8 +84,6 @@ get_data <- function(this.conn, src.name = NULL, tgt.name = NULL, this.data = NU
 			magrittr::freduce(.x, post.op)
 		} else { .x }
 	});
-
-	this.conn = check.db_conn(this.conn);
 
 	# Execute data retrieval and (optionally) assign the output
 	output <- { if (is.null(this.data)){
@@ -133,11 +131,10 @@ export_data <- function(this.conn, out.data, tbl = NULL, sch = "dbo", append = F
 #'
 #' @family Data transmission
 #'
-#' @export
+# @export
 
 	if (!data.table::is.data.table(out.data)){ .out.data <- data.table::as.data.table(out.data) }
 	regex.remove <- "([-][-])|(/[*])|([*]/)";
-	this.conn <- check.db_conn(this.conn);
 	.args <- list(conn = this.conn, name = DBI::Id(schema = sch, table = tbl), value = out.data);
 	.args[...names()] <- rlang::list2(...);
 
@@ -151,20 +148,4 @@ export_data <- function(this.conn, out.data, tbl = NULL, sch = "dbo", append = F
 	if (!persist.conn){ DBI::dbDisconnect(this.conn) }
 }
 #
-check.db_conn <- function(this.conn, pass, ...){
-#' Check a Database Connection (OBSOLETE)
-#'
-#' \code{check.db_conn} Validates a DBI connection and reconnects if it is invalid by using the connection's stored settings.
-#'
-#' @param this.conn A \code{\link[DBI]{DBI-package}} connection object
-#' @param pass The password to use if required: raw input is converted to character
-#' @param ... Not used
-#'
-#' @return An active DBI connection object
-#'
-#' @family Data transmission
-#'
-#' @export
 
-	invisible(this.conn)
-}

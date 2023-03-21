@@ -14,22 +14,13 @@
 #' @section Chapter 2 - Environment Integrity:
 #'  This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to  missing object dependencies:
 #'  \itemize{
-#'  	\item{\code{\link{\%must.have\%}}}
 #'  	\item{\code{\link{check.env}}}
+#'  	\item{\code{\link{\%must.have\%}}}
 #'  	\item{\code{\link{\%+=\%}}}
 #'  	\item{\code{\link{\%-=\%}}}
 #'  }
 #'
-#' @section Chapter 3 - External Data Management:
-#'  This family of functions focuses on connecting to external data (primarily databases) as well as parallelized computing contexts with special consideration of Windows environments without SSH implemented:
-#'  \itemize{
-#'  	\item{\code{\link{make_query}}}
-#'  	\item{\code{\link{get_data}}}
-#'  	\item{\code{\link{export_data}}}
-#'  	\item{\code{\link{check.db_conn}}}
-#'  }
-#'
-#' @section Chapter 4 - Workflow Management:
+#' @section Chapter 3 - Workflow Management:
 #'  This family of functions focuses on code execution workflow:
 #'  \itemize{
 #'  	\item{\code{\link{read.snippet}}}
@@ -38,8 +29,16 @@
 #  	\item{\code{\link{workflow_manager}}}
 #'  }
 #'
+# @section Chapter 4 - External Data Management (REMOVED):
+#  This family of functions focuses on connecting to relational databases
+#  \itemize{
+#  	\item{\code{\link{make_query}}}
+#  	\item{\code{\link{get_data}}}
+#  	\item{\code{\link{export_data}}}
+#  }
+#'
 #' @importFrom magrittr %>% %T>% %<>% %$% freduce not
-#' @importFrom data.table %between% %ilike% %like% rbindlist last
+#' @importFrom data.table %between% %ilike% %like% rbindlist last setattr
 #' @importFrom stringi %s+%
 #' @importFrom utils askYesNo installed.packages
 #'

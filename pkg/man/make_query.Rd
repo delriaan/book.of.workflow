@@ -53,7 +53,6 @@ A (T-)SQL string for use in an RDBMS call
 }
 \seealso{
 Other Data transmission: 
-\code{\link{check.db_conn}()},
 \code{\link{export_data}()},
 \code{\link{get_data}()}
 }

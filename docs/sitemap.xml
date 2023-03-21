@@ -13,79 +13,28 @@
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/reference/Book-of-Workflow-Package.html</loc>
-  </url>
-  <url>
     <loc>/reference/book.of.workflow.html</loc>
   </url>
   <url>
-    <loc>/reference/check.db_conn.html</loc>
+    <loc>/reference/check.env.html</loc>
   </url>
   <url>
     <loc>/reference/copy_obj.html</loc>
   </url>
   <url>
-    <loc>/reference/do.copy_obj.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.export_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.get_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.get_pkgs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.load_unloaded.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.make_cluster.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.make_query.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.make_workers.html</loc>
-  </url>
-  <url>
-    <loc>/reference/do.save_image.html</loc>
-  </url>
-  <url>
-    <loc>/reference/env.check.html</loc>
-  </url>
-  <url>
-    <loc>/reference/env_add.html</loc>
-  </url>
-  <url>
-    <loc>/reference/env_subtract.html</loc>
-  </url>
-  <url>
     <loc>/reference/export_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get.cluster_meta.html</loc>
   </url>
   <url>
     <loc>/reference/get_data.html</loc>
   </url>
   <url>
-    <loc>/reference/grapes-check-grapes.html</loc>
-  </url>
-  <url>
     <loc>/reference/grapes-equals-grapes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/grapes-missing-grapes.html</loc>
   </url>
   <url>
     <loc>/reference/grapes-must.have-grapes.html</loc>
   </url>
   <url>
     <loc>/reference/grapes-plus-equals-grapes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/grapes-plus-must.have-grapes.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -100,15 +49,6 @@
     <loc>/reference/make_query.html</loc>
   </url>
   <url>
-    <loc>/reference/mgr_upgrade.html</loc>
-  </url>
-  <url>
-    <loc>/reference/must.have.html</loc>
-  </url>
-  <url>
-    <loc>/reference/must.have2.html</loc>
-  </url>
-  <url>
     <loc>/reference/read.snippet.html</loc>
   </url>
   <url>
@@ -116,11 +56,5 @@
   </url>
   <url>
     <loc>/reference/snippets_toc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/terminate.cluster_workers.html</loc>
-  </url>
-  <url>
-    <loc>/reference/workflow_manager.html</loc>
   </url>
 </urlset>

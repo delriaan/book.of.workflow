@@ -144,7 +144,7 @@ save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), f
 	} else { save(list = i , envir = env, file = tmp.file, compress = "bzip2") }
 }
 #
-copy_obj <- function(..., from_env = .GlobalEnv, to_env = from_env, keep.orig = TRUE, chatty = FALSE){
+copy_obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv, keep.orig = TRUE, chatty = FALSE){
 #' Replace, Copy, or Move Objects
 #'
 #' @description
@@ -190,31 +190,42 @@ copy_obj <- function(..., from_env = .GlobalEnv, to_env = from_env, keep.orig = 
 
 	to <- purrr::map2(names(queue), from, ~{
 				.has_dollar <- grepl("[$]", .x);
+
 				from_quo <- .y
 
 				if (.has_dollar | identical(.x, rlang::as_label(rlang::quo_get_expr(from_quo)) )){
+					# Fully-qualified target object
 						rlang::parse_expr(.x)
 				} else {
 					.tmp_to_env <- rlang::enexprs(to_env)[[1]]
 
 					# Check for multi-assign use case
 					if (!rlang::has_length(.tmp_to_env, 1)){
+						.obj <- .x
 						.tmp_to_env[-1] |>
-							purrr::map(~sprintf("%s$%s", rlang::as_label(.x), rlang::as_label(rlang::quo_get_expr(from_quo))) |> rlang::parse_expr())
-					} else {
-						sprintf("%s$%s", rlang::as_label(.tmp_to_env), rlang::as_label(rlang::quo_get_expr(from_quo))) |> rlang::parse_expr()
-					}
+							purrr::map(~{
+								env <- .x;
+								obj <- if (!identical(.obj, rlang::as_label(rlang::quo_get_expr(from_quo))) & (.obj != "")){
+									rlang::parse_expr(.obj)
+								} else { rlang::quo_get_expr(from_quo) }
+								as.call(list(rlang::expr(`$`), env, obj))
+							})
+						} else {
+							env <- .tmp_to_env;
+							obj <- if (!identical(.x, rlang::as_label(rlang::quo_get_expr(from_quo))) & (.x != "")){	rlang::parse_expr(.x)} else {	rlang::quo_get_expr(from_quo)}
+							as.call(list(rlang::expr(`$`), env, obj))
+						}
 				}
 			})
 
 	action <- purrr::map2(to, from, ~{
-				if (!rlang::is_list(.x)){
-					list(`<-`, .x, rlang::eval_tidy(.y)) |> as.call() |> data.table::setattr("from", .y)
-				} else {
-					y <- .y
-					purrr::map(.x, ~list(`<-`, .x, rlang::eval_tidy(y)) |> as.call() |> data.table::setattr("from", y))
-				}
-			});
+			if (!rlang::is_list(.x)){
+				list(`<-`, .x, rlang::eval_tidy(.y)) |> as.call() |> data.table::setattr("from", .y)
+			} else {
+				y <- .y
+				purrr::map(.x, ~list(`<-`, .x, rlang::eval_tidy(y)) |> as.call() |> data.table::setattr("from", y))
+			}
+		});
 
 	if (.debug){
 		return(data.table::setattr(action, "call", rlang::caller_call()))
@@ -230,9 +241,11 @@ copy_obj <- function(..., from_env = .GlobalEnv, to_env = from_env, keep.orig = 
 				eval(.x);
 				eval(.check_clean);
 			} else {
-				purrr::walk(.x, ~{
+				.action <- .x;
+
+				purrr::iwalk(.action, ~{
 					eval(.x);
-					eval(.check_clean);
+					if (.y == length(.action)){ eval(.check_clean); }
 				})
 			}
 		})

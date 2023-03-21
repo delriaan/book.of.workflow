@@ -35,10 +35,10 @@ check.env <- function(...){
 `%must.have%` <- function(env, x = ""){
 #' Must Have
 #'
-#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{\%check\%}}.
+#' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{check.env}}.
 #'
 #' @param env (object) An environment or name of an environment
-#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{`!!`}} operator when passing a vector or list.
+#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.
 #'
 #' @return The names of the objects that \code{env} must have
 #' @family Environmental Integrity

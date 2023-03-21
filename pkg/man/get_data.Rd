@@ -43,7 +43,6 @@ The workflow for this function is to retrieve the data from SQL Server, post-pro
 }
 \seealso{
 Other Data transmission: 
-\code{\link{check.db_conn}()},
 \code{\link{export_data}()},
 \code{\link{make_query}()}
 }

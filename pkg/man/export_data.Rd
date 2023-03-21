@@ -34,7 +34,6 @@ export_data(
 }
 \seealso{
 Other Data transmission: 
-\code{\link{check.db_conn}()},
 \code{\link{get_data}()},
 \code{\link{make_query}()}
 }
