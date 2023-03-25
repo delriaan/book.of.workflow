@@ -208,5 +208,4 @@ check.env(BLAH) # Checking `BLAH`: FAIL: (missing W, Y)
 check.env(.GlobalEnv, BLAH, BLEH)
 #
 # pkgdown ----
-pkgdown::build_site(pkg = "pkg")
-# pkgdown::build_site_github_pages()
+# pkgdown::build_site(pkg = "pkg", override = list(destination = "../docs"))
