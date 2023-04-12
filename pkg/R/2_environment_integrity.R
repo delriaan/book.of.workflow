@@ -18,7 +18,7 @@ check.env <- function(...){
 #' @param ... One or more environments to check
 #'
 #' @return If all objects that \code{env} \code{\link{\%must.have\%}} are present, nothing is returned; otherwise, an error message is returned.
-#' @family Environmental Integrity
+#' @family Chapter 2 - Environment Integrity
 #' @export
 
 	envs <- rlang::enquos(..., .named = TRUE) |> purrr::map(check_env_arg);
@@ -41,7 +41,7 @@ check.env <- function(...){
 #' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.
 #'
 #' @return The names of the objects that \code{env} must have
-#' @family Environmental Integrity
+#' @family Chapter 2 - Environment Integrity
 #' @export
 
 	env <- check_env_arg(env);
@@ -68,8 +68,7 @@ check.env <- function(...){
 #' @param x	(list) A named list with the names serving as the object name to add to \code{env} and the values the object definitions/contents for each object.
 #'
 #' @return The target environment, invisibly
-#'
-#' @family Environmental Integrity
+#' @family Chapter 2 - Environment Integrity
 #' @export
 
 	env <- check_env_arg(env)
@@ -90,8 +89,7 @@ check.env <- function(...){
 #' @param x	(string[]) A collection of strings representing the names of the objects to remove from \code{env}.
 #'
 #' @return The target environment, invisibly
-#'
-#' @family Environmental Integrity
+#' @family Chapter 2 - Environment Integrity
 #' @export
 
 	env <- check_env_arg(env)

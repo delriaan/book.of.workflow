@@ -18,9 +18,9 @@ The names of the objects that \code{env} must have
 \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{check.env}}.
 }
 \seealso{
-Other Environmental Integrity: 
+Other Chapter 2 - Environment Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%-=\%}()},
 \code{\link{check.env}()}
 }
-\concept{Environmental Integrity}
+\concept{Chapter 2 - Environment Integrity}

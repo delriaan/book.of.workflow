@@ -24,7 +24,13 @@ copy_obj(
 \item{chatty}{(logical | \code{FALSE}) Verbosity flag}
 }
 \description{
-\code{copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
+\code{copy.obj} Facilitates the renaming, copying, and moving of objects within and across environments.
 If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
 If \code{to.env} has multiple values, the copy or move operations will populate each environment.
 }
+\seealso{
+Other Chapter 1 - Environment Processing: 
+\code{\link{load_unloaded}()},
+\code{\link{save_image}()}
+}
+\concept{Chapter 1 - Environment Processing}

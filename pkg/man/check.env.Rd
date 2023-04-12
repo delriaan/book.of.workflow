@@ -16,9 +16,9 @@ If all objects that \code{env} \code{\link{\%must.have\%}} are present, nothing 
 \code{check.env} checks one or more environments for required objects
 }
 \seealso{
-Other Environmental Integrity: 
+Other Chapter 2 - Environment Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%-=\%}()},
 \code{\link{\%must.have\%}()}
 }
-\concept{Environmental Integrity}
+\concept{Chapter 2 - Environment Integrity}

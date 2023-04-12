@@ -22,8 +22,7 @@ read.snippet <- function(..., doc, action){
 #' }
 #'
 #' @return The snippet text invisibly
-#'
-#' @family Code Management
+#' @family Chapter 3 - Workflow Management
 #' @export
 #'
 	if (...length() == 0){ stop("No snippet keywords provided in `...`") }
@@ -101,8 +100,7 @@ make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 #' @param use.clipboard (logical) When \code{TRUE}, the snippet contents are saved to the clipboard and \code{`.Last.value`}
 #'
 #' @return When \code{use.clipboard} is \code{FALSE}, a pair of "tag"-like comments between which code is to be supplied; otherwise, the contents are saved to the clipboard (Windows OS only)
-#'
-#' @family Code Management
+#' @family Chapter 3 - Workflow Management
 #' @export
 
 	if (!interactive()){ return(invisible(NULL)) }
@@ -137,6 +135,7 @@ snippets_toc <- function(doc){
 #' @param doc The path to a document containing code sections created via \code{\link{make.snippet}}()
 #'
 #' @return Invisibly, a listing of snippet code sections for the document provided
+#' @family Chapter 3 - Workflow Management
 #' @export
 
 	if (missing(doc) || rlang::is_empty(doc)){

@@ -68,7 +68,7 @@ unit_tests$copy_obj <- rlang::exprs(
 			}
 		);
 
-attr(unit_tests, "init") |> eval()
+make_test_objs |> eval()
 purrr::imap(unit_tests$copy_obj[], ~{ message(.y); eval(.x, envir = globalenv()) })
 
 # debug(copy_obj)
@@ -87,8 +87,9 @@ read.snippet(keyword, another_1, action = parse);
 # </snippet>
 make.snippet(keyword, another_2, use.clipboard = TRUE)
 make.snippet(keyword, another_3, include.read = FALSE, use.clipboard = FALSE)
+
 # <snippet: keyword another_3> ----
-TRUE
+TEST
 # </snippet>
 read.snippet(key, another_3, action = save)
 file.edit("key_another_3.snippet")
@@ -106,6 +107,7 @@ save_image(!!!LETTERS[1:6], env = BLEH, file.name = "all")
 # ~ load_unloaded() :: Run from fresh session to ensure libraries are not loaded ----
 sapply(dir("pkg/R", full.names = TRUE, pattern = "^1_"), source)
 
+# undebug(load_unloaded)
 load_unloaded(purrr)
 "package:purrr" %in% print(search())
 

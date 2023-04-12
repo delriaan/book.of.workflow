@@ -31,14 +31,15 @@ load_unloaded(
 See \code{\link[base]{library}}
 }
 \description{
-\code{load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
+\code{load.unloaded} checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
 }
 \details{
 Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
 Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
 }
 \seealso{
-Other Environment Processing: 
+Other Chapter 1 - Environment Processing: 
+\code{\link{copy_obj}()},
 \code{\link{save_image}()}
 }
-\concept{Environment Processing}
+\concept{Chapter 1 - Environment Processing}

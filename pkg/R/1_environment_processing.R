@@ -1,8 +1,8 @@
 # ::::: ENVIRONMENT PROCESSING
-load_unloaded <- function(..., libs = NULL, delim = "[,|; ]", autoinstall = FALSE, chatty = FALSE) {
+load_unloaded <- load.unloaded <- function(..., libs = NULL, delim = "[,|; ]", autoinstall = FALSE, chatty = FALSE) {
 #' Load Unloaded Packages
 #'
-#' \code{load_unloaded}checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
+#' \code{load.unloaded} checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
 #'
 #' Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
 #' Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
@@ -19,16 +19,14 @@ load_unloaded <- function(..., libs = NULL, delim = "[,|; ]", autoinstall = FALS
 #' @param chatty (logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
 #'
 #' @return See \code{\link[base]{library}}
-#'
-#' @family Environment Processing
-#'
+#' @family Chapter 1 - Environment Processing
 #' @export
 
 	libs <- c(as.character(rlang::enexprs(...)), libs);
 
 	if (chatty){ cat(libs, sep = "\n") }
 
-	.tmp_str <- stringi::stri_split_regex(str = libs, pattern = delim, simplify = TRUE, omit_empty = TRUE) |> unlist();
+	.tmp_str <- stringi::stri_split_regex(str = libs, pattern = delim, simplify = TRUE, omit_empty = TRUE) |> unlist() |> as.vector();
 	.tmp_str <- rlang::set_names(
 								.tmp_str
 								, stringi::stri_replace_all_regex(.tmp_str, pattern = "([{].*.[}])?", replacement = "", simplify = TRUE) |> unlist()
@@ -71,7 +69,7 @@ load_unloaded <- function(..., libs = NULL, delim = "[,|; ]", autoinstall = FALS
 		)
 }
 #
-save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), file.name = "", use.prefix = TRUE, use.timestamp = TRUE, prepare = NULL){
+save_image <- save.obj <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), file.name = "", use.prefix = TRUE, use.timestamp = TRUE, prepare = NULL){
 #' Manual Export of Workspace Objects
 #'
 #' The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
@@ -86,8 +84,7 @@ save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), f
 #' @param prepare	(language | \code{NULL}) A quoted expression that executes before the save action takes place.
 #'
 #' @return A `.rdata` file, the filename of which being suffixed with a timestamp formatted as "yyyy.mm.dd.hhmmss"
-#'
-#' @family Environment Processing
+#' @family Chapter 1 - Environment Processing
 #' @export
 
 	# :: Preliminary checks on supplied parameters
@@ -144,11 +141,11 @@ save_image <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), f
 	} else { save(list = i , envir = env, file = tmp.file, compress = "bzip2") }
 }
 #
-copy_obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv, keep.orig = TRUE, chatty = FALSE){
+copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv, keep.orig = TRUE, chatty = FALSE){
 #' Replace, Copy, or Move Objects
 #'
 #' @description
-#' \code{copy_obj} Facilitates the renaming, copying, and moving of objects within and across environments.
+#' \code{copy.obj} Facilitates the renaming, copying, and moving of objects within and across environments.
 #' If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
 #' If \code{to.env} has multiple values, the copy or move operations will populate each environment.
 #'
@@ -158,6 +155,7 @@ copy_obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv, keep.orig 
 #' @param keep.orig (logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}
 #' @param chatty (logical | \code{FALSE}) Verbosity flag
 #'
+#' @family Chapter 1 - Environment Processing
 #' @export
 
 	`%||%` <- rlang::`%||%`;

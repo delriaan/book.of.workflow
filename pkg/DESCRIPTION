@@ -2,30 +2,27 @@ Package: book.of.workflow
 Type: Package
 Title: Book of Workflow
 Description: Book of Workflow provides action-oriented functions that support data processing and connection workflow.
-Version: 1.2.3
+Version: 0.1.0
 Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
 Maintainer: Chionesu George <sapienti.Dei@outlook.com>
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 Depends: R (>= 4.1.0)
-Imports: parallel
-	, purrr(< 1.0.0)
-	, data.table
-	, magrittr
-	, stringi
-	, DBI
-	, callr 
-	, foreach
+Imports: purrr(>= 1.0.0)
 	, future
+	, parallel
 	, parallelly
-	, rlang
+	, callr
 	, doParallel
-	, rstudioapi
-	, readtext
-	, tcltk
-	, odbc
-	, RODBCDBI
+	, foreach
+	, magrittr
+	, data.table
+	, stringi
 	, glue
+	, readtext
 	, utils
+	, tcltk
+	, rlang
+	, rstudioapi
 License: file LICENSE

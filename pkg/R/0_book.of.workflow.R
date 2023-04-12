@@ -29,14 +29,6 @@
 #  	\item{\code{\link{workflow_manager}}}
 #'  }
 #'
-# @section Chapter 4 - External Data Management (REMOVED):
-#  This family of functions focuses on connecting to relational databases
-#  \itemize{
-#  	\item{\code{\link{make_query}}}
-#  	\item{\code{\link{get_data}}}
-#  	\item{\code{\link{export_data}}}
-#  }
-#'
 #' @importFrom magrittr %>% %T>% %<>% %$% freduce not
 #' @importFrom data.table %between% %ilike% %like% rbindlist last setattr
 #' @importFrom stringi %s+%

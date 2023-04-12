@@ -18,9 +18,9 @@ The target environment, invisibly
 \code{\%+=\%} wraps \code{base::list2env()}
 }
 \seealso{
-Other Environmental Integrity: 
+Other Chapter 2 - Environment Integrity: 
 \code{\link{\%-=\%}()},
 \code{\link{\%must.have\%}()},
 \code{\link{check.env}()}
 }
-\concept{Environmental Integrity}
+\concept{Chapter 2 - Environment Integrity}
