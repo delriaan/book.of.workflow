@@ -1,6 +1,6 @@
-# Book of Workflow
+# ![book](../img/book_small.png) Book of Workflow
 
-The following functional families are covered in 'book.of.workflow':
+`book.of.workflow` provides functionality related to making certain mundane workflow tasks a bit easier:
 
 ## Chapter 1: Environment-processing
 
