@@ -1,4 +1,4 @@
-# ![book](../img/book_small.png) Book of Workflow
+# ![book](book_small.png) Book of Workflow
 
 `book.of.workflow` provides functionality related to making certain mundane workflow tasks a bit easier:
 

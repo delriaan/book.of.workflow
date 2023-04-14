@@ -22,6 +22,12 @@
     <loc>/reference/copy_obj.html</loc>
   </url>
   <url>
+    <loc>/reference/export_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_data.html</loc>
+  </url>
+  <url>
     <loc>/reference/grapes-equals-grapes.html</loc>
   </url>
   <url>
@@ -38,6 +44,9 @@
   </url>
   <url>
     <loc>/reference/make.snippet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/make_query.html</loc>
   </url>
   <url>
     <loc>/reference/read.snippet.html</loc>
