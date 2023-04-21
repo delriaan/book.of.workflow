@@ -1,7 +1,7 @@
 # ::::: ENVIRONMENT INTEGRITY
 check_env_arg <- function(env){
 	if (is.character(env)){
-		if (env %in% search()){ as.environment(env) } else { rlang::parse_expr(env) |> eval() }
+		if (env %in% search()){ as.environment(env) |> data.table::setattr("attached", TRUE) } else { rlang::parse_expr(env) |> eval() }
 	} else if (rlang::is_quosure(env)){
 		rlang::eval_tidy(env)
 	} else {
@@ -17,7 +17,7 @@ check.env <- function(...){
 #'
 #' @param ... One or more environments to check
 #'
-#' @return If all objects that \code{env} \code{\link{\%must.have\%}} are present, nothing is returned; otherwise, an error message is returned.
+#' @return If not all objects that \code{env} \code{\link{\%must.have\%}} are present, an error message is produced; a corresponding logical is invisibly returned
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
@@ -27,7 +27,7 @@ check.env <- function(...){
 		.test <- rlang::env_has(.x, attr(.x, "must.have"));
 		.pass <- "PASS"
 		.fail <- paste0("FAIL (missing ", paste(names(.test[!.test]) |> trimws(), collapse = ", "), ")");
-		cat(glue::glue("Checking `{.y}`: {ifelse(all(.test), .pass, .fail)}"), sep = "\n")
+		cat(glue::glue("Checking `{.y}`: { ifelse(all(.test), .pass, .fail) }"), sep = "\n");
 	})
 }
 
@@ -38,22 +38,27 @@ check.env <- function(...){
 #' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{check.env}}.
 #'
 #' @param env (object) An environment or name of an environment
-#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.
+#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked. Start a string with "-" or "!" to remove an existing entry
 #'
 #' @return The names of the objects that \code{env} must have
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
 	env <- check_env_arg(env);
-	x <- rlang::enexprs(x) |> purrr::compact();
 
-	if (x == ""){
-		if (rlang::is_empty(attr(env, "must.have"))){ return() } else { return(attr(env, "must.have")) }
+	x <- purrr::compact(x);
+
+	if (identical(x, "")){
+		if (rlang::is_empty(attr(env, "must.have"))){
+			return()
+		} else {
+			return(attr(env, "must.have"))
+		}
 	} else {
 		if (rlang::is_empty(attr(env, "must.have"))){
-			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist()
+				attr(env, "must.have") <- purrr::discard(\(i) grepl("^[-!]", i)) |> unique()
 		} else {
-			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist() |> c(attr(env, "must.have")) |> unique()
+			attr(env, "must.have") <- c(attr(env, "must.have"), x) |> unique() |> purrr::discard(\(i) grepl("^[-!]", i))
 		}
 	}
 }

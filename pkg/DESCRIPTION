@@ -2,7 +2,7 @@ Package: book.of.workflow
 Type: Package
 Title: Book of Workflow
 Description: Book of Workflow provides action-oriented functions that support data processing and connection workflow.
-Version: 0.1.0
+Version: 0.1.0.1
 Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
 Maintainer: Chionesu George <sapienti.Dei@outlook.com>
 Encoding: UTF-8

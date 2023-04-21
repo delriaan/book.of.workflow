@@ -11,7 +11,7 @@ make_test_objs <- rlang::expr({
 			.pattern <- "^[A-Z]$"
 		})
 unit_tests <- list()
-# sapply(dir("pkg/R", full.names = TRUE), source)
+sapply(dir("pkg/R", full.names = TRUE), source)
 
 # library(book.of.workflow)
 library(purrr);
@@ -196,7 +196,11 @@ rlang::env_has(BLAH, c("W", "Y")) # TRUE TRUE
 
 rm(W, Y, Z, envir = BLAH)
 
-BLAH %must.have% !!c("W", "Y", "Z")
+BLAH %must.have% c("W", "Y", "Z")
+`%must.have%`(BLAH)
+check.env(BLAH) # Checking `BLAH`: FAIL: (missing W, Y, Z)
+
+BLAH %must.have% c("!W", "!Y", "-Z")
 `%must.have%`(BLAH)
 check.env(BLAH) # Checking `BLAH`: FAIL: (missing W, Y, Z)
 

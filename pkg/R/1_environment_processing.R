@@ -159,22 +159,30 @@ copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv
 #' @export
 
 	`%||%` <- rlang::`%||%`;
-	nms <- which(...names() != ".debug") |> stats::na.omit()
+	nms <- which(...names() != ".debug") |> stats::na.omit();
+
 	if (identical(integer(), nms)){ nms <- sequence(...length()) }
 
-	queue <- rlang::enquos(..., .named = FALSE)[nms]
-	.debug <- list(...)$.debug %||% FALSE
+	queue <- rlang::enquos(..., .named = FALSE)[nms];
 
-	from <- purrr::map(queue, ~{
-		obj <- rlang::quo_get_expr(.x)
+	.debug <- rlang::has_name(queue, "debug");
+
+	from <- purrr::map(queue, \(x){
+		obj <- rlang::quo_get_expr(x);
+
 		if (is.character(obj)){ obj <- rlang::sym(obj) }
 
 		.has_dollar <- grepl("[$]", rlang::as_label(obj));
 
 		env <- if (.has_dollar){
-						rlang::parse_expr(magrittr::extract(stringi::stri_split_fixed(rlang::as_label(obj), "$", n = 2, simplify = TRUE), 1)) |>
+						rlang::parse_expr(
+							magrittr::extract(
+								stringi::stri_split_fixed(rlang::as_label(obj), "$", n = 2, simplify = TRUE)
+								, 1
+								)
+							) |>
 						eval(envir = .GlobalEnv)
-					} else { rlang::quo_get_env(.x) }
+					} else { rlang::quo_get_env(x) }
 
 		if (!identical(from_env, env)){ env <- from_env }
 
@@ -183,67 +191,71 @@ copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv
 			.tmp_env <- as.list(obj)[[2]] |> eval(envir = env)
 
 			rlang::as_quosure(.tmp_sym, env = .tmp_env)
-		} else { .x }
+		} else { x }
 	});
 
-	to <- purrr::map2(names(queue), from, ~{
-				.has_dollar <- grepl("[$]", .x);
+	to <- purrr::map2(names(queue), from, \(x, y){
+				.has_dollar <- grepl("[$]", x);
 
-				from_quo <- .y
+				from_quo <- y;
 
-				if (.has_dollar | identical(.x, rlang::as_label(rlang::quo_get_expr(from_quo)) )){
+				if (.has_dollar | identical(x, rlang::as_label(rlang::quo_get_expr(from_quo)) )){
 					# Fully-qualified target object
-						rlang::parse_expr(.x)
+						rlang::parse_expr(x)
 				} else {
 					.tmp_to_env <- rlang::enexprs(to_env)[[1]]
 
 					# Check for multi-assign use case
 					if (!rlang::has_length(.tmp_to_env, 1)){
-						.obj <- .x
+						.obj <- x
 						.tmp_to_env[-1] |>
-							purrr::map(~{
-								env <- .x;
+							purrr::map(\(x){
+								env <- x;
 								obj <- if (!identical(.obj, rlang::as_label(rlang::quo_get_expr(from_quo))) & (.obj != "")){
 									rlang::parse_expr(.obj)
 								} else { rlang::quo_get_expr(from_quo) }
+
 								as.call(list(rlang::expr(`$`), env, obj))
 							})
 						} else {
 							env <- .tmp_to_env;
-							obj <- if (!identical(.x, rlang::as_label(rlang::quo_get_expr(from_quo))) & (.x != "")){	rlang::parse_expr(.x)} else {	rlang::quo_get_expr(from_quo)}
+							obj <- if (!identical(x, rlang::as_label(rlang::quo_get_expr(from_quo))) & (x != "")){
+								rlang::parse_expr(x)
+							} else { rlang::quo_get_expr(from_quo) }
+
 							as.call(list(rlang::expr(`$`), env, obj))
 						}
 				}
 			})
 
-	action <- purrr::map2(to, from, ~{
-			if (!rlang::is_list(.x)){
-				list(`<-`, .x, rlang::eval_tidy(.y)) |> as.call() |> data.table::setattr("from", .y)
+	action <- purrr::map2(to, from, \(x, y){
+			if (!rlang::is_list(x)){
+				list(`<-`, x, rlang::eval_tidy(y)) |> as.call() |> data.table::setattr("from", y)
 			} else {
-				y <- .y
-				purrr::map(.x, ~list(`<-`, .x, rlang::eval_tidy(y)) |> as.call() |> data.table::setattr("from", y))
+				purrr::map(x, \(x) list(`<-`, x, rlang::eval_tidy(y)) |> as.call() |> data.table::setattr("from", y))
 			}
 		});
 
 	if (.debug){
 		return(data.table::setattr(action, "call", rlang::caller_call()))
 	} else {
-		purrr::walk(action, ~{
-			.check_clean <- rlang::expr({if (!keep.orig){
-						obj <- attr(.x, "from") |> rlang::quo_get_expr()  |> rlang::as_label()
-						env <- attr(.x, "from") |> rlang::quo_get_env()
+		purrr::walk(action, \(x){
+			.check_clean <- rlang::expr({
+				if (!keep.orig){
+						obj <- attr(x, "from") |> rlang::quo_get_expr() |> rlang::as_label()
+						env <- attr(x, "from") |> rlang::quo_get_env()
 						rm(list = obj, envir = env)
 					}})
 
-			if (rlang::is_call(.x)){
-				eval(.x);
+			if (rlang::is_call(x)){
+				eval(x);
 				eval(.check_clean);
 			} else {
-				.action <- .x;
+				.action <- x;
 
-				purrr::iwalk(.action, ~{
-					eval(.x);
-					if (.y == length(.action)){ eval(.check_clean); }
+				purrr::iwalk(.action, \(x, y){
+					eval(x);
+					if (y == length(.action)){ eval(.check_clean); }
 				})
 			}
 		})
