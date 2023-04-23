@@ -9,7 +9,7 @@ env \%must.have\% x
 \arguments{
 \item{env}{(object) An environment or name of an environment}
 
-\item{x}{(string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.}
+\item{x}{(string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.  Each string beginning with "-" or "!" will remove object names the target environment must have.}
 }
 \value{
 The names of the objects that \code{env} must have

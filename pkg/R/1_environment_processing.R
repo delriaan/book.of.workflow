@@ -163,7 +163,7 @@ copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv
 	if (identical(integer(), nms)){ nms <- sequence(...length()) }
 
 	queue <- rlang::enquos(..., .named = FALSE)[nms]
-	.debug <- list(...)$.debug %||% FALSE
+	.debug <- rlang::list2(...)$.debug %||% FALSE
 
 	from <- purrr::map(queue, ~{
 		obj <- rlang::quo_get_expr(.x)

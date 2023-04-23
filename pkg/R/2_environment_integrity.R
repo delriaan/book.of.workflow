@@ -1,5 +1,6 @@
 # ::::: ENVIRONMENT INTEGRITY
-check_env_arg <- function(env){
+check_env_arg <- function(env, env_nm){
+	message(glue::glue("Checking `{env_nm}`"))
 	if (is.character(env)){
 		if (env %in% search()){ as.environment(env) } else { rlang::parse_expr(env) |> eval() }
 	} else if (rlang::is_quosure(env)){
@@ -21,13 +22,20 @@ check.env <- function(...){
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
-	envs <- rlang::enquos(..., .named = TRUE) |> purrr::map(check_env_arg);
+	envs <- rlang::enquos(...) %>%
+		rlang::set_names(purrr::map_chr(., \(x) rlang::as_label(rlang::quo_get_expr(x)))) |>
+		purrr::imap(check_env_arg);
 
 	purrr::iwalk(envs, ~{
-		.test <- rlang::env_has(.x, attr(.x, "must.have"));
+		.names <- attr(.x, "must.have");
+		if (rlang::is_empty(.names)){
+			cat("No required values set: exiting ..;", sep = "\n");
+			return("N/A")
+		}
+		.test <- rlang::env_has(.x, .names);
 		.pass <- "PASS"
 		.fail <- paste0("FAIL (missing ", paste(names(.test[!.test]) |> trimws(), collapse = ", "), ")");
-		cat(glue::glue("Checking `{.y}`: {ifelse(all(.test), .pass, .fail)}"), sep = "\n")
+		if (!all(.test)){ cat(.fail, sep = "\n") }
 	})
 }
 
@@ -38,13 +46,13 @@ check.env <- function(...){
 #' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{check.env}}.
 #'
 #' @param env (object) An environment or name of an environment
-#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.
+#' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.  Each string beginning with "-" or "!" will remove object names the target environment must have.
 #'
 #' @return The names of the objects that \code{env} must have
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
-	env <- check_env_arg(env);
+	env <- check_env_arg(env, env_nm = rlang::as_label(rlang::enexpr(env)));
 	x <- rlang::enexprs(x) |> purrr::compact();
 
 	if (x == ""){
@@ -53,7 +61,10 @@ check.env <- function(...){
 		if (rlang::is_empty(attr(env, "must.have"))){
 			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist()
 		} else {
-			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist() |> c(attr(env, "must.have")) |> unique()
+			.names <- purrr::map(x, as.character) |> unlist() |> c(attr(env, "must.have")) |> unique();
+			.not_have <- if (any(grepl("^[-!]", .names))){ grep("^[-!].+", .names, value = TRUE) |> stringi::stri_replace_first_regex("[-!]", "") }
+
+			attr(env, "must.have") <- .names[!(grepl("^[-!]", .names) | (.names %in% .not_have))]
 		}
 	}
 }
@@ -71,7 +82,7 @@ check.env <- function(...){
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
-	env <- check_env_arg(env)
+	env <- suppressMessages(check_env_arg(env, ""))
 	x <- as.list(x);
 
 	suppressWarnings(if (x != ""){ list2env(x, envir = env) })
@@ -92,7 +103,7 @@ check.env <- function(...){
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
-	env <- check_env_arg(env)
+	env <- suppressMessages(check_env_arg(env, ""))
 
 	suppressWarnings(if (x != ""){ rm(list = x, envir = env); })
 
