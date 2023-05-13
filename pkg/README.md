@@ -1,6 +1,8 @@
 # ![book](book_small.png) Book of Workflow
 
-`book.of.workflow` provides functionality related to making certain mundane workflow tasks a bit easier:
+`book.of.workflow` provides functionality related to making certain mundane workflow tasks a bit easier.  
+
+Use `remotes::install_github("delriaan/book.of.workflow", subdir = "pkg")` to install.
 
 ## Chapter 1: Environment-processing
 
