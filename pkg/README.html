@@ -297,23 +297,17 @@ overflow-y: auto;
 border: 1px solid #ddd;
 border-radius: 4px;
 }
-.tabset-dropdown > .nav-tabs > li.active:before {
-content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+content: "\e259";
 font-family: 'Glyphicons Halflings';
 display: inline-block;
 padding: 10px;
 border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-content: "";
-border: none;
-}
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-content: "";
+content: "\e258";
 font-family: 'Glyphicons Halflings';
-display: inline-block;
-padding: 10px;
-border-right: 1px solid #ddd;
+border: none;
 }
 .tabset-dropdown > .nav-tabs > li.active {
 display: block;
@@ -359,37 +353,35 @@ display: none;
 
 
 <div id="book-book-of-workflow" class="section level1">
-<h1><img src="data:image/png;base64,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" alt="book" /> Book of Workflow</h1>
-<p><code>book.of.workflow</code> provides functionality related to
-making certain mundane workflow tasks a bit easier:</p>
-<div id="chapter-1-environment-processing" class="section level2">
-<h2>Chapter 1: Environment-processing</h2>
-<p>The focus is on loading libraries and managing environment
-objects:</p>
+<h1><img src="book_small.png" alt="book" /> Book of Workflow</h1>
+<p>The following functional families are covered in
+book.of.workflow:</p>
+<div id="chapter-1---environment-integrity" class="section level2">
+<h2>Chapter 1 - Environment Integrity</h2>
 <ul>
-<li>load.unloaded</li>
-<li>save.obj</li>
-<li>copy.obj</li>
-</ul>
-</div>
-<div id="chapter-2-environment-integrity" class="section level2">
-<h2>Chapter 2: Environment Integrity</h2>
-<p>This family of functions is focused on maintaining the integrity of
-object environments, primarily, to mitigate errors due to missing object
-dependencies:</p>
-<ul>
-<li>%must.have%</li>
-<li>%check%</li>
-<li>%+=%</li>
 <li>%-=%</li>
+<li>%+=%</li>
+<li>%must.have%</li>
+<li>check.env</li>
+<li>check_env_arg</li>
 </ul>
 </div>
-<div id="chapter-3-workflow-management" class="section level2">
-<h2>Chapter 3: Workflow Management</h2>
-<p>This family of functions focuses on code execution workflow:</p>
+<div id="chapter-2---environment-processing" class="section level2">
+<h2>Chapter 2 - Environment Processing</h2>
 <ul>
-<li>read.snippet</li>
+<li>copy.obj</li>
+<li>copy_obj</li>
+<li>load.unloaded</li>
+<li>load_unloaded</li>
+<li>save.obj</li>
+<li>save_image</li>
+</ul>
+</div>
+<div id="chapter-3---workflow-management" class="section level2">
+<h2>Chapter 3 - Workflow Management</h2>
+<ul>
 <li>make.snippet</li>
+<li>read.snippet</li>
 <li>snippets_toc</li>
 </ul>
 </div>

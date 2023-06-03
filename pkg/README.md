@@ -1,28 +1,26 @@
 # ![book](book_small.png) Book of Workflow
 
-`book.of.workflow` provides functionality related to making certain mundane workflow tasks a bit easier:
+The following functional families are covered in book.of.workflow:
 
-## Chapter 1: Environment-processing
+## Chapter 1 - Environment Integrity
 
-The focus is on loading libraries and managing environment objects:
+- %-=%
+- %+=%
+- %must.have%
+- check.env
+- check_env_arg
 
--   load.unloaded
--   save.obj
--   copy.obj
+## Chapter 2 - Environment Processing
 
-## Chapter 2: Environment Integrity
+- copy.obj
+- copy_obj
+- load.unloaded
+- load_unloaded
+- save.obj
+- save_image
 
-This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to missing object dependencies:
+## Chapter 3 - Workflow Management
 
--   %must.have%
--   %check%
--   %+=%
--   %-=%
-
-## Chapter 3: Workflow Management
-
-This family of functions focuses on code execution workflow:
-
--   read.snippet
--   make.snippet
--   snippets_toc
+- make.snippet
+- read.snippet
+- snippets_toc
