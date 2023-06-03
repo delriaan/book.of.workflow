@@ -73,6 +73,3 @@ BLAH %must.have% !!c("-W", "-Y")
 `%must.have%`(BLAH)
 
 check.env(.GlobalEnv, BLAH, BLEH)
-#
-# pkgdown ----
-# pkgdown::build_site(pkg = "pkg", override = list(destination = "../docs"))

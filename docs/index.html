@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">book.of.workflow</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
       </span>
     </div>
 
@@ -59,36 +59,36 @@
 <div class="page-header"><h1 id="book-book-of-workflow">
 <img src="book_small.png" alt="book"> Book of Workflow<a class="anchor" aria-label="anchor" href="#book-book-of-workflow"></a>
 </h1></div>
-<p><code>book.of.workflow</code> provides functionality related to making certain mundane workflow tasks a bit easier.</p>
-<p>Use <code>remotes::install_github("delriaan/book.of.workflow", subdir = "pkg")</code> to install.</p>
+<p>The following functional families are covered in book.of.workflow:</p>
 <div class="section level2">
-<h2 id="chapter-1-environment-processing">Chapter 1: Environment-processing<a class="anchor" aria-label="anchor" href="#chapter-1-environment-processing"></a>
+<h2 id="chapter-1---environment-integrity">Chapter 1 - Environment Integrity<a class="anchor" aria-label="anchor" href="#chapter-1---environment-integrity"></a>
 </h2>
-<p>The focus is on loading libraries and managing environment objects:</p>
 <ul>
-<li>load.unloaded</li>
-<li>save.obj</li>
-<li>copy.obj</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="chapter-2-environment-integrity">Chapter 2: Environment Integrity<a class="anchor" aria-label="anchor" href="#chapter-2-environment-integrity"></a>
-</h2>
-<p>This family of functions is focused on maintaining the integrity of object environments, primarily, to mitigate errors due to missing object dependencies:</p>
-<ul>
-<li>%must.have%</li>
-<li>%check%</li>
-<li>%+=%</li>
 <li>%-=%</li>
+<li>%+=%</li>
+<li>%must.have%</li>
+<li>check.env</li>
+<li>check_env_arg</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="chapter-3-workflow-management">Chapter 3: Workflow Management<a class="anchor" aria-label="anchor" href="#chapter-3-workflow-management"></a>
+<h2 id="chapter-2---environment-processing">Chapter 2 - Environment Processing<a class="anchor" aria-label="anchor" href="#chapter-2---environment-processing"></a>
 </h2>
-<p>This family of functions focuses on code execution workflow:</p>
 <ul>
-<li>read.snippet</li>
+<li>copy.obj</li>
+<li>copy_obj</li>
+<li>load.unloaded</li>
+<li>load_unloaded</li>
+<li>save.obj</li>
+<li>save_image</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="chapter-3---workflow-management">Chapter 3 - Workflow Management<a class="anchor" aria-label="anchor" href="#chapter-3---workflow-management"></a>
+</h2>
+<ul>
 <li>make.snippet</li>
+<li>read.snippet</li>
 <li>snippets_toc</li>
 </ul>
 </div>
