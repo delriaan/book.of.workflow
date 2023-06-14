@@ -7,7 +7,7 @@
 The following functional chapters are covered in \code{book.of.workflow}:\cr
 }
 \section{Chapter 1 - Environment Integrity}{
- 
+
 \itemize{
 \item{\code{\link{\%-=\%}}}
 \item{\code{\link{\%+=\%}}}
@@ -18,7 +18,7 @@ The following functional chapters are covered in \code{book.of.workflow}:\cr
 }
 
 \section{Chapter 2 - Environment Processing}{
- 
+
 \itemize{
 \item{\code{\link{copy.obj}}}
 \item{\code{\link{copy_obj}}}
@@ -30,7 +30,7 @@ The following functional chapters are covered in \code{book.of.workflow}:\cr
 }
 
 \section{Chapter 3 - Workflow Management}{
- 
+
 \itemize{
 \item{\code{\link{make.snippet}}}
 \item{\code{\link{read.snippet}}}

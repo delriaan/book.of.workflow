@@ -26,3 +26,7 @@ Imports: purrr(>= 1.0.0)
 	, rlang
 	, rstudioapi
 License: file LICENSE
+Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr
+URL: https://github.com/delriaan/book.of.workflow/, https://delriaan.github.io/book.of.workflow/
+
