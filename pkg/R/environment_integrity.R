@@ -70,7 +70,7 @@ check.env <- function(...){
 }
 
 # Add to environment
-`%+=%`<- function(env, x = ""){
+`%+=%`<- function(env, x = NULL){
 #' Assignment Shorthand
 #'
 #' \code{\%+=\%} wraps \code{base::list2env()}
@@ -84,8 +84,7 @@ check.env <- function(...){
 
 	env <- suppressMessages(check_env_arg(env, ""))
 	x <- as.list(x);
-
-	suppressWarnings(if (x != ""){ list2env(x, envir = env) })
+	suppressWarnings(if (!rlang::is_empty(x)){ list2env(x, envir = env) })
 
 	invisible(env);
 }
