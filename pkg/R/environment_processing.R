@@ -29,7 +29,7 @@ load_unloaded <- load.unloaded <- function(..., libs = NULL, delim = "[,|; ]", a
 	.tmp_str <- stringi::stri_split_regex(str = libs, pattern = delim, simplify = TRUE, omit_empty = TRUE) |> unlist() |> as.vector();
 	.tmp_str <- rlang::set_names(
 								.tmp_str
-								, stringi::stri_replace_all_regex(.tmp_str, pattern = "([{].*.[}])?", replacement = "", simplify = TRUE) |> unlist()
+								, stringi::stri_replace_all_regex(.tmp_str, pattern = "([{].*.[}])?", replacement = "", vectorize_all = TRUE) |> unlist()
 								);
 	library.cfg <- purrr::map(.tmp_str, ~{
 			ns_objs <- stringi::stri_split_regex(.x, pattern = "[{}]", omit_empty = TRUE, simplify = TRUE) |> unlist() |> magrittr::extract(-1)
