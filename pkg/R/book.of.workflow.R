@@ -18,6 +18,7 @@
 #' \item{\code{\link{copy_obj}}}
 #' \item{\code{\link{load.unloaded}}}
 #' \item{\code{\link{load_unloaded}}}
+#' \item{\code{\link{refer.to}}}
 #' \item{\code{\link{save.obj}}}
 #' \item{\code{\link{save_image}}}
 #' }

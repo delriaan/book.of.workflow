@@ -16,6 +16,7 @@ The following functional families are covered in book.of.workflow:
 - copy_obj
 - load.unloaded
 - load_unloaded
+- refer.to
 - save.obj
 - save_image
 

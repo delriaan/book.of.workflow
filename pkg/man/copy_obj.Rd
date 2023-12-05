@@ -31,6 +31,7 @@ If \code{to.env} has multiple values, the copy or move operations will populate 
 \seealso{
 Other Chapter 1 - Environment Processing: 
 \code{\link{load_unloaded}()},
+\code{\link{refer.to}()},
 \code{\link{save_image}()}
 }
 \concept{Chapter 1 - Environment Processing}

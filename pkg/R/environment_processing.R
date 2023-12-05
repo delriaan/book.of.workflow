@@ -249,3 +249,43 @@ copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv
 		})
 	}
 }
+#
+refer.to <- function(x){
+	#' Refer to an Environment
+	#'
+	#' \code{refer.to} is a convenience function for referring to an environment. It is a wrapper for \code{\link{as.environment}} that allows for the use of character strings and environments as arguments.
+	#'
+	#' @param x An environment or character string
+	#'
+	#' @return Invisibly, the environment if it exists or an error message
+	#'
+	#' @family Chapter 1 - Environment Processing
+	#'
+	#' @export
+	x <- rlang::enexpr(x) |> rlang::as_label();
+
+	on.exit(invisible(.Last.value))
+
+	if (x %in% search()){
+		as.environment(x)
+	} else {
+		xenv <- find(x)
+		if (!rlang::is_empty(xenv)){
+			xenv <- as.environment(xenv);
+			if (is.environment(xenv[[x]])){
+				xenv[[x]]
+			} else {
+				stop(glue::glue("'{x}' is not an environment"))
+			}
+		} else {
+			x.expr <- rlang::parse_expr(x)
+			if (is.environment(eval(x.expr))){
+				eval(x.expr)
+			} else {
+				stop(glue::glue("'{x}' is not an environment"))
+			}
+		}
+	} -> out;
+
+	invisible(out)
+}

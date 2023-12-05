@@ -41,6 +41,7 @@ The default value for \code{i} exports the entire workspace.  Unless \code{file}
 \seealso{
 Other Chapter 1 - Environment Processing: 
 \code{\link{copy_obj}()},
-\code{\link{load_unloaded}()}
+\code{\link{load_unloaded}()},
+\code{\link{refer.to}()}
 }
 \concept{Chapter 1 - Environment Processing}

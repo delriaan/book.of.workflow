@@ -40,6 +40,7 @@ Inclusions and exclusions can be declared using the following template:\cr  \cod
 \seealso{
 Other Chapter 1 - Environment Processing: 
 \code{\link{copy_obj}()},
+\code{\link{refer.to}()},
 \code{\link{save_image}()}
 }
 \concept{Chapter 1 - Environment Processing}
