@@ -264,28 +264,24 @@ refer.to <- function(x){
 	#' @export
 	x <- rlang::enexpr(x) |> rlang::as_label();
 
-	on.exit(invisible(.Last.value))
-
-	if (x %in% search()){
-		as.environment(x)
-	} else {
-		xenv <- find(x)
-		if (!rlang::is_empty(xenv)){
-			xenv <- as.environment(xenv);
-			if (is.environment(xenv[[x]])){
-				xenv[[x]]
-			} else {
-				stop(glue::glue("'{x}' is not an environment"))
-			}
+	invisible(if (x %in% search()){
+			as.environment(x)
 		} else {
-			x.expr <- rlang::parse_expr(x)
-			if (is.environment(eval(x.expr))){
-				eval(x.expr)
+			xenv <- find(x)
+			if (!rlang::is_empty(xenv)){
+				xenv <- as.environment(xenv);
+				if (is.environment(xenv[[x]])){
+					xenv[[x]]
+				} else {
+					stop(glue::glue("'{x}' is not an environment"))
+				}
 			} else {
-				stop(glue::glue("'{x}' is not an environment"))
+				x.expr <- rlang::parse_expr(x)
+				if (is.environment(eval(x.expr))){
+					eval(x.expr)
+				} else {
+					stop(glue::glue("'{x}' is not an environment"))
+				}
 			}
-		}
-	} -> out;
-
-	invisible(out)
+	})
 }
