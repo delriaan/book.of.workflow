@@ -255,7 +255,7 @@ refer.to <- function(x){
 	#'
 	#' \code{refer.to} is a convenience function for referring to an environment. It is a wrapper for \code{\link{as.environment}} that allows for the use of character strings and environments as arguments.
 	#'
-	#' @param x An environment or character string
+	#' @param x An unquoted name of an environment or attached space (i.e., found in the output of \code{search()})
 	#'
 	#' @return Invisibly, the environment if it exists or an error message
 	#'

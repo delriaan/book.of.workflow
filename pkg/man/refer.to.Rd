@@ -7,7 +7,7 @@
 refer.to(x)
 }
 \arguments{
-\item{x}{An environment or character string}
+\item{x}{An unquoted name of an environment or attached space (i.e., found in the output of \code{search()})}
 }
 \value{
 Invisibly, the environment if it exists or an error message
