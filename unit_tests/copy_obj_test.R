@@ -1,4 +1,4 @@
-list(
+tests <- rlang::exprs(
 	test_1 = {
 			copy_obj(A, keep.orig = TRUE);
 			list(`.GlobalEnv` = rlang::env_has(.GlobalEnv, c("A")));
@@ -27,7 +27,7 @@ list(
 				)
 		}
 	, test_7 = {
-			copy_obj(!!!(LETTERS[1:7]), to_env = c(BLEH, BLAH), keep.orig = FALSE);
+			copy_obj(!!!LETTERS[1:7], to_env = c(BLEH, BLAH), keep.orig = !FALSE);
 			list(
 				BLAH = rlang::env_has(BLAH, LETTERS[1:7])
 				, BLEH = rlang::env_has(BLEH, LETTERS[1:7])
@@ -53,4 +53,9 @@ list(
 				, `.GlobalEnv` = !rlang::env_has(.GlobalEnv, c("H", "I", "J")) |> print()
 				)
 		}
-	)
+	);
+
+for (i in 1:length(tests)){
+	cli::cli_alert_info(names(tests)[i])
+	tests[[i]] |> eval(envir = .GlobalEnv)
+}

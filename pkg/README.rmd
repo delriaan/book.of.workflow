@@ -16,3 +16,8 @@ The following functional families are covered in `book.of.workflow`:
 ## Dependencies
 
 `r dep_html`
+
+## History
+
+**Version `0.1.2.1000`**
+1. `copy_obj()`: Completely re-engineered the code to make it more maintainable and less bug-prone.

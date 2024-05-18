@@ -18,7 +18,16 @@ check.env <- function(...){
 #'
 #' @param ... One or more environments to check
 #'
-#' @return If all objects that \code{env} \code{\link{\%must.have\%}} are present, nothing is returned; otherwise, an error message is returned.
+#' @section Changelog:
+#' \definition{
+#' \item{Version 0.1.2.1000}{
+#'	\itemize{
+#'		\item{Changed the output to a conditionally-attributed logical scalar}
+#'		}
+#'	}
+#' }
+#'
+#' @return A logical scalar indicating success or failure. In the case of failure (\code{FALSE}), the missing objects are attached in an attribute named \code{"missing"}.
 #' @family Chapter 2 - Environment Integrity
 #' @export
 
@@ -26,16 +35,24 @@ check.env <- function(...){
 		rlang::set_names(purrr::map_chr(., \(x) rlang::as_label(rlang::quo_get_expr(x)))) |>
 		purrr::imap(check_env_arg);
 
-	purrr::iwalk(envs, ~{
-		.names <- attr(.x, "must.have");
+	purrr::iwalk(envs, \(x, y){
+		.names <- attr(x, "must.have");
+
 		if (rlang::is_empty(.names)){
 			cat("No required values set: exiting ..;", sep = "\n");
-			return("N/A")
+			return(invisible(NA));
 		}
-		.test <- rlang::env_has(.x, .names);
+		.test <- rlang::env_has(x, .names);
 		.pass <- "PASS"
 		.fail <- paste0("FAIL (missing ", paste(names(.test[!.test]) |> trimws(), collapse = ", "), ")");
-		if (!all(.test)){ cat(.fail, sep = "\n") }
+
+		if (!all(.test)){
+			cat(.fail, sep = "\n");
+			res <- attr(FALSE, .test, "missing") <- rlang::syms(names(.test[!.test]) |> trimws());
+			invisible(res);
+		} else {
+			invisible(TRUE);
+		}
 	})
 }
 
@@ -56,13 +73,24 @@ check.env <- function(...){
 	x <- rlang::enexprs(x) |> purrr::compact();
 
 	if (x == ""){
-		if (rlang::is_empty(attr(env, "must.have"))){ return() } else { return(attr(env, "must.have")) }
+		if (rlang::is_empty(attr(env, "must.have"))){
+			return()
+		} else {
+			return(attr(env, "must.have"))
+		}
 	} else {
 		if (rlang::is_empty(attr(env, "must.have"))){
 			attr(env, "must.have") <- purrr::map(x, as.character) |> unlist()
 		} else {
-			.names <- purrr::map(x, as.character) |> unlist() |> c(attr(env, "must.have")) |> unique();
-			.not_have <- if (any(grepl("^[-!]", .names))){ grep("^[-!].+", .names, value = TRUE) |> stringi::stri_replace_first_regex("[-!]", "") }
+			.names <- purrr::map(x, as.character) |>
+				unlist() |>
+				c(attr(env, "must.have")) |>
+				unique();
+
+			.not_have <- if (any(grepl("^[-!]", .names))){
+					grep("^[-!].+", .names, value = TRUE) |>
+						stringi::stri_replace_first_regex("[-!]", "")
+				}
 
 			attr(env, "must.have") <- .names[!(grepl("^[-!]", .names) | (.names %in% .not_have))]
 		}
