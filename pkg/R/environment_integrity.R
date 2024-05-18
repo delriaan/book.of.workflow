@@ -48,7 +48,7 @@ check.env <- function(...){
 
 		if (!all(.test)){
 			cat(.fail, sep = "\n");
-			res <- attr(FALSE, .test, "missing") <- rlang::syms(names(.test[!.test]) |> trimws());
+			res <- magrittr::set_attr(FALSE, "missing", .names[.test]);
 			invisible(res);
 		} else {
 			invisible(TRUE);
