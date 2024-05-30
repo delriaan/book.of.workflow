@@ -3,6 +3,4 @@
 .RData
 .Ruserdata
 *.pper
-.Rhistory
-.Rhistory
-*.ini
+desktop.ini

@@ -1,6 +1,8 @@
 #' @title Book of Workflow
 #
 #' @description
+#' Book of Workflow provides action-oriented functions that support data processing and connection workflow.
+#'
 #' The following functional chapters are covered in \code{book.of.workflow}:\cr
 #'
 #' @section Chapter 1 - Environment Integrity: 
