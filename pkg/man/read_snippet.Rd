@@ -2,6 +2,7 @@
 % Please edit documentation in R/workflow_management.R
 \name{read_snippet}
 \alias{read_snippet}
+\alias{read.snippet}
 \title{Read a Snippet from Source Code}
 \usage{
 read_snippet(..., doc, action)
@@ -17,7 +18,7 @@ read_snippet(..., doc, action)
 The snippet text invisibly
 }
 \description{
-\code{read.snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
+\code{read_snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
 Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.
 }
 \details{

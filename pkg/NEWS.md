@@ -1,3 +1,11 @@
+# book.of.workflow 0.1.2.1111
+
+- Documentation updates
+- Export of function aliases `read.snippet()` and `make.snippet()`
+
+# book.of.workflow 0.1.2.1110
+
+- Documentation updates only
 # book.of.workflow 0.1.2.1110
 
 - Documentation updates only

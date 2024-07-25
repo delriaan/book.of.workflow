@@ -2,7 +2,7 @@
 read_snippet <- read.snippet <- function(..., doc, action){
 #' Read a Snippet from Source Code
 #'
-#' \code{read.snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
+#' \code{read_snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
 #' Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.
 #'
 #' With the exception of \code{action = goto}, the document cursor moves to the closing snippet tag (i.e., \code{"</snippet>"}) when using RStudio.
@@ -23,6 +23,7 @@ read_snippet <- read.snippet <- function(..., doc, action){
 #'
 #' @return The snippet text invisibly
 #' @family Chapter 3 - Workflow Management
+#' @aliases read.snippet
 #' @export
 #'
 	if (...length() == 0){ stop("No snippet keywords provided in `...`") }
@@ -98,7 +99,7 @@ read_snippet <- read.snippet <- function(..., doc, action){
 make_snippet <- make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 #' Make a Snippet
 #'
-#' On a new line, \code{make.snippet} creates "tag"-like comments referenced by \code{\link{read.snippet}} (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>}).  Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.  The opening "tag" is created as a code section.
+#' On a new line, \code{make_snippet} creates "tag"-like comments referenced by \code{\link{read.snippet}} (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>}).  Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.  The opening "tag" is created as a code section.
 #'
 #' @param ... (\code{\link[rlang]{dots_list}}) Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document
 #'
@@ -201,3 +202,9 @@ snippets_toc <- function(doc, choose = FALSE){
 	}
 	invisible(.toc)
 }
+#
+#' @export
+read.snippet <- read_snippet
+
+#' @export
+make.snippet <- make_snippet
