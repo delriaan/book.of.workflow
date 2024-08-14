@@ -1,3 +1,7 @@
+# book.of.workflow 0.1.2.1120
+
+- `snippets_toc()`: Added a check for interactivity when `choose = TRUE`
+
 # book.of.workflow 0.1.2.1111
 
 - Documentation updates

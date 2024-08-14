@@ -172,7 +172,7 @@ snippets_toc <- function(doc, choose = FALSE){
 		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |>
 		trimws();
 
-	if (!choose){
+	if (!(choose | interactive())){
 		sprintf(
 			"Snippet Table of Contents [%s], \n%s"
 			, doc
@@ -180,7 +180,7 @@ snippets_toc <- function(doc, choose = FALSE){
 			) |>
 			cat();
 	} else {
-		res <- svDialogs::dlg_list(
+		res <- svDialogs::dlg_listS(
 			stringi::stri_extract_first_regex(.toc, "([a-zA-Z0-9_[:space:]])+") |>
 				trimws() |>
 				stringi::stri_replace_all_fixed(" ", ", ", vectorize_all = FALSE)
