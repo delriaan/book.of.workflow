@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">book.of.workflow</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2.1120</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3.0000</span>
       </span>
     </div>
 
@@ -47,6 +47,36 @@
       <small>Source: <a href="https://github.com/delriaan/book.of.workflow/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.1.3.0000" id="bookofworkflow-0130000">book.of.workflow 0.1.3.0000<a class="anchor" aria-label="anchor" href="#bookofworkflow-0130000"></a></h2>
+<ul><li>Closed <a href="https://github.com/delriaan/book.of.workflow/issues/3" class="external-link">Add Snippet Selector</a> and <a href="https://github.com/delriaan/book.of.workflow/issues/5" class="external-link">Interactive GUI Confirmation</a>
+</li>
+<li>Added library <code>htmltools</code> to Imports</li>
+<li>
+<code><a href="../reference/make_snippet.html">make_snippet()</a></code>:
+<ul><li>Argument <code>doc</code> in the generated snippet is defaulted to <code>NULL</code>
+</li>
+</ul></li>
+<li>
+<code><a href="../reference/read_snippet.html">read_snippet()</a></code>:
+<ul><li>When no matching snippets are found, a message is produced.</li>
+<li>Replaced messaging calls to use <code>cli::cli_alert_*</code> functions.</li>
+<li>Argument <code>doc</code> is defaulted to <code>NULL</code>
+</li>
+<li>Argument <code>action</code>:
+<ul><li>Removed functionality for <code>goto</code>: if supplied, nothing happens.</li>
+<li>Set the default value to <code>parse</code>
+</li>
+</ul></li>
+</ul></li>
+<li>
+<code><a href="../reference/snippets_toc.html">snippets_toc()</a></code>:
+<ul><li>Argument <code>doc</code> is defaulted to <code>NULL</code>
+</li>
+<li>Added argument <code>action</code> to be passed to <code><a href="../reference/read_snippet.html">read_snippet()</a></code> when <code>choose</code> is <code>TRUE</code>
+</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.2.1120" id="bookofworkflow-0121120">book.of.workflow 0.1.2.1120<a class="anchor" aria-label="anchor" href="#bookofworkflow-0121120"></a></h2>
 <ul><li>

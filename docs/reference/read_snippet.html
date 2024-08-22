@@ -18,7 +18,7 @@ Because of the parsing used, it is important that statements end with a semi-col
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">book.of.workflow</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2.1111</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3.0000</span>
       </span>
     </div>
 
@@ -55,7 +55,7 @@ Because of the parsing used, it is important that statements end with a semi-col
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_snippet</span><span class="op">(</span><span class="va">...</span>, <span class="va">doc</span>, <span class="va">action</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_snippet</span><span class="op">(</span><span class="va">...</span>, doc <span class="op">=</span> <span class="cn">NULL</span>, action <span class="op">=</span> <span class="st">"parse"</span>, chatty <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -69,7 +69,11 @@ Because of the parsing used, it is important that statements end with a semi-col
 
 
 <dt>action</dt>
-<dd><p>One of <code>goto</code>, <code>skip</code>, <code>parse</code>, <code>exec</code>, <code>save</code></p></dd>
+<dd><p>(See <code>action</code> below.)</p></dd>
+
+
+<dt>chatty</dt>
+<dd><p>(logical) Should execution message be generated?</p></dd>
 
 </dl></div>
     <div id="value">
@@ -78,19 +82,19 @@ Because of the parsing used, it is important that statements end with a semi-col
 
 <p>The snippet text invisibly</p>
     </div>
-    <div id="details">
-    <h2>Details</h2>
-    <p>With the exception of <code>action = goto</code>, the document cursor moves to the closing snippet tag (i.e., <code>"&lt;/snippet&gt;"</code>) when using RStudio.</p>
+    <div id="note">
+    <h2>Note</h2>
+    <p>Only the first matching position for the opening snippet tag is used; therefore, ensure that tag labels are unique.</p>
     </div>
     <div id="action">
     <h2><code>action</code></h2>
     
 
-<ul><li><p>goto (RStudio-only): Editor cursor jumps to beginning of code region without execution</p></li>
-<li><p>skip (RStudio-only): Editor jumps to end of code region without execution</p></li>
-<li><p>parse: Contents of the code region are run through <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></code> without execution</p></li>
-<li><p>exec: Contents of the code region are parse and executed from the global environment</p></li>
-<li><p>save: Contents of the code region are saved to the current working directory using the keywords contained in <code>`...`</code> ending in '.snippet'</p></li>
+<ul><li><p>skip: No code is executed</p></li>
+<li><p>parse: Contents of the code region are parsed and printed without execution</p></li>
+<li><p>exec: Contents of the code region are parse and executed from the <em>global</em> environment</p></li>
+<li><p>save: Contents of the code region are saved to the current working directory using the keywords contained in <code>`...`</code> with file extension <code>'.snippet'</code></p></li>
+<li><p>html: Contents of the code region are rendered to the viewer using the keywords contained in <code>`...`</code></p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>

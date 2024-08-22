@@ -4,21 +4,25 @@
 \alias{snippets_toc}
 \title{Snippets Table of Contents}
 \usage{
-snippets_toc(doc, choose = FALSE)
+snippets_toc(doc = NULL, choose = FALSE, action = "skip")
 }
 \arguments{
-\item{doc}{The path to a document containing code sections created via \code{\link{make.snippet}}()}
+\item{doc}{The path to a document containing code sections created via \code{\link{make_snippet}}()}
 
-\item{choose}{(logical) When \code{TRUE}, an interactive dialog allowing for selection is presented. Selected snippets are executed.}
+\item{choose}{(logical) Should snippets be interactively selected?}
+
+\item{action}{(See \code{\link{read_snippet}})}
 }
 \value{
 Invisibly, a listing of snippet code sections for the document provided
 }
 \description{
-\code{snippets_toc} creates a table of contents of snippet code sections.
+\code{snippets_toc} creates a table of contents of snippet code sections and optionally invokes \code{\link{read_snippet}}
 }
 \note{
-An active session must be required to use this file if \code{doc} is \code{NULL}
+An active session must be required to use this file if \code{doc} is \code{NULL} or \code{choose=TRUE}
+
+When \code{action=skip} (default) or \code{choose=FALSE} (default), the snippets listing is sent to the console without execution.
 }
 \seealso{
 Other Chapter 3 - Workflow Management: 

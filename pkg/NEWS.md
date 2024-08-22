@@ -1,3 +1,20 @@
+# book.of.workflow 0.1.3.0000 
+
+- Closed [Add Snippet Selector](https://github.com/delriaan/book.of.workflow/issues/3) and [Interactive GUI Confirmation](https://github.com/delriaan/book.of.workflow/issues/5)
+- Added library `htmltools` to Imports
+- `make_snippet()`: 
+   - Argument `doc` in the generated snippet is defaulted to `NULL`
+- `read_snippet()`:
+   - When no matching snippets are found, a message is produced.
+   - Replaced messaging calls to use `cli::cli_alert_*` functions.
+   - Argument `doc` is defaulted to `NULL`
+   - Argument `action`:
+      - Removed functionality for `goto`: if supplied, nothing happens.
+      - Set the default value to `parse`
+- `snippets_toc()`:
+   - Argument `doc` is defaulted to `NULL`
+   - Added argument `action` to be passed to `read_snippet()` when `choose` is `TRUE`
+
 # book.of.workflow 0.1.2.1120
 
 - `snippets_toc()`: Added a check for interactivity when `choose = TRUE`

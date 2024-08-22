@@ -29,6 +29,8 @@
 #'
 #' @section Chapter 3 - Workflow Management: 
 #' \itemize{
+#' \item{\code{\link{?check_action}}}
+#' \item{\code{\link{?is_studio_audience}}}
 #' \item{\code{\link{?make.snippet}}}
 #' \item{\code{\link{?make_snippet}}}
 #' \item{\code{\link{?read.snippet}}}

@@ -1,99 +1,150 @@
 # ::::: WORKFLOW MANAGEMENT
-read_snippet <- read.snippet <- function(..., doc, action){
+is_studio_audience <- \() interactive() & "rstudioapi" %in% loadedNamespaces();
+check_action <- \(action){
+	if (!action %in% c('skip', 'parse', 'exec', 'save', 'html')){
+		cli::cli_alert_warning("Invalid action ({action}): defaulting to 'skip'")
+		cli::alert_info("Valid actions include 'skip', 'parse', 'exec', 'save', and 'html'")
+		action <- "skip"
+	}
+	return(action)
+} 
+
+read_snippet <- read.snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
 #' Read a Snippet from Source Code
 #'
 #' \code{read_snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
 #' Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.
 #'
-#' With the exception of \code{action = goto}, the document cursor moves to the closing snippet tag (i.e., \code{"</snippet>"}) when using RStudio.
-#'
 #' @param ... (\code{\link[rlang]{dots_list}}) Keywords given as strings or symbols for which a matching snippet is sought. Use \code{!!!} when passing vectors/lists.
 #'
 #' @param doc The input source document name given as a string: defaults to the active document when the function is invoked with no argument
-#' @param action One of \code{goto}, \code{skip}, \code{parse}, \code{exec}, \code{save}
+#' @param action (See \code{action} below.)
+#' @param chatty (logical) Should execution message be generated?
 #'
 #' @section \code{action}:
 #' \itemize{
-#' \item{goto (RStudio-only): Editor cursor jumps to beginning of code region without execution}
-#' \item{skip (RStudio-only): Editor jumps to end of code region without execution}
-#' \item{parse: Contents of the code region are run through \code{\link[base]{cat}} without execution}
-#' \item{exec: Contents of the code region are parse and executed from the global environment}
-#' \item{save: Contents of the code region are saved to the current working directory using the keywords contained in \code{`...`} ending in '.snippet'}
+#' \item{skip: No code is executed}
+#' \item{parse: Contents of the code region are parsed and printed without execution}
+#' \item{exec: Contents of the code region are parse and executed from the \emph{global} environment}
+#' \item{save: Contents of the code region are saved to the current working directory using the keywords contained in \code{`...`} with file extension \code{'.snippet'}}
+#' \item{html: Contents of the code region are rendered to the viewer using the keywords contained in \code{`...`}}
 #' }
 #'
+#' @note Only the first matching position for the opening snippet tag is used; therefore, ensure that tag labels are unique.
+#' 
 #' @return The snippet text invisibly
 #' @family Chapter 3 - Workflow Management
 #' @aliases read.snippet
 #' @export
 #'
 	if (...length() == 0){ stop("No snippet keywords provided in `...`") }
-	is_studio_audience <- interactive() & "rstudioapi" %in% loadedNamespaces();
 
-	if (missing(doc)){ doc <- ifelse(
-		interactive()
-		, ifelse(
-				is_studio_audience
-				, rstudioapi::getSourceEditorContext()$path
-				, do.call(file.choose, args = NULL)
-				)
-		, NULL
-		)
+	if (rlang::is_empty(doc)){ 
+		doc <- ifelse(
+			interactive()
+			, ifelse(
+					is_studio_audience()
+					, rstudioapi::getSourceEditorContext()$path
+					, file.choose()
+					)
+			, NULL
+			)
 	}
 
 	if (rlang::is_empty(doc)){
 		stop("Value for 'doc' is empty.  Call this funciton from RStudio to default to current document: exiting ...")
 	}
 
+	action	<- as.character(rlang::enexpr(action)) |> check_action()
+
 	label 	<- as.character(rlang::enexprs(...));
 	pattern <- paste(label, collapse = ".+") |> sprintf(fmt = "<snippet[:].+%s.+");
-	action	<- if (missing(action)){ "goto" } else { as.character(rlang::enexpr(action)) }
 
 	# ::
 	do.this <- { rlang::exprs(
-		goto		= { message(sprintf("Moved to snippet <%s> ..." , paste(label, collapse = ", "))); }
-		, skip	= { message(sprintf("Skipping snippet <%s> ..." , paste(label, collapse = ", "))); }
-		, parse = { message(sprintf("Parsed snippet <%s> as:\n" , paste(label, collapse = ", "))); cat(out, sep = "\n"); }
-		, exec	= { message(sprintf("Executing snippet <%s> ...", paste(label, collapse = ", "))); parse(text = out) |> eval(envir = globalenv()) }
-		, save	= { .outfile = sprintf("%s.snippet", paste(label, collapse = "_"));
-								message(sprintf("Saving snippet <%s> to '%s'", paste(label, collapse = ", "), .outfile));
-								cat(out, sep = "\n", file = .outfile);
-							}
-		)}[[action]];
+		skip	= { cli::cli_alert_info("Skipping snippet <{paste(label, collapse = ', ')}> ...") }
+		, parse = { 
+				cli::cli_alert_info("Parsed snippet <{paste(label, collapse = ', ')}> as:\n")
+				paste(out, collapse = "\n") |> cat(sep = "\n")
+			}
+		, exec = { 
+				cli::cli_alert_info("Executing snippet <{paste(label, collapse = ', ')}> ...")
+				paste(out, collapse = "\n") |>
+					rlang::parse_exprs() |> 
+					purrr::walk(eval, envir = globalenv())
+			}
+		, save	= { 
+				.outfile <- sprintf("%s.snippet", paste(label, collapse = "_"))
+				cli::cli_alert_info("Saving snippet <{paste(label, collapse = ', ')}> to <{(.outfile)}> ...")
+				cat(out, sep = "\n", file = .outfile, append = FALSE)
+			}
+		, html	= { 
+				.outfile <- sprintf("%s.html", paste(label, collapse = "_"))
+				cli::cli_alert_info("Saving snippet <{paste(label, collapse = ', ')}> to <{(.outfile)}> ...")
+				
+				purrr::modify_at(out, c(1, length(out)), htmltools::htmlEscape) |> 
+					stringi::stri_replace_all_regex(
+						c("\n", "(\t)|([[:space:]]{2})")
+						, c("<br>", "&nbsp;&nbsp;&nbsp;")
+						, vectorize_all = FALSE
+						) |>
+					paste(collapse = "<br>") |>
+					htmltools::HTML() |>
+					htmltools::tags$code(style = "font-size:16pt;") |>
+					htmltools::html_print()
+			}
+		)
+	}[[action]]
 
-	# ::
-	message("Searching " %s+% doc);
+# Read in the text content:
+cli::cli_alert_info("Searching <{doc}>")
+file.data <- suppressWarnings(
+	readtext::readtext(doc)$text |> 
+		stringi::stri_split_regex("\n", simplify = TRUE)
+	) |>
+  stringi::stri_trim_right()
 
-	file.data <- suppressWarnings(readtext::readtext(doc)$text |> stringi::stri_split_regex("\n", simplify = TRUE)) |>
-		stringi::stri_replace_all_regex("read[.]snippet[(].+[)][;]?", "", vectorize_all = FALSE) |>
-		stringi::stri_trim_both();
+# Find the positions of matches containing the snippet patterns:
+match.pos <- grepl(pattern, file.data)
+	
+if (!any(match.pos)){
+	cli::cli_alert_warning("No valid snippet tags found: exiting ...")
+	return(invisible())
+}
+	
+# Check to see if the snippet can be skipped first:
+if (action == "skip"){ 
+	eval(do.this) 
+	return(invisible())
+}
 
-	match.pos <- which(grepl(pattern, file.data)) |>
-		purrr::map(\(x){
-			from = x
-			to = which(grepl("</snippet", file.data)) |>
-				purrr::keep(\(x) x > from) |>
-				min(na.rm = TRUE);
+# Only the first matching position for the opening snippet tag is used.
+# The user should ensure that tag labels are unique.
+match.pos <- which(match.pos)[1] |> 
+	(\(x){
+    from <- x
+    to <- which(grepl("[[:space:]]+?</snippet", file.data))
 
-			if (action == "goto"){ x } else { seq(from, to); }
-		}) |>
-		unlist();
+    if (rlang::is_empty(to)){
+      cli::cli_alert_danger("Closing snippet tag not detected.")
+      stop("Ill-formed snippet tag.")
+    } else {
+      to <- to[to > from] |> min(na.rm = TRUE);
+    }
 
-  out <- paste(file.data[match.pos] |> stringi::stri_replace_all_regex("\t", "", vectorize_all = FALSE), collapse = "\n");
+		res <- seq(from, to)
+		rs <- stringi::stri_detect_regex(file.data[res], "read[.]snippet[(].+[)][;]?")
+		if (any(rs) & action == "exec"){ res <- res[!rs] }
+		
+		# Return 
+		res
+  })() |>
+  unlist();
 
-	# ::
-	if (is_studio_audience){
-	  if (!action %in% c("goto", "parse")){
-	  	if (doc == rstudioapi::getSourceEditorContext()$path){
-	  		rstudioapi::setCursorPosition(rstudioapi::as.document_position(c(max(match.pos) + 1L, 1L)))
-	  	}
-	  } else {
-	  	if (doc == rstudioapi::getSourceEditorContext()$path){
-	  	rstudioapi::setCursorPosition(rstudioapi::as.document_position(c(min(match.pos), 1L))) }
-	  }
-	}
+  out <- file.data[match.pos]
 
-	eval(do.this);
-	invisible(out);
+	eval(do.this)
+	invisible(out)
 }
 #
 make_snippet <- make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
@@ -113,91 +164,97 @@ make_snippet <- make.snippet <- function(..., include.read = TRUE, use.clipboard
 #' @export
 
 	if (!interactive()){ return(invisible(NULL)) }
-	is_studio_audience <- interactive() & "rstudioapi" %in% loadedNamespaces();
-
 	.args = as.character(rlang::enexprs(...));
 
-	.text = { sprintf(
-							fmt = "# <snippet: %s> ----%s"
-							, paste(.args, collapse = " ")
-							, ifelse(include.read, sprintf("\nread.snippet(%s, action = parse);\n", paste(.args, collapse = ", ")), "")
-							)
-						} |> c("\n# </snippet>\n") |> paste(collapse = "");
+	.text = { 
+		sprintf(
+			fmt = "# <snippet: %s> ----%s"
+			, paste(.args, collapse = " ")
+			, ifelse(include.read, sprintf("\nread.snippet(action = parse, doc = NULL, %s);\n", paste(.args, collapse = ", ")), "")
+			)
+		} |> 
+		c("\n# </snippet>\n") |> paste(collapse = "");
 
 	if (use.clipboard){
 		cat(.text);
 		message("The above snippet has been saved to the clipboard.  Paste the contents in desired editor location.")
 		utils::writeClipboard(.text);
 		.Last.value <- .text;
-	} else if (is_studio_audience){
+	} else if (is_studio_audience()){
 		.tgt_pos = rstudioapi::getSourceEditorContext()$selection[[1]]$range$start;
 		rstudioapi::insertText(location = .tgt_pos, text = .text);
-	} else { utils::readClipboard() }
+	} else { 
+		utils::readClipboard() 
+	}
 }
 #
-snippets_toc <- function(doc, choose = FALSE){
+snippets_toc <- function(doc = NULL, choose = FALSE, action = "skip"){
 #' Snippets Table of Contents
 #'
-#' \code{snippets_toc} creates a table of contents of snippet code sections.
+#' \code{snippets_toc} creates a table of contents of snippet code sections and optionally invokes \code{\link{read_snippet}}
 #'
-#' @note An active session must be required to use this file if \code{doc} is \code{NULL}
+#' @note An active session must be required to use this file if \code{doc} is \code{NULL} or \code{choose=TRUE}
 #'
-#' @param doc The path to a document containing code sections created via \code{\link{make.snippet}}()
-#' @param choose (logical) When \code{TRUE}, an interactive dialog allowing for selection is presented. Selected snippets are executed.
+#' @param doc The path to a document containing code sections created via \code{\link{make_snippet}}()
+#' @param choose (logical) Should snippets be interactively selected?
+#' @param action (See \code{\link{read_snippet}}) 
+#' 
+#' @note When \code{action=skip} (default) or \code{choose=FALSE} (default), the snippets listing is sent to the console without execution.
 #'
 #' @return Invisibly, a listing of snippet code sections for the document provided
 #' @family Chapter 3 - Workflow Management
 #' @export
-
-	if (missing(doc) || rlang::is_empty(doc)){
+	if (rlang::is_empty(doc)){ 
 		doc <- ifelse(
 			interactive()
 			, ifelse(
-					"rstudioapi" == (installed.packages())[grepl("rstudio", rownames(installed.packages())), "Package"]
+					is_studio_audience()
 					, rstudioapi::getSourceEditorContext()$path
-					, ""
+					, file.choose()
 					)
-			, { message("This function requires an active session when argument 'doc' is not provided: exiting ...");
-					return()
-				}
+			, NULL
 			)
 	}
 
-	if (doc == ""){
-		stop("Unable to determine the document to use: provide a document path.")
+	if (rlang::is_empty(doc)){
+		stop("This function requires an active session when argument 'doc' is not provided: exiting ...");
 	}
+
+	action	<- as.character(rlang::enexpr(action)) |> check_action()
 
 	.toc <- readLines(doc) |>
 		purrr::keep(\(x) grepl("^[# <]+snippet[:].+[>]", x)) |>
 		stringi::stri_replace_all_regex("([# <]+snippet[: ])|([> ]+[-]+)", "", vectorize_all = FALSE) |>
 		trimws();
 
-	if (!(choose | interactive())){
+	if ((action == "skip") | !choose){
 		sprintf(
 			"Snippet Table of Contents [%s], \n%s"
 			, doc
 			, paste(paste0(seq_along(.toc), ". ", .toc), collapse = "\n")
 			) |>
-			cat();
+			cat()
 	} else {
-		res <- svDialogs::dlg_listS(
-			stringi::stri_extract_first_regex(.toc, "([a-zA-Z0-9_[:space:]])+") |>
-				trimws() |>
-				stringi::stri_replace_all_fixed(" ", ", ", vectorize_all = FALSE)
-			, title = glue::glue("Choose the snippet(s) from '{doc}' to execute:")
+		snips <- stringi::stri_extract_first_regex(.toc, "([a-zA-Z0-9_[:space:]])+") |>
+			trimws() |>
+			stringi::stri_replace_all_fixed(" ", ", ", vectorize_all = FALSE)
+
+		res <- svDialogs::dlg_list(
+			choices = snips
+			, title = glue::glue("Choose one or more snippets found in <{doc}>:")
 			, multiple = TRUE
-			)$res;
+			)$res
 
 		if (rlang::is_empty(res)){
 			return(invisible(.toc))
 		} else {
 			purrr::walk(res, \(x){
 				read.snippet(
-					!!!stringi::stri_split_fixed(x, ", ", simplify = TRUE)
-					, doc = doc
-					, action = exec
+					doc = doc
+					, action = !!action
+					, !!!stringi::stri_split_fixed(x, ", ", simplify = TRUE)
 					)
-			});
+			})
 		}
 	}
 	invisible(.toc)

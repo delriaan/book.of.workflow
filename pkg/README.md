@@ -24,6 +24,8 @@ The following functional families are covered in `book.of.workflow`:
 
 ## Chapter 3 - Workflow Management
 
+- check_action
+- is_studio_audience
 - make.snippet
 - make_snippet
 - read.snippet

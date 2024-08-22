@@ -5,14 +5,16 @@
 \alias{read.snippet}
 \title{Read a Snippet from Source Code}
 \usage{
-read_snippet(..., doc, action)
+read_snippet(..., doc = NULL, action = "parse", chatty = FALSE)
 }
 \arguments{
 \item{...}{(\code{\link[rlang]{dots_list}}) Keywords given as strings or symbols for which a matching snippet is sought. Use \code{!!!} when passing vectors/lists.}
 
 \item{doc}{The input source document name given as a string: defaults to the active document when the function is invoked with no argument}
 
-\item{action}{One of \code{goto}, \code{skip}, \code{parse}, \code{exec}, \code{save}}
+\item{action}{(See \code{action} below.)}
+
+\item{chatty}{(logical) Should execution message be generated?}
 }
 \value{
 The snippet text invisibly
@@ -21,17 +23,17 @@ The snippet text invisibly
 \code{read_snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
 Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.
 }
-\details{
-With the exception of \code{action = goto}, the document cursor moves to the closing snippet tag (i.e., \code{"</snippet>"}) when using RStudio.
+\note{
+Only the first matching position for the opening snippet tag is used; therefore, ensure that tag labels are unique.
 }
 \section{\code{action}}{
 
 \itemize{
-\item{goto (RStudio-only): Editor cursor jumps to beginning of code region without execution}
-\item{skip (RStudio-only): Editor jumps to end of code region without execution}
-\item{parse: Contents of the code region are run through \code{\link[base]{cat}} without execution}
-\item{exec: Contents of the code region are parse and executed from the global environment}
-\item{save: Contents of the code region are saved to the current working directory using the keywords contained in \code{`...`} ending in '.snippet'}
+\item{skip: No code is executed}
+\item{parse: Contents of the code region are parsed and printed without execution}
+\item{exec: Contents of the code region are parse and executed from the \emph{global} environment}
+\item{save: Contents of the code region are saved to the current working directory using the keywords contained in \code{`...`} with file extension \code{'.snippet'}}
+\item{html: Contents of the code region are rendered to the viewer using the keywords contained in \code{`...`}}
 }
 }
 
