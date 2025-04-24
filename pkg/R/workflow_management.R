@@ -11,7 +11,7 @@ check_action <- \(action){
 	}
 	return(action)
 } 
-read_snippet <- read.snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
+read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
   #' Read a Snippet from Source Code
   #'
   #' \code{read_snippet} returns pre-defined sections (snippets) of larger source files marked with "tag"-like syntax (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>})
@@ -113,7 +113,7 @@ read_snippet <- read.snippet <- function(..., doc = NULL, action = "parse", chat
     
   # Check to see if the snippet can be skipped first:
   if (action == "skip"){ 
-    eval(do.this, envir = rlang::caller_env()) 
+    eval(do.this, envir = rlang::caller_env())
     return(invisible(TRUE))
   }
 
@@ -144,10 +144,10 @@ read_snippet <- read.snippet <- function(..., doc = NULL, action = "parse", chat
 
   out <- file.data[match.pos]
 
-	eval(do.this)
+	eval(do.this, envir = rlang::caller_env())
 	invisible(out)
 }
-make_snippet <- make.snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
+make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
   #' Make a Snippet
   #'
   #' On a new line, \code{make_snippet} creates "tag"-like comments referenced by \code{\link{read.snippet}} (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>}).  Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.  The opening "tag" is created as a code section.
@@ -253,3 +253,9 @@ snippets_toc <- function(doc = NULL, choose = FALSE, action = "skip"){
 	invisible(.toc)
 }
 
+#' @export
+read.snippet <- read_snippet
+#' @export
+make.snippet <- make_snippet
+#' @export
+snippets.toc <- snippets_toc

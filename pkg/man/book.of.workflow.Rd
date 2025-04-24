@@ -42,6 +42,7 @@ The following functional chapters are covered in \code{book.of.workflow}:\cr
 \item{\code{\link{?make_snippet}}}
 \item{\code{\link{?read.snippet}}}
 \item{\code{\link{?read_snippet}}}
+\item{\code{\link{?snippets.toc}}}
 \item{\code{\link{?snippets_toc}}}
 }
 }
