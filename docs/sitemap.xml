@@ -1,57 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/book.of.workflow.html</loc>
-  </url>
-  <url>
-    <loc>/reference/check.env.html</loc>
-  </url>
-  <url>
-    <loc>/reference/copy_obj.html</loc>
-  </url>
-  <url>
-    <loc>/reference/grapes-equals-grapes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/grapes-must.have-grapes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/grapes-plus-equals-grapes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/load_unloaded.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_snippet.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read_snippet.html</loc>
-  </url>
-  <url>
-    <loc>/reference/refer_to.html</loc>
-  </url>
-  <url>
-    <loc>/reference/save_image.html</loc>
-  </url>
-  <url>
-    <loc>/reference/snippets_toc.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/book.of.workflow.html</loc></url>
+<url><loc>/reference/check.env.html</loc></url>
+<url><loc>/reference/copy_obj.html</loc></url>
+<url><loc>/reference/grapes-equals-grapes.html</loc></url>
+<url><loc>/reference/grapes-must.have-grapes.html</loc></url>
+<url><loc>/reference/grapes-plus-equals-grapes.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/load_unloaded.html</loc></url>
+<url><loc>/reference/make_snippet.html</loc></url>
+<url><loc>/reference/read_snippet.html</loc></url>
+<url><loc>/reference/refer_to.html</loc></url>
+<url><loc>/reference/save_image.html</loc></url>
+<url><loc>/reference/snippets_toc.html</loc></url>
 </urlset>
+

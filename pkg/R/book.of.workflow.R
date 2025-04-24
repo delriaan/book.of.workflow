@@ -1,7 +1,7 @@
 #' @title Book of Workflow
 #
 #' @description
-#' `{pkg_title}` provides action-oriented functions that support data processing and connection workflows.
+#' `book.of.utilities` seeks to facilitate execution of those repetitive, ad-hoc tasks often encountered during data processing.
 #'
 #'
 #' The following functional chapters are covered in \code{book.of.workflow}:\cr
@@ -39,9 +39,12 @@
 #' }
 #'
 #'
-#' @importFrom magrittr %>% %T>% %<>% %$% freduce not
-#' @importFrom data.table %between% %ilike% %like% rbindlist last setattr
-#' @importFrom stringi %s+%
-#' @importFrom utils askYesNo installed.packages
+#' @importFrom magrittr %>% %T>% or %<>%
+#' @importFrom purrr map map_lgl map_chr reduce modify modify_if modify_at
+#' @importFrom data.table %ilike% %like% like := .N .SD
+#' @importFrom foreach %do% %dopar%
+#' @importFrom methods new
+#' @importFrom stats sd
+#' @importFrom utils object.size
 #' @name book.of.workflow
 NULL

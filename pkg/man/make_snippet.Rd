@@ -12,7 +12,7 @@ make_snippet(..., include.read = TRUE, use.clipboard = FALSE)
 
 \item{include.read}{(logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{eval = parse}}
 
-\item{use.clipboard}{(logical) When \code{TRUE}, the snippet contents are saved to the clipboard and \code{`.Last.value`}}
+\item{use.clipboard}{(logical) When \code{TRUE}, the snippet contents are saved to the clipboard and \code{`.Last.value`}. This is forcibly set to \code{FALSE} for non-Windows operating systems.}
 }
 \value{
 When \code{use.clipboard} is \code{FALSE}, a pair of "tag"-like comments between which code is to be supplied; otherwise, the contents are saved to the clipboard (Windows OS only)

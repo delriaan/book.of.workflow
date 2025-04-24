@@ -4,7 +4,7 @@
 \alias{book.of.workflow}
 \title{Book of Workflow}
 \description{
-\code{{pkg_title}} provides action-oriented functions that support data processing and connection workflows.
+\code{book.of.utilities} seeks to facilitate execution of those repetitive, ad-hoc tasks often encountered during data processing.
 
 The following functional chapters are covered in \code{book.of.workflow}:\cr
 }
@@ -36,6 +36,8 @@ The following functional chapters are covered in \code{book.of.workflow}:\cr
 \section{Chapter 3 - Workflow Management}{
 
 \itemize{
+\item{\code{\link{?check_action}}}
+\item{\code{\link{?is_studio_audience}}}
 \item{\code{\link{?make.snippet}}}
 \item{\code{\link{?make_snippet}}}
 \item{\code{\link{?read.snippet}}}

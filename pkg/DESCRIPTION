@@ -2,30 +2,30 @@ Package: book.of.workflow
 Type: Package
 Title: Book of Workflow
 Description: Book of Workflow provides action-oriented functions that support data processing and connection workflow.
-Version: 0.1.3.0000
+Version: 0.1.3.1
 Author: Chionesu George <sapienti.Dei@outlook.com> [aut, cre]
 Maintainer: Chionesu George <sapienti.Dei@outlook.com>
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
-Depends: R (>= 4.3.2)
+RoxygenNote: 7.3.2
+Depends: R (>= 4.4.0)
 Imports: purrr(>= 1.0.0)
-	, future
-	, parallel
-	, parallelly
-	, callr
-	, doParallel
-	, foreach
-	, magrittr
-	, data.table
-	, stringi
-	, glue
-	, readtext
-	, utils
-	, tcltk
-	, rlang
-	, rstudioapi
-	, svDialogs
+    , future (>= 1.34.0)
+    , parallel (>= 4.5.0)
+    , parallelly (>= 1.38.0)
+    , callr (>= 3.7.6)
+    , doParallel (>= 1.0.0)
+    , foreach (>= 1.5.0)
+    , magrittr (>= 2.0.0)
+    , data.table (>= 1.17.0)
+    , stringi (>= 1.8.0)
+    , glue (>= 1.7.0)
+    , readtext (>= 0.91)
+    , utils (>= 4.5.0)
+    , tcltk (>= 4.5.0)
+    , rlang (>= 1.1.0)
+    , rstudioapi (>= 0.16.0)
+    , svDialogs (>= 1.1.0)
 License: file LICENSE
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

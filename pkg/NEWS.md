@@ -1,4 +1,10 @@
-# book.of.workflow 0.1.3.0000 
+# book.of.workflow 0.1.3.1
+
+## Bug Fixes
+
+- `read_snippet()`: Updated code to skip lines with matching snippet tags or specifying `doc = NULL` to allow nested snippet signatures to be read and processed without the need for aliasing `read_snippet()`.
+
+# book.of.workflow 0.1.3.0
 
 - Closed [Add Snippet Selector](https://github.com/delriaan/book.of.workflow/issues/3) and [Interactive GUI Confirmation](https://github.com/delriaan/book.of.workflow/issues/5)
 - Added library `htmltools` to Imports
