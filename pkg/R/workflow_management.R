@@ -57,8 +57,8 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
     skip = glue::glue("Skipping snippet <{paste(label, collapse = ', ')}> ...")
     , parse = glue::glue("Parsed snippet <{paste(label, collapse = ', ')}> as:\n")
     , exec = glue::glue("Executing snippet <{paste(label, collapse = ', ')}> ...")
-    , save = "Saving snippet <{paste(label, collapse = ', ')}> to <{(outfile)}> ..."
-    , html = "Saving snippet <{paste(label, collapse = ', ')}> to <{(outfile)}> ..."
+    , save = glue::glue("Saving snippet <{paste(label, collapse = ', ')}> to <{{outfile}}> ...")
+    , html = glue::glue("Saving snippet <{paste(label, collapse = ', ')}> to <{{outfile}}> ...")
     )
 	do.this <- { rlang::exprs(
 		skip	= { cli::cli_alert_info(!!action_msgs$skip) }
@@ -144,7 +144,8 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
 
   out <- file.data[match.pos]
 
-	eval(do.this, envir = rlang::caller_env())
+	do.this <- rlang::expr(substitute(!!do.this, list(out = out))) |> eval()
+  eval(do.this, envir = rlang::caller_env())
 	invisible(out)
 }
 make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
