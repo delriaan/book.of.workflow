@@ -57,8 +57,8 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
     skip = glue::glue("Skipping snippet <{paste(label, collapse = ', ')}> ...")
     , parse = glue::glue("Parsed snippet <{paste(label, collapse = ', ')}> as:\n")
     , exec = glue::glue("Executing snippet <{paste(label, collapse = ', ')}> ...")
-    , save = glue::glue("Saving snippet <{paste(label, collapse = ', ')}> to <{{outfile}}> ...")
-    , html = glue::glue("Saving snippet <{paste(label, collapse = ', ')}> to <{{outfile}}> ...")
+    , save = glue::glue("Saving snippet <{paste(label, collapse = ', ')}> to <{{(.outfile)}}> ...")
+    , html = glue::glue("Saving snippet <{paste(label, collapse = ', ')}> to <{{(.outfile)}}> ...")
     )
 	do.this <- { rlang::exprs(
 		skip	= { cli::cli_alert_info(!!action_msgs$skip) }
@@ -73,12 +73,12 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
 					purrr::walk(eval, envir = rlang::caller_env())
 			}
 		, save	= { 
-        outfile <- !!paste0(paste(label, collapse = "_"), ".snippet")
+        .outfile <- !!paste0(paste(label, collapse = "_"), ".snippet")
 				cli::cli_alert_info(!!action_msgs$save)
-				cat(out, sep = "\n", file = outfile, append = FALSE)
+				cat(out, sep = "\n", file = .outfile, append = FALSE)
 			}
 		, html	= { 
-        outfile <- !!paste0(paste(label, collapse = "_"), ".html")
+        .outfile <- !!paste0(paste(label, collapse = "_"), ".html")
 				cli::cli_alert_info(!!action_msgs$html)
 				
 				purrr::modify_at(out, c(1, length(out)), htmltools::htmlEscape) |> 
@@ -90,7 +90,7 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
 					paste(collapse = "<br>") |>
 					htmltools::HTML() |>
 					htmltools::tags$code(style = "font-size:16pt;") |>
-					htmltools::save_html(file = outfile)
+					htmltools::save_html(file = .outfile)
 			}
 		)
 	}[[action]]
@@ -145,7 +145,7 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
   out <- file.data[match.pos]
 
 	do.this <- rlang::expr(substitute(!!do.this, list(out = out))) |> eval()
-  eval(do.this, envir = rlang::caller_env())
+  eval(do.this, envir = .GlobalEnv)
 	invisible(out)
 }
 make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
