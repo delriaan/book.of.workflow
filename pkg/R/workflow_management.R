@@ -70,7 +70,7 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
 				cli::cli_alert_info(!!action_msgs$exec)
 				paste(out, collapse = "\n") |>
 					rlang::parse_exprs() |> 
-					purrr::walk(eval, envir = rlang::caller_env())
+					purrr::walk(eval, envir = .GlobalEnv)
 			}
 		, save	= { 
         .outfile <- !!paste0(paste(label, collapse = "_"), ".snippet")
@@ -145,7 +145,7 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
   out <- file.data[match.pos]
 
 	do.this <- rlang::expr(substitute(!!do.this, list(out = out))) |> eval()
-  eval(do.this, envir = .GlobalEnv)
+  source(exprs = do.this, local = .GlobalEnv)
 	invisible(out)
 }
 make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
@@ -166,7 +166,7 @@ make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
   if (!win_os){ use.clipboard <- FALSE }
 
 	.args <- as.character(rlang::enexprs(...))
-  .rs_text <- glue::glue("\tread_snippet(action = parse, doc = NULL, {paste(.args, collapse = \", \")})")
+  .rs_text <- glue::glue("\t# read_snippet(action = parse, doc = NULL, {paste(.args, collapse = \", \")})")
 	.snippet_tags = glue::glue(
       "# <snippet: {paste(.args, collapse = \" \")}> ----"
       , "{if (include.read) .rs_text}"
