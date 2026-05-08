@@ -26,13 +26,13 @@ copy_obj(
 }
 \description{
 \code{copy.obj} Facilitates the renaming, copying, and moving of objects within and across environments.
-If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
-If \code{to.env} has multiple values, the copy or move operations will populate each environment.
+If \code{to_env} is \code{NULL}, the execution will simply replace the object under a new name.
+If \code{to_env} has multiple values, the copy or move operations will populate each environment.
 }
 \seealso{
-Other Chapter 1 - Environment Processing: 
+Other Chapter 2 - Environment Processing: 
 \code{\link{load_unloaded}()},
 \code{\link{refer_to}()},
 \code{\link{save_image}()}
 }
-\concept{Chapter 1 - Environment Processing}
+\concept{Chapter 2 - Environment Processing}

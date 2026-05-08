@@ -3,6 +3,7 @@
 export("%+=%")
 export("%-=%")
 export("%must.have%")
+export("%read%")
 export(check.env)
 export(copy_obj)
 export(load_unloaded)

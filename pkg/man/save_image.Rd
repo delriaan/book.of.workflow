@@ -40,9 +40,9 @@ A \code{.rdata} file, the filename of which being suffixed with a timestamp form
 The default value for \code{i} exports the entire workspace.  Unless \code{file} is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
 }
 \seealso{
-Other Chapter 1 - Environment Processing: 
+Other Chapter 2 - Environment Processing: 
 \code{\link{copy_obj}()},
 \code{\link{load_unloaded}()},
 \code{\link{refer_to}()}
 }
-\concept{Chapter 1 - Environment Processing}
+\concept{Chapter 2 - Environment Processing}

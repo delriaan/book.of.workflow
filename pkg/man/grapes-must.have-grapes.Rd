@@ -2,25 +2,28 @@
 % Please edit documentation in R/environment_integrity.R
 \name{\%must.have\%}
 \alias{\%must.have\%}
-\title{Must Have}
+\title{Set Required Object Names for an Environment}
 \usage{
 env \%must.have\% x
 }
 \arguments{
-\item{env}{(object) An environment or name of an environment}
+\item{env}{An environment or name of an environment.}
 
-\item{x}{(string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.  Each string beginning with "-" or "!" will remove object names the target environment must have.}
+\item{x}{Character vector of required object names. Use \verb{!!} when passing a
+vector or list. Strings beginning with \code{"-"} or \code{"!"} remove required
+names.}
 }
 \value{
-The names of the objects that \code{env} must have
+Character vector of required object names.
 }
 \description{
-\code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{check.env}}.
+\verb{\%must.have\%} sets an attribute in \code{env} listing object names that the
+environment must contain when checked by \code{\link[=check.env]{check.env()}}.
 }
 \seealso{
-Other Chapter 2 - Environment Integrity: 
+Other Chapter 1 - Environment Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%-=\%}()},
 \code{\link{check.env}()}
 }
-\concept{Chapter 2 - Environment Integrity}
+\concept{Chapter 1 - Environment Integrity}

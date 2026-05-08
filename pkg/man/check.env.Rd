@@ -7,29 +7,31 @@
 check.env(...)
 }
 \arguments{
-\item{...}{One or more environments to check}
+\item{...}{One or more environments to check.}
 }
 \value{
-A logical scalar indicating success or failure. In the case of failure (\code{FALSE}), the missing objects are attached in an attribute named \code{"missing"}.
+A logical scalar indicating success or failure. In the case of
+failure (\code{FALSE}), missing objects are attached in attribute
+\code{"missing"}.
 }
 \description{
-\code{check.env} checks one or more environments for required objects
+\code{check.env()} checks one or more environments for required objects.
 }
 \section{Changelog}{
 
 \describe{
 \item{Version 0.1.2.1000}{
 \itemize{
-\item{Changed the output to a conditionally-attributed logical scalar}
+\item{Changed the output to a conditionally-attributed logical scalar.}
 }
 }
 }
 }
 
 \seealso{
-Other Chapter 2 - Environment Integrity: 
+Other Chapter 1 - Environment Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%-=\%}()},
 \code{\link{\%must.have\%}()}
 }
-\concept{Chapter 2 - Environment Integrity}
+\concept{Chapter 1 - Environment Integrity}

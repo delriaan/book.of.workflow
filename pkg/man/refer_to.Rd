@@ -17,9 +17,9 @@ Invisibly, the environment if it exists or an error message
 \code{refer.to} is a convenience function for referring to an environment. It is a wrapper for \code{\link{as.environment}} that allows for the use of character strings and environments as arguments.
 }
 \seealso{
-Other Chapter 1 - Environment Processing: 
+Other Chapter 2 - Environment Processing: 
 \code{\link{copy_obj}()},
 \code{\link{load_unloaded}()},
 \code{\link{save_image}()}
 }
-\concept{Chapter 1 - Environment Processing}
+\concept{Chapter 2 - Environment Processing}

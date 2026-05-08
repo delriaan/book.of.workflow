@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Book of Workflow">
-<meta property="og:description" content="Book of Workflow provides action-oriented functions that support data processing and connection workflow.">
+<meta property="og:description" content="Provides action-oriented functions that support data processing and connection workflows.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">book.of.workflow</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3.4</span>
       </span>
     </div>
 
@@ -69,44 +69,152 @@
 <div class="page-header"><h1 id="book-book-of-workflow">
 <img src="book_small.png" alt="book"> Book of Workflow<a class="anchor" aria-label="anchor" href="#book-book-of-workflow"></a>
 </h1></div>
-<p><strong>book.of.workflow</strong> provides action-oriented functions that support data processing and connection workflows. The following functional families are covered in <code>book.of.workflow</code>:</p>
+<p><strong>book.of.workflow</strong> provides action-oriented functions that support data processing and connection workflows. The following functional families are covered in <code>book.of.workflow</code>.</p>
 <div class="section level2">
-<h2 id="chapter-1---environment-integrity">Chapter 1 - Environment Integrity<a class="anchor" aria-label="anchor" href="#chapter-1---environment-integrity"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<ul>
-<li>%-=%</li>
-<li>%+=%</li>
-<li>%must.have%</li>
-<li>check.env</li>
-<li>check_env_arg</li>
-</ul>
+<p>Use <code>remotes::install_github("delriaan/book.of.workflow", subdir = "pkg")</code> to install the latest version from GitHub.</p>
 </div>
 <div class="section level2">
-<h2 id="chapter-2---environment-processing">Chapter 2 - Environment Processing<a class="anchor" aria-label="anchor" href="#chapter-2---environment-processing"></a>
+<h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a>
 </h2>
-<ul>
-<li>copy.obj</li>
-<li>copy_obj</li>
-<li>load.unloaded</li>
-<li>load_unloaded</li>
-<li>refer.to</li>
-<li>refer_to</li>
-<li>save.obj</li>
-<li>save_image</li>
-</ul>
+<p>The following functional families are covered in <code>book.of.workflow</code>:</p>
+<div class="section level3">
+<h3 id="chapter-1-environment-integrity">Chapter 1: Environment Integrity<a class="anchor" aria-label="anchor" href="#chapter-1-environment-integrity"></a>
+</h3>
+<table style="width:97%;" class="table">
+<colgroup>
+<col width="48%">
+<col width="48%">
+</colgroup>
+<thead><tr>
+<th align="left">Function</th>
+<th align="left">Synopsis</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left"><code>check_env_arg</code></td>
+<td align="left">Resolves an environment reference from symbols, strings, quosures, or expressions.</td>
+</tr>
+<tr>
+<td align="left"><code>check.env</code></td>
+<td align="left">Checks environments for required objects registered with <code>%must.have%</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>%must.have%</code></td>
+<td align="left">Declares required object names for an environment integrity check.</td>
+</tr>
+<tr>
+<td align="left"><code>%+=%</code></td>
+<td align="left">Adds named objects from a list into an environment.</td>
+</tr>
+<tr>
+<td align="left"><code>%-=%</code></td>
+<td align="left">Removes named objects from an environment.</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="section level2">
-<h2 id="chapter-3---workflow-management">Chapter 3 - Workflow Management<a class="anchor" aria-label="anchor" href="#chapter-3---workflow-management"></a>
-</h2>
-<ul>
-<li>check_action</li>
-<li>is_studio_audience</li>
-<li>make.snippet</li>
-<li>make_snippet</li>
-<li>read.snippet</li>
-<li>read_snippet</li>
-<li>snippets_toc</li>
-</ul>
+<div class="section level3">
+<h3 id="chapter-2-environment-processing">Chapter 2: Environment Processing<a class="anchor" aria-label="anchor" href="#chapter-2-environment-processing"></a>
+</h3>
+<table style="width:97%;" class="table">
+<colgroup>
+<col width="48%">
+<col width="48%">
+</colgroup>
+<thead><tr>
+<th align="left">Function</th>
+<th align="left">Synopsis</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left"><code>load_unloaded</code></td>
+<td align="left">Loads packages that are not already attached, with optional install support.</td>
+</tr>
+<tr>
+<td align="left"><code>load.unloaded</code></td>
+<td align="left">Alias of <code>load_unloaded</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>save_image</code></td>
+<td align="left">Saves selected objects from an environment to a timestamped <code>.rdata</code> file.</td>
+</tr>
+<tr>
+<td align="left"><code>save.obj</code></td>
+<td align="left">Alias of <code>save_image</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>copy_obj</code></td>
+<td align="left">Copies, renames, or moves objects across environments.</td>
+</tr>
+<tr>
+<td align="left"><code>copy.obj</code></td>
+<td align="left">Alias of <code>copy_obj</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>refer_to</code></td>
+<td align="left">Resolves an environment from an attached name or expression.</td>
+</tr>
+<tr>
+<td align="left"><code>refer.to</code></td>
+<td align="left">Alias of <code>refer_to</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="chapter-3-workflow-management">Chapter 3: Workflow Management<a class="anchor" aria-label="anchor" href="#chapter-3-workflow-management"></a>
+</h3>
+<table style="width:97%;" class="table">
+<colgroup>
+<col width="46%">
+<col width="51%">
+</colgroup>
+<thead><tr>
+<th align="left">Function</th>
+<th align="left">Synopsis</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left"><code>is_studio_audience</code></td>
+<td align="left">Detects whether execution is interactive in an RStudio session.</td>
+</tr>
+<tr>
+<td align="left"><code>check_action</code></td>
+<td align="left">Validates snippet action mode values.</td>
+</tr>
+<tr>
+<td align="left"><code>read_snippet</code></td>
+<td align="left">Finds and reads tagged code snippets from source files.</td>
+</tr>
+<tr>
+<td align="left"><code>read.snippet</code></td>
+<td align="left">Alias of <code>read_snippet</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>make_snippet</code></td>
+<td align="left">Inserts or generates snippet tags and boilerplate snippet wrappers.</td>
+</tr>
+<tr>
+<td align="left"><code>make.snippet</code></td>
+<td align="left">Alias of <code>make_snippet</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>snippets_toc</code></td>
+<td align="left">Lists snippet tags and optionally runs selected snippets.</td>
+</tr>
+<tr>
+<td align="left"><code>snippets.toc</code></td>
+<td align="left">Alias of <code>snippets_toc</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>%read%</code></td>
+<td align="left">Infix shorthand for <code>read_snippet(..., action = "exec")</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
   </div>
@@ -116,14 +224,14 @@
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/delriaan/book.of.workflow/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/delriaan/book.of.workflow/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li>GPL (&gt;= 3)</li>
 </ul>
 </div>
 
@@ -138,7 +246,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Chionesu George <br><small class="roles"> Maintainer </small>  </li>
+<li>Chionesu George <br><small class="roles"> Author, maintainer </small>   </li>
 </ul>
 </div>
 
@@ -155,7 +263,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

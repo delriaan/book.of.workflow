@@ -1,16 +1,17 @@
-# ::::: WORKFLOW MANAGEMENT
 is_studio_audience <- \(){
   interactive() & 
     "rstudioapi" %in% loadedNamespaces()
 }
+
 check_action <- \(action){
 	if (!action %in% c('skip', 'parse', 'exec', 'save', 'html')){
 		cli::cli_alert_warning("Invalid action ({action}): defaulting to 'skip'")
-		cli::alert_info("Valid actions include 'skip', 'parse', 'exec', 'save', and 'html'")
+		cli::cli_alert_info("Valid actions include 'skip', 'parse', 'exec', 'save', and 'html'")
 		action <- "skip"
 	}
 	return(action)
 } 
+
 read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
   #' Read a Snippet from Source Code
   #'
@@ -25,7 +26,7 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
   #' \itemize{
   #' \item{skip: No code is executed}
   #' \item{parse: Contents of the code region are parsed and printed without execution}
-  #' \item{exec: Contents of the code region are parse and executed from the \emph{global} environment}
+  #' \item{exec: Contents of the code region are parsed and executed from the \emph{global} environment}
   #' \item{save: Contents of the code region are saved to the current working directory using the keywords contained in \code{`...`} with file extension \code{'.snippet'}}
   #' \item{html: Contents of the code region are rendered to the viewer using the keywords contained in \code{`...`}}
   #' }
@@ -148,13 +149,14 @@ read_snippet <- function(..., doc = NULL, action = "parse", chatty = FALSE){
   source(exprs = do.this, local = .GlobalEnv)
 	invisible(out)
 }
+
 make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
   #' Make a Snippet
   #'
   #' On a new line, \code{make_snippet} creates "tag"-like comments referenced by \code{\link{read.snippet}} (e.g., \code{<snippet: }label\code{>}...\code{<}/snippet\code{>}).  Because of the parsing used, it is important that statements end with a semi-colon (;) as is the case with many other programming languages.  The opening "tag" is created as a code section.
   #'
   #' @param ... (\code{\link[rlang]{dots_list}}) Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document
-  #' @param include.read (logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{eval = parse}
+  #' @param include.read (logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{action = parse}
   #' @param use.clipboard (logical) When \code{TRUE}, the snippet contents are saved to the clipboard and \code{`.Last.value`}. This is forcibly set to \code{FALSE} for non-Windows operating systems.
   #' @return When \code{use.clipboard} is \code{FALSE}, a pair of "tag"-like comments between which code is to be supplied; otherwise, the contents are saved to the clipboard (Windows OS only)
   #' @family Chapter 3 - Workflow Management
@@ -186,6 +188,7 @@ make_snippet <- function(..., include.read = TRUE, use.clipboard = FALSE){
 		if (use.clipboard) utils::readClipboard() 
 	}
 }
+
 snippets_toc <- function(doc = NULL, choose = FALSE, action = "skip"){
   #' Snippets Table of Contents
   #'
@@ -260,3 +263,21 @@ read.snippet <- read_snippet
 make.snippet <- make_snippet
 #' @export
 snippets.toc <- snippets_toc
+
+`%read%` <- function(doc, x){
+  #' Snippet Operator
+  #' 
+  #' This is an infix operator shorthand for \code{\link{read_snippet}} using \code{action=exec}
+  #' 
+  #' @param doc (string) The input source document name given as a string: defaults to the active document when the function is invoked with no argument
+  #' @param x Keywords given as strings or symbols for which a matching snippet is sought. Use \code{c(...)} when passing multiple values.
+  #' 
+  #' @return see \code{\link{read_snippet}}
+  #' @family Chapter 3 - Workflow Management
+  #' @export
+  x <- rlang::enexpr(x) |> as.list()
+  if (length(x) > 1){
+    x <- x[-1]
+  }
+ read_snippet(doc = doc, action = exec, !!!x)
+}

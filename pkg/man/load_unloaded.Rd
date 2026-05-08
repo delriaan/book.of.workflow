@@ -18,11 +18,11 @@ load_unloaded(
 
 \item{libs}{(string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.}
 
-\item{delim}{(string | "\link{, }") A regular expression delimiter pattern that operates on \code{str}: \emph{DO NOT use glyphs \code{+} or \code{-}}.}
+\item{delim}{(string | "\link{, }") A regular expression delimiter pattern that operates on \code{str}: \emph{DO NOT use primitives \code{+} or \code{-}}.}
 
 \item{autoinstall}{\itemize{
-\item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}
-\item{\code{TRUE}: If a library isn't installed, it will be using the default library installation path}
+\item{\code{FALSE} (default): A notification message is shown when \code{chatty} is \code{TRUE}; otherwise no message is shown}
+\item{\code{TRUE}: If a library is not installed, it is installed using the default library path}
 \item{\code{list()}: Assumes \code{TRUE} and should be a list of arguments (excluding \code{pkgs}) to send to \code{\link[utils]{install.packages}}}
 }}
 
@@ -39,9 +39,9 @@ Library names can be declared in a single, delimited string (e.g., \code{"name0 
 Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
 }
 \seealso{
-Other Chapter 1 - Environment Processing: 
+Other Chapter 2 - Environment Processing: 
 \code{\link{copy_obj}()},
 \code{\link{refer_to}()},
 \code{\link{save_image}()}
 }
-\concept{Chapter 1 - Environment Processing}
+\concept{Chapter 2 - Environment Processing}

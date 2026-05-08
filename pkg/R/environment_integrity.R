@@ -1,5 +1,15 @@
-# ::::: ENVIRONMENT INTEGRITY
 check_env_arg <- function(env, env_nm = rlang::as_label(rlang::enexpr(env)), chatty = FALSE){
+	#' Resolve an Environment Argument
+	#'
+	#' `check_env_arg()` normalizes an environment reference given as an
+	#' environment object, quoted/unquoted expression, quosure, or attached search
+	#' path label.
+	#'
+	#' @param env An environment reference to resolve.
+	#' @param env_nm A label used in informational messages.
+	#' @param chatty Logical; when `TRUE`, emits a progress message.
+	#'
+	#' @return An environment object.
 	if (chatty){
 		msg_fun <- if (require(cli)){ cli::cli_alert_info } else { message }
 
@@ -19,27 +29,27 @@ check_env_arg <- function(env, env_nm = rlang::as_label(rlang::enexpr(env)), cha
 	}
 }
 
-# Check if environment has what is should
 check.env <- function(...){
-  #' Environment Integrity Check
-  #'
-  #' \code{check.env} checks one or more environments for required objects
-  #'
-  #' @param ... One or more environments to check
-  #'
-  #' @section Changelog:
-  #' \describe{
-  #' \item{Version 0.1.2.1000}{
-  #'	\itemize{
-  #'		\item{Changed the output to a conditionally-attributed logical scalar}
-  #'		}
-  #'	}
-  #' }
-  #'
-  #' @return A logical scalar indicating success or failure. In the case of failure (\code{FALSE}), the missing objects are attached in an attribute named \code{"missing"}.
-  #' @family Chapter 2 - Environment Integrity
-  #' @export
-
+	#' Environment Integrity Check
+	#'
+	#' `check.env()` checks one or more environments for required objects.
+	#'
+	#' @param ... One or more environments to check.
+	#'
+	#' @section Changelog:
+	#' \describe{
+	#' \item{Version 0.1.2.1000}{
+	#'   \itemize{
+	#'     \item{Changed the output to a conditionally-attributed logical scalar.}
+	#'   }
+	#' }
+	#' }
+	#'
+	#' @return A logical scalar indicating success or failure. In the case of
+	#'   failure (`FALSE`), missing objects are attached in attribute
+	#'   `"missing"`.
+	#' @family Chapter 1 - Environment Integrity
+	#' @export
 	envs <- rlang::enquos(...)
 	envs <- rlang::set_names(envs, purrr::map_chr(envs, \(x) rlang::as_label(rlang::quo_get_expr(x)))) |>
 		purrr::imap(check_env_arg)
@@ -65,19 +75,20 @@ check.env <- function(...){
 	})
 }
 
-# Environment must have ...
 `%must.have%` <- function(env, x = ""){
-  #' Must Have
-  #'
-  #' \code{\%must.have\%} sets an attribute in the environment given by \code{env} with the name(s) of the object(s) that the environment must have.  Verification is done via \code{\link{check.env}}.
-  #'
-  #' @param env (object) An environment or name of an environment
-  #' @param x (string[]) A vector or strings containing the object names that \code{env} must have when checked.  Use the \code{\link[rlang]{!!}} operator when passing a vector or list.  Each string beginning with "-" or "!" will remove object names the target environment must have.
-  #'
-  #' @return The names of the objects that \code{env} must have
-  #' @family Chapter 2 - Environment Integrity
-  #' @export
-
+	#' Set Required Object Names for an Environment
+	#'
+	#' `%must.have%` sets an attribute in `env` listing object names that the
+	#' environment must contain when checked by [check.env()].
+	#'
+	#' @param env An environment or name of an environment.
+	#' @param x Character vector of required object names. Use `!!` when passing a
+	#'   vector or list. Strings beginning with `"-"` or `"!"` remove required
+	#'   names.
+	#'
+	#' @return Character vector of required object names.
+	#' @family Chapter 1 - Environment Integrity
+	#' @export
 	env <- check_env_arg(env, env_nm = rlang::as_label(rlang::enexpr(env)))
 	x <- rlang::enexprs(x) |> purrr::compact()
 
@@ -106,19 +117,18 @@ check.env <- function(...){
 	}
 }
 
-# Add to environment
 `%+=%`<- function(env, x = NULL){
-  #' Assignment Shorthand
-  #'
-  #' \code{\%+=\%} wraps \code{base::list2env()}
-  #'
-  #' @param env (environment, string) An environment or name of an environment
-  #' @param x	(list) A named list with the names serving as the object name to add to \code{env} and the values the object definitions/contents for each object.
-  #'
-  #' @return The target environment, invisibly
-  #' @family Chapter 2 - Environment Integrity
-  #' @export
-
+	#' Add Objects to an Environment
+	#'
+	#' `%+=%` is a shorthand wrapper around [base::list2env()].
+	#'
+	#' @param env An environment or name of an environment.
+	#' @param x A named list where names are object names and values are object
+	#'   definitions.
+	#'
+	#' @return The target environment, invisibly.
+	#' @family Chapter 1 - Environment Integrity
+	#' @export
 	env <- suppressMessages(check_env_arg(env, ""))
 	x <- as.list(x)
 	suppressWarnings(if (!rlang::is_empty(x)){ list2env(x, envir = env) })
@@ -126,19 +136,17 @@ check.env <- function(...){
 	invisible(env)
 }
 
-# Remove from environment
 `%-=%` <- function(env, x = ""){
-  #' Remove Objects from an Environment
-  #'
-  #' \code{\%-=\%} wraps for \code{base::rm()}
-  #'
-  #' @param env (environment, string) An environment or name of an environment
-  #' @param x	(string[]) A collection of strings representing the names of the objects to remove from \code{env}.
-  #'
-  #' @return The target environment, invisibly
-  #' @family Chapter 2 - Environment Integrity
-  #' @export
-
+	#' Remove Objects from an Environment
+	#'
+	#' `%-=%` is a shorthand wrapper around [base::rm()].
+	#'
+	#' @param env An environment or name of an environment.
+	#' @param x Character vector of object names to remove from `env`.
+	#'
+	#' @return The target environment, invisibly.
+	#' @family Chapter 1 - Environment Integrity
+	#' @export
 	env <- suppressMessages(check_env_arg(env, ""))
 
 	suppressWarnings(if (x != ""){ rm(list = x, envir = env); })

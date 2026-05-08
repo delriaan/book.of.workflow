@@ -31,7 +31,7 @@ Only the first matching position for the opening snippet tag is used; therefore,
 \itemize{
 \item{skip: No code is executed}
 \item{parse: Contents of the code region are parsed and printed without execution}
-\item{exec: Contents of the code region are parse and executed from the \emph{global} environment}
+\item{exec: Contents of the code region are parsed and executed from the \emph{global} environment}
 \item{save: Contents of the code region are saved to the current working directory using the keywords contained in \code{`...`} with file extension \code{'.snippet'}}
 \item{html: Contents of the code region are rendered to the viewer using the keywords contained in \code{`...`}}
 }
@@ -39,6 +39,7 @@ Only the first matching position for the opening snippet tag is used; therefore,
 
 \seealso{
 Other Chapter 3 - Workflow Management: 
+\code{\link{\%read\%}()},
 \code{\link{make_snippet}()},
 \code{\link{snippets_toc}()}
 }

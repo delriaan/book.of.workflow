@@ -10,7 +10,7 @@ make_snippet(..., include.read = TRUE, use.clipboard = FALSE)
 \arguments{
 \item{...}{(\code{\link[rlang]{dots_list}}) Symbols or words serving as keywords that, taken together, distinguish the snippet from others in the same source document}
 
-\item{include.read}{(logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{eval = parse}}
+\item{include.read}{(logical) When \code{TRUE}, an associated \code{\link{read.snippet}} command is provided with argument \code{action = parse}}
 
 \item{use.clipboard}{(logical) When \code{TRUE}, the snippet contents are saved to the clipboard and \code{`.Last.value`}. This is forcibly set to \code{FALSE} for non-Windows operating systems.}
 }
@@ -22,6 +22,7 @@ On a new line, \code{make_snippet} creates "tag"-like comments referenced by \co
 }
 \seealso{
 Other Chapter 3 - Workflow Management: 
+\code{\link{\%read\%}()},
 \code{\link{read_snippet}()},
 \code{\link{snippets_toc}()}
 }

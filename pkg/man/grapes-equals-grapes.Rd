@@ -7,20 +7,20 @@
 env \%-=\% x
 }
 \arguments{
-\item{env}{(environment, string) An environment or name of an environment}
+\item{env}{An environment or name of an environment.}
 
-\item{x}{(string[]) A collection of strings representing the names of the objects to remove from \code{env}.}
+\item{x}{Character vector of object names to remove from \code{env}.}
 }
 \value{
-The target environment, invisibly
+The target environment, invisibly.
 }
 \description{
-\code{\%-=\%} wraps for \code{base::rm()}
+\verb{\%-=\%} is a shorthand wrapper around \code{\link[base:rm]{base::rm()}}.
 }
 \seealso{
-Other Chapter 2 - Environment Integrity: 
+Other Chapter 1 - Environment Integrity: 
 \code{\link{\%+=\%}()},
 \code{\link{\%must.have\%}()},
 \code{\link{check.env}()}
 }
-\concept{Chapter 2 - Environment Integrity}
+\concept{Chapter 1 - Environment Integrity}

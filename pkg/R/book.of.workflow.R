@@ -1,45 +1,49 @@
 #' @title Book of Workflow
-#
+#'
 #' @description
-#' `book.of.utilities` seeks to facilitate execution of those repetitive, ad-hoc tasks often encountered during data processing.
+#' `book.of.workflow` facilitates repetitive, ad hoc tasks commonly encountered
+#' during data processing and workflow management.
 #'
+#' The following functional chapters are covered in `book.of.workflow`:
 #'
-#' The following functional chapters are covered in \code{book.of.workflow}:\cr
-#'
-#' @section Chapter 1 - Environment Integrity: 
-#' \itemize{
-#' \item{\code{\link{?\%-=\%}}}
-#' \item{\code{\link{?\%+=\%}}}
-#' \item{\code{\link{?\%must.have\%}}}
-#' \item{\code{\link{?check.env}}}
-#' \item{\code{\link{?check_env_arg}}}
+#' @section Chapter 1 - Environment Integrity:
+#' \tabular{ll}{
+#' \strong{Function} \tab \strong{Synopsis}\cr
+#' \code{\link{\%-=\%}} \tab Removes named objects from an environment target.\cr
+#' \code{\link{\%+=\%}} \tab Assigns/adds named objects into an environment target.\cr
+#' \code{\link{\%must.have\%}} \tab Validates required objects and enforces presence checks.\cr
+#' \code{\link{check.env}} \tab Checks environment state and object availability.\cr
+#' \code{\link{check_env_arg}} \tab Validates environment argument inputs for workflow helpers.\cr
 #' }
 #'
-#' @section Chapter 2 - Environment Processing: 
-#' \itemize{
-#' \item{\code{\link{?copy.obj}}}
-#' \item{\code{\link{?copy_obj}}}
-#' \item{\code{\link{?load.unloaded}}}
-#' \item{\code{\link{?load_unloaded}}}
-#' \item{\code{\link{?refer.to}}}
-#' \item{\code{\link{?refer_to}}}
-#' \item{\code{\link{?save.obj}}}
-#' \item{\code{\link{?save_image}}}
+#' @section Chapter 2 - Environment Processing:
+#' \tabular{ll}{
+#' \strong{Function} \tab \strong{Synopsis}\cr
+#' \code{\link{copy.obj}} \tab Copies selected objects between environments.\cr
+#' \code{\link{copy_obj}} \tab Alias for \code{\link{copy.obj}}.\cr
+#' \code{\link{load.unloaded}} \tab Loads objects that are currently not present in memory.\cr
+#' \code{\link{load_unloaded}} \tab Alias for \code{\link{load.unloaded}}.\cr
+#' \code{\link{refer.to}} \tab Creates or updates object references for reuse.\cr
+#' \code{\link{refer_to}} \tab Alias for \code{\link{refer.to}}.\cr
+#' \code{\link{save.obj}} \tab Saves selected objects to disk.\cr
+#' \code{\link{save_image}} \tab Saves the working image/environment state.\cr
 #' }
 #'
-#' @section Chapter 3 - Workflow Management: 
-#' \itemize{
-#' \item{\code{\link{?check_action}}}
-#' \item{\code{\link{?is_studio_audience}}}
-#' \item{\code{\link{?make.snippet}}}
-#' \item{\code{\link{?make_snippet}}}
-#' \item{\code{\link{?read.snippet}}}
-#' \item{\code{\link{?read_snippet}}}
-#' \item{\code{\link{?snippets.toc}}}
-#' \item{\code{\link{?snippets_toc}}}
+#' @section Chapter 3 - Workflow Management:
+#' \tabular{ll}{
+#' \strong{Function} \tab \strong{Synopsis}\cr
+#' \code{\link{check_action}} \tab Validates and normalizes action declarations in workflows.\cr
+#' \code{\link{is_studio_audience}} \tab Detects whether the session target is an RStudio audience.\cr
+#' \code{\link{make.snippet}} \tab Creates reusable snippet definitions.\cr
+#' \code{\link{make_snippet}} \tab Alias for \code{\link{make.snippet}}.\cr
+#' \code{\link{read.snippet}} \tab Reads saved snippet content for reuse.\cr
+#' \code{\link{read_snippet}} \tab Alias for \code{\link{read.snippet}}.\cr
+#' \code{\link{snippets_toc}} \tab Produces a table of contents for available snippets.\cr
 #' }
 #'
-#'
+#' @section Installation:
+#' Use `remotes::install_github("delriaan/book.of.workflow", subdir = "pkg")` to install the latest version from GitHub.
+#' 
 #' @importFrom magrittr %>% %T>% or %<>%
 #' @importFrom purrr map map_lgl map_chr reduce modify modify_if modify_at
 #' @importFrom data.table %ilike% %like% like := .N .SD

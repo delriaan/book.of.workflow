@@ -1,27 +1,26 @@
-# ::::: ENVIRONMENT PROCESSING
 load_unloaded <- load.unloaded <- function(..., libs = NULL, delim = "[,|; ]", autoinstall = FALSE, chatty = FALSE) {
-#' Load Unloaded Packages
-#'
-#' \code{load.unloaded} checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
-#'
-#' Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
-#' Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
-#'
-#' @param ... \code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
-#' @param libs (string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
-#' @param delim  (string | "[, ]") A regular expression delimiter pattern that operates on `str`: \emph{DO NOT use glyphs \code{+} or \code{-}}.
-#' @param autoinstall
-#' \itemize{
-#'	\item{\code{FALSE} (default): A notification message is provided if \code{chatty} is \code{TRUE}; otherwise, no message is sent}
-#'	\item{\code{TRUE}: If a library isn't installed, it will be using the default library installation path}
-#'	\item{\code{list()}: Assumes \code{TRUE} and should be a list of arguments (excluding \code{pkgs}) to send to \code{\link[utils]{install.packages}}}
-#'	}
-#' @param chatty (logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
-#'
-#' @return See \code{\link[base]{library}}
-#' @family Chapter 1 - Environment Processing
-#' @aliases load.unloaded
-#' @export
+  #' Load Unloaded Packages
+  #'
+  #' \code{load.unloaded} checks the packages provided in \code{libs} against a call to \code{\link[base]{search}} and only makes a call to \code{\link[base]{library}} for unloaded (and attached) libraries.
+  #'
+  #' Library names can be declared in a single, delimited string (e.g., \code{"name0 name1, name2|name3"}) or as a vector of strings (e.g. \code{c("name0", "name1", "name2")}).
+  #' Inclusions and exclusions can be declared using the following template:\cr  \code{"library_name{+name0+name1+...}"} for inclusions and \code{"library_name{-name0-name1-...}"}.  Since inclusions and exclusions cannot be used in the same call to \code{\link[base]{library}}(), trying to do so with this function will result in an error.
+  #'
+  #' @param ... \code{\link[rlang]{dots_list}} A vector of packages to load given as characters.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
+  #' @param libs (string[]) A vector of packages to load given as characters or symbols.  Delimited strings are allowed: \emph{DO NOT use \code{+} or \code{-}}.
+  #' @param delim  (string | "[, ]") A regular expression delimiter pattern that operates on `str`: \emph{DO NOT use primitives `+` or `-`}.
+  #' @param autoinstall
+  #' \itemize{
+  #'	\item{\code{FALSE} (default): A notification message is shown when \code{chatty} is \code{TRUE}; otherwise no message is shown}
+  #'	\item{\code{TRUE}: If a library is not installed, it is installed using the default library path}
+  #'	\item{\code{list()}: Assumes \code{TRUE} and should be a list of arguments (excluding \code{pkgs}) to send to \code{\link[utils]{install.packages}}}
+  #'	}
+  #' @param chatty (logical | \code{FALSE}) Sets the \code{quietly} argument in the call to \code{\link[base]{library}}()
+  #'
+  #' @return See \code{\link[base]{library}}
+  #' @family Chapter 2 - Environment Processing
+  #' @aliases load.unloaded
+  #' @export
 
 	libs <- c(as.character(rlang::enexprs(...)), libs);
 
@@ -83,25 +82,25 @@ load_unloaded <- load.unloaded <- function(..., libs = NULL, delim = "[,|; ]", a
 			})
 		)
 }
-#
+
 save_image <- save.obj <- function(..., safe = TRUE, env = .GlobalEnv, save.dir = getwd(), file.name = "", use.prefix = TRUE, use.timestamp = TRUE, prepare = NULL){
-#' Manual Export of Workspace Objects
-#'
-#' The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
-#'
-#' @param ... (\code{\link[rlang]{dots_list}}) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})
-#' @param safe	(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?
-#' @param env	The environment to search for items
-#' @param save.dir (string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.
-#' @param file.name	(string | "") The name of the file to save, or, when \code{NULL}, the value of \code{i} if atomic or a predefined name when \code{i} is a vector
-#' @param use.prefix (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}
-#' @param use.timestamp (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is appended with a formatted value of \code{Sys.time()}
-#' @param prepare	(language | \code{NULL}) A quoted expression that executes before the save action takes place.
-#'
-#' @return A `.rdata` file, the filename of which being suffixed with a timestamp formatted as "yyyy.mm.dd.hhmmss"
-#' @family Chapter 1 - Environment Processing
-#' @aliases save.obj
-#' @export
+  #' Manual Export of Workspace Objects
+  #'
+  #' The default value for \code{i} exports the entire workspace.  Unless `file` is \code{NULL}, when \code{i} is a vector of names or delimited string of names, the file name becomes 'multiObs'; otherwise, the file name is set to the value of \code{i}. When {i} contains 'all' or '*', regardless of the full content of \code{i}, the entire workspace is exported.
+  #'
+  #' @param ... (\code{\link[rlang]{dots_list}}) Names of objects to save given as strings or symbols. Strings may be delimited (\code{c(',', ';', '|', ' ')})
+  #' @param safe	(logical | \code{TRUE}) Should the pending action be confirmed at the prompt?
+  #' @param env	The environment to search for items
+  #' @param save.dir (string | \code{getwd()}) The directory to save to (not the file name).  Use \code{TRUE} to interactively choose a save directory.
+  #' @param file.name	(string | "") The name of the file to save, or, when \code{NULL}, the value of \code{i} if atomic or a predefined name when \code{i} is a vector
+  #' @param use.prefix (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is prefixed with the value of \code{env}
+  #' @param use.timestamp (logical | \code{TRUE}) When \code{TRUE} (the default), the file name is appended with a formatted value of \code{Sys.time()}
+  #' @param prepare	(language | \code{NULL}) A quoted expression that executes before the save action takes place.
+  #'
+  #' @return A `.rdata` file, the filename of which being suffixed with a timestamp formatted as "yyyy.mm.dd.hhmmss"
+  #' @family Chapter 2 - Environment Processing
+  #' @aliases save.obj
+  #' @export
 
 	# :: Preliminary checks on supplied parameters
 	obj.nms <- NULL;
@@ -188,26 +187,26 @@ save_image <- save.obj <- function(..., safe = TRUE, env = .GlobalEnv, save.dir 
 		save(list = i , envir = env, file = tmp.file, compress = "bzip2")
 	}
 }
-#
+
 copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv, keep.orig = TRUE, chatty = FALSE){
-#' Replace, Copy, or Move Objects
-#'
-#' @description
-#' \code{copy.obj} Facilitates the renaming, copying, and moving of objects within and across environments.
-#' If \code{to.env} is \code{NULL}, the execution will simply replace the object under a new name.
-#' If \code{to.env} has multiple values, the copy or move operations will populate each environment.
-#'
-#' @param ... (\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.
-#' @param from_env (string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied
-#' @param to_env (string| \code{.GlobalEnv}): The default target environment of the target object
-#' @param keep.orig (logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}
-#' @param chatty (logical | \code{FALSE}) Verbosity flag
-#'
-#' @importFrom rlang %||%
-#'
-#' @family Chapter 1 - Environment Processing
-#' @aliases copy.obj
-#' @export
+  #' Replace, Copy, or Move Objects
+  #'
+  #' @description
+  #' \code{copy.obj} Facilitates the renaming, copying, and moving of objects within and across environments.
+  #' If \code{to_env} is \code{NULL}, the execution will simply replace the object under a new name.
+  #' If \code{to_env} has multiple values, the copy or move operations will populate each environment.
+  #'
+  #' @param ... (\code{\link[rlang]{dots_list}}) String(s) giving the names of the object(s) to be moved: may include environment prefix (e.g., \code{FROM_ENV$from.name}).  Elements given as a key-value pair will have the names of keys become the destination object names; otherwise, the value is (parsed and ) used as the destination name.  For example, \code{... = list(a = this, that, TO_ENV$the_other = other)} results in three destination objects named \code{a}, \code{that}, and \code{the_other} with \code{the_other} created in environment \code{TO_ENV}.
+  #' @param from_env (string| \code{.GlobalEnv}): The default source environment of the object(s) to be moved/copied
+  #' @param to_env (string| \code{.GlobalEnv}): The default target environment of the target object
+  #' @param keep.orig (logical | \code{TRUE}): When \code{FALSE}, the original is removed via \code{\link[base]{rm}}
+  #' @param chatty (logical | \code{FALSE}) Verbosity flag
+  #'
+  #' @importFrom rlang %||%
+  #'
+  #' @family Chapter 2 - Environment Processing
+  #' @aliases copy.obj
+  #' @export
 
 	# `%||%` <- rlang::`%||%`;
 	nms <- which(...names() != ".debug") |> stats::na.omit();
@@ -309,7 +308,7 @@ copy_obj <- copy.obj <- function(..., from_env = .GlobalEnv, to_env = .GlobalEnv
 		}
 	})
 }
-#
+
 refer_to <- refer.to <- function(x){
 	#' Refer to an Environment
 	#'
@@ -319,7 +318,7 @@ refer_to <- refer.to <- function(x){
 	#'
 	#' @return Invisibly, the environment if it exists or an error message
 	#'
-	#' @family Chapter 1 - Environment Processing
+	#' @family Chapter 2 - Environment Processing
 	#' @aliases refer.to
 	#' @export
 	x <- rlang::enexpr(x) |> rlang::as_label();

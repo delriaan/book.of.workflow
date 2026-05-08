@@ -2,25 +2,26 @@
 % Please edit documentation in R/environment_integrity.R
 \name{\%+=\%}
 \alias{\%+=\%}
-\title{Assignment Shorthand}
+\title{Add Objects to an Environment}
 \usage{
 env \%+=\% x
 }
 \arguments{
-\item{env}{(environment, string) An environment or name of an environment}
+\item{env}{An environment or name of an environment.}
 
-\item{x}{(list) A named list with the names serving as the object name to add to \code{env} and the values the object definitions/contents for each object.}
+\item{x}{A named list where names are object names and values are object
+definitions.}
 }
 \value{
-The target environment, invisibly
+The target environment, invisibly.
 }
 \description{
-\code{\%+=\%} wraps \code{base::list2env()}
+\verb{\%+=\%} is a shorthand wrapper around \code{\link[base:list2env]{base::list2env()}}.
 }
 \seealso{
-Other Chapter 2 - Environment Integrity: 
+Other Chapter 1 - Environment Integrity: 
 \code{\link{\%-=\%}()},
 \code{\link{\%must.have\%}()},
 \code{\link{check.env}()}
 }
-\concept{Chapter 2 - Environment Integrity}
+\concept{Chapter 1 - Environment Integrity}

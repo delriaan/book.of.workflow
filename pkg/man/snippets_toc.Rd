@@ -26,6 +26,7 @@ When \code{action=skip} (default) or \code{choose=FALSE} (default), the snippets
 }
 \seealso{
 Other Chapter 3 - Workflow Management: 
+\code{\link{\%read\%}()},
 \code{\link{make_snippet}()},
 \code{\link{read_snippet}()}
 }
